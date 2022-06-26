@@ -16,20 +16,18 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
-    if '@pytest_ar' in globals():
-        from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-
-# from acab.core.parsing import debug_funcs as DBF
-# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
-
-import acab.interfaces.value as VI
-from acab.core.parsing import pyparse_dsl as ppDSL
-import acab.core.defaults.value_keys as DS
-from acab.modules.context.context_instance import ContextInstance
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.values.binding.binding import Bind
+    import acab.interfaces.value as VI
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    import acab.core.defaults.value_keys as DS
+    from acab.modules.context.context_instance import ContextInstance
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.core.data.node import AcabNode
+    from acab.modules.values.binding.binding import Bind
+    from acab.modules.values.sen_val.module import Sen_Val_Parser
 
 
 class BindingLogicTests(unittest.TestCase):
@@ -49,6 +47,7 @@ class BindingLogicTests(unittest.TestCase):
         # Set up the parser to ease test setup
         cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser)
+        cls.dsl.register(Sen_Val_Parser)
         cls.dsl.build()
         # dsl()
 
@@ -172,11 +171,105 @@ class BindingLogicTests(unittest.TestCase):
         target = self.dsl("sentence.blah")[0]
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target})
-
         result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
-        self.assertEqual(result, "_:a.test.sentence.blah")
+        self.assertEqual(result, "_:a.test.[sentence.blah]")
         self.assertEqual(len(result), 3)
         self.assertIsInstance(result[-1], VI.Sentence_i)
 
+    def test_at_var_binding(self):
+        source = self.dsl("@x")[0]
+        target = self.dsl("val")[0][0]
+        target_node = AcabNode(target)
+
+        ctx = ContextInstance({"x": target}, nodes={"x": target_node})
+        result = Bind.bind(source[0], ctx)
+        self.assertIsInstance(result, AcabNode)
+
+    def test_at_var_in_sentence(self):
+        source = self.dsl("@x.b.c")[0]
+        target = self.dsl("val")[0][0]
+        target_node = AcabNode(target)
+        ctx = ContextInstance({"x": target}, nodes={"x": target_node})
+
+        result = Bind.bind(source, ctx)
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertEqual(result, "_:val.b.c")
+        self.assertIsInstance(result[0], VI.Value_i)
+        self.assertNotIsInstance(result[0], VI.Sentence_i)
+
+    def test_container_bind(self):
+        source = self.dsl['sentence.ends'].parse_string("test(::γ):\n a.b.$x?\nend")[0]
+
+        ctx = ContextInstance({'x': self.dsl("val")[0]})
+        result = Bind.bind(source, ctx)
+
+        self.assertEqual(result.type[:2], "_:INSTRUCT.CONTAINER")
+        self.assertEqual(result[0], "_:a.b.val")
+
+
+    def test_container_bind_ignore_params(self):
+        source = self.dsl['sentence.ends'].parse_string("test(::γ):\n | $x |\n\n a.b.$x?\nend")[0]
+
+        ctx = ContextInstance({'x': self.dsl("val")[0]})
+        result = Bind.bind(source, ctx)
+
+        self.assertEqual(result.type[:2], "_:INSTRUCT.CONTAINER")
+        self.assertEqual(result[0], "_:a.b.x")
+
+    def test_sen_bind_container(self):
+        source = self.dsl("a.container.test(::γ):\n a.b.$x?\nend")[0]
+
+        ctx = ContextInstance({'x': self.dsl("val")[0]})
+
+        result = Bind.bind(source, ctx)
+
+        self.assertEqual(result.type[:2], "_:SENTENCE")
+        self.assertEqual(result, "_:a.container.'test'")
+        self.assertEqual(result[-1][0], "_:a.b.val")
+
+    def test_sen_bind_container_param_ignore(self):
+        source = self.dsl("a.container.test(::γ):\n | $x |\n\n a.b.$x?\nend")[0]
+
+        ctx = ContextInstance({'x': self.dsl("val")[0]})
+        result = Bind.bind(source, ctx)
+
+        self.assertEqual(result.type[:2], "_:SENTENCE")
+        self.assertEqual(result, "_:a.container.'test'")
+        self.assertEqual(result[-1][0], "_:a.b.x")
+
+    def test_sen_bind_container_in_container(self):
+        source = self.dsl("a.container.test(::α):\n !! a.b.$x\n !! another.container(::γ):\n  a.b.$x?\n end\nend")[0]
+        ctx = ContextInstance({'x': self.dsl("val")[0]})
+        result = Bind.bind(source, ctx)
+        self.assertEqual(result.type[:2], "_:SENTENCE")
+        self.assertEqual(result, "_:a.container.'test'")
+        self.assertEqual(result[-1][0], "_:[!!].[[a.b.val]].[returns.unit]")
+        self.assertEqual(result[-1][1], "_:[!!].[[another.'container']].[returns.unit]")
+        self.assertEqual(result[-1][1][1][0][-1].type[:2], "_:INSTRUCT.CONTAINER")
+        self.assertEqual(result[-1][1][1][0][-1][0], "_:a.b.val")
+
+    def test_sen_bind_container_in_container_param_ignore(self):
+        source = self.dsl("a.container.test(::α):\n !! a.b.$x\n !! another.container(::γ):\n  | $x |\n\n  a.b.$x?\n end\nend")[0]
+        ctx = ContextInstance({'x': self.dsl("val")[0]})
+        result = Bind.bind(source, ctx)
+
+        self.assertEqual(result.type[:2], "_:SENTENCE")
+        self.assertEqual(result, "_:a.container.'test'")
+        self.assertEqual(result[-1][0], "_:[!!].[[a.b.val]].[returns.unit]")
+        self.assertEqual(result[-1][1], "_:[!!].[[another.'container']].[returns.unit]")
+        self.assertEqual(result[-1][1][1][0][-1].type[:2], "_:INSTRUCT.CONTAINER")
+        self.assertEqual(result[-1][1][1][0][-1][0], "_:a.b.x")
+
+    def test_sen_bind_container_in_container_param_ignore(self):
+        source = self.dsl("a.container.test(::α):\n | $x |\n\n !! a.b.$x\n !! another.container(::γ):\n  a.b.$x?\n end\nend")[0]
+        ctx = ContextInstance({'x': self.dsl("val")[0]})
+        result = Bind.bind(source, ctx)
+
+        self.assertEqual(result.type[:2], "_:SENTENCE")
+        self.assertEqual(result, "_:a.container.'test'")
+        self.assertEqual(result[-1][0], "_:[!!].[[a.b.x]].[returns.unit]")
+        self.assertEqual(result[-1][1], "_:[!!].[[another.'container']].[returns.unit]")
+        self.assertEqual(result[-1][1][1][0][-1].type[:2], "_:INSTRUCT.CONTAINER")
+        self.assertEqual(result[-1][1][1][0][-1][0], "_:a.b.x")

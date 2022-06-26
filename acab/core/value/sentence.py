@@ -19,6 +19,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.value.value_meta import ValueMeta
 from acab.error.base import AcabBasicException
 from acab.error.protocol import AcabProtocolError as APE
+from acab.error.semantic import AcabOperatorMissingException
 from acab.interfaces.value import ValueFactory
 
 logging        = logmod.getLogger(__name__)
@@ -37,6 +38,7 @@ Instruction_A : TypeAlias = AT.Instruction
 ValueData     : TypeAlias = str
 
 @APE.assert_implements(VI.Sentence_i)
+@dataclass(frozen=True, repr=False, eq=False)
 class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     """
     A Sentence is an instruction which is idempotent on from_sentences/to_sentences
@@ -51,12 +53,21 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
         processed = [VI.ValueFactory.value(x) for x in value]
         return processed
 
+    def __post_init__(self):
+        if self.data[DS.BIND] != False:
+            raise TypeError("Sentences Shouldn't be variables")
+        if self.is_var and self[0].type != "_:ATOM" and self.type == "_:SENTENCE":
+            # If sentence is just a var, promote the var's type
+            # to the entire sentence
+            self.data[DS.TYPE_INSTANCE] = self.type << self[0].type.words
+
     def match(self, sen:Sen_A) -> list[Tuple[Value_A, Value_A]]:
         """ Match a target sentence's variables to self's target
         as tuples of (bind_name, value)
 
         eg: _:$x.b.$y match _:a.b.c -> [(x, a), (y, c)]
         """
+        raise DeprecationWarning()
         # TODO this should be a controllable / utility function
         results : list[Tuple[Value_A, Value_A]] = []
         if self.is_var:
@@ -83,7 +94,13 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
         a_sen = Sentence(data=...) << "a" << "test" << ["sentence", "also", "handles", "lists"]
         a_sen == "_:a.test.sentence.also.handles.lists"
         """
+        if other is None or not bool(other):
+            return self
         if not isinstance(other, list):
             other = [other]
         words = self.words + other
         return self.copy(value=words)
+
+
+    def __call__(self, *args, **kwargs):
+        raise AcabOperatorMissingException("Attempted to call a sentence, likely instead of an operator", context=[self])

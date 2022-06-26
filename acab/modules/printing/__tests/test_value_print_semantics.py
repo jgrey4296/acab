@@ -21,23 +21,24 @@ with warnings.catch_warnings():
     config = acab.setup()
 
 
-import acab.core.defaults.value_keys as DS
-import acab.modules.parsing.exlo.parsers.ActionParser as AP
-import acab.modules.parsing.exlo.parsers.FactParser as FP
-import acab.modules.parsing.exlo.parsers.QueryParser as QP
-import acab.modules.parsing.exlo.parsers.RuleParser as RP
-import acab.modules.parsing.exlo.parsers.TransformParser as TP
-import acab.modules.printing.printers as Printers
-from acab.core.config.config import AcabConfig
-from acab.core.defaults import print_signals as DSig
-from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                         ProductionContainer,
-                                         ProductionOperator)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.handler_system import Handler_i
-from acab.modules.printing import default
-from acab.modules.printing.basic_printer import BasicPrinter
+    import acab.core.defaults.value_keys as DS
+    import acab.modules.parsing.exlo.parsers.ActionParser as AP
+    import acab.modules.parsing.exlo.parsers.FactParser as FP
+    import acab.modules.parsing.exlo.parsers.QueryParser as QP
+    import acab.modules.parsing.exlo.parsers.RuleParser as RP
+    import acab.modules.parsing.exlo.parsers.TransformParser as TP
+    import acab.modules.printing.printers as Printers
+    from acab.core.config.config import AcabConfig
+    from acab.core.defaults import print_signals as DSig
+    from acab.core.value.instruction import (Instruction, ProductionContainer,
+                                            ProductionOperator)
+    from acab.core.util.sentences import ProductionComponent
+
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.handler_system import Handler_i
+    from acab.modules.printing import default
+    from acab.modules.printing.basic_printer import BasicPrinter
 
 QUERY_S           = DS.QUERY
 BIND_S            = DS.BIND
@@ -88,7 +89,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_initial(self):
         """ Check a basic value can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.AtomicPrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.AtomicPrinter().as_handler(signal="[ATOM]"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")]
@@ -99,7 +100,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_multiple(self):
         """ Check multiple values can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.AtomicPrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.AtomicPrinter().as_handler(signal="[ATOM]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
@@ -111,7 +112,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_string_wrap(self):
         """ Check a string type value can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="[ATOM]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")]
@@ -125,7 +126,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_regex_wrap(self):
         """ Check a regex type value can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="[ATOM]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
@@ -137,7 +138,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_var_wrap(self):
         """ Check a variable type value can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="[ATOM]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
@@ -149,7 +150,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_pprint_at_var(self):
         """ Check an @ variable can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="[ATOM]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
@@ -162,7 +163,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_modal_print(self):
         """ Check a modal can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="[ATOM]"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")
@@ -176,7 +177,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_modal_print2(self):
         """ Check the other modal can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="[ATOM]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")
@@ -191,7 +192,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_modal_print_override(self):
         """ Check modal symbols can be overriden for printing """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="[ATOM]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter(overrides={DOT_E : "^"}).as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")
@@ -205,7 +206,7 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_symbol_override(self):
         """ Check bind symbols can be overriden for printing """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="[ATOM]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter(overrides={config.prepare("Symbols", "BIND") : "%"}).as_handler(signal="SYMBOL"),
                                               Printers.NoOpPrinter().as_handler(signal="MODAL")
@@ -220,7 +221,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         """ Check the uuid of a value can be printed """
         val = AcabValue("test")
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.UUIDAwarePrinter().as_handler(signal="ATOM")],
+                               init_handlers=[Printers.UUIDAwarePrinter().as_handler(signal="[ATOM]")],
                                )
         result = sem_sys.pprint(val)
         self.assertEqual(result, "({} : {})".format(val.uuid, val.name))
@@ -230,14 +231,14 @@ class PrintValueSemanticTests(unittest.TestCase):
         """ Check constraints of values can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[
-                                   Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                   Printers.AnnotationAwareValuePrinter().as_handler(signal="[ATOM]"),
                                    Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                    Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
-                                   Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                   Printers.BasicSentenceAwarePrinter().as_handler(signal="[SENTENCE]"),
                                    Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                    Printers.ConstraintPrinter().as_handler(signal=DSig.CONSTRAINT),
                                    Printers.ModalPrinter().as_handler(signal="MODAL"),
-                                   Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                   Printers.ProductionComponentPrinter().as_handler(signal="[SENTENCE.COMPONENT]"),
                                    Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                ],
                                settings={"MODAL": "exop"})
@@ -248,10 +249,10 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_constraints_multi_var(self):
         """ Check constraints with multiple variables can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="[SENTENCE]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="[ATOM]"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="[SENTENCE.COMPONENT]"),
                                               Printers.ConstraintPrinter().as_handler(signal="CONSTRAINT"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),

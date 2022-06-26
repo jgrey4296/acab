@@ -17,8 +17,13 @@ from acab.core.value.sentence import Sentence
 from acab.interfaces.printing import PrintSemantics_i
 
 config = AcabConfig()
+TYPE_INSTANCE = config.attr.Print.Signals.TYPE_INSTANCE
+TYPE_DEF      = config.attr.Print.Signals.TYPE_DEF
+SUM_TYPE      = config.attr.Print.Signals.SUM_TYPE
+OP_DEF        = config.attr.Print.Signals.OP_DEF
+TYPE_CLASS    = config.attr.Print.Signals.TYPE_CLASS
 
-@HandleSignal("TYPE_INSTANCE")
+@HandleSignal(TYPE_INSTANCE)
 class TypeAwareValuePrinter(basic.PrintSemanticsImpl):
 
     def __call__(self, value, top=None, data=None):
@@ -33,7 +38,7 @@ class TypeAwareValuePrinter(basic.PrintSemanticsImpl):
         return return_list
 
 
-@HandleSignal("TYPE_DEF")
+@HandleSignal(TYPE_DEF)
 class TypeRecordPrinter(basic.PrintSemanticsImpl):
 
     def __call__(self, value, top=None, data=None):
@@ -63,20 +68,20 @@ class TypeRecordPrinter(basic.PrintSemanticsImpl):
 
         return ret_list
 
-@HandleSignal("SUM_TYPE")
+@HandleSignal(SUM_TYPE)
 class SumTypePrinter(basic.PrintSemanticsImpl):
     def __call__(self, value, top=None, data=None):
         return_list = ["SUMTYPE"]
         return return_list
 
 
-@HandleSignal("OP_DEF")
+@HandleSignal(OP_DEF)
 class OperatorTypePrinter(basic.PrintSemanticsImpl):
     def __call__(self, value, top=None, data=None):
         return_list = ["OPTYPE"]
         return return_list
 
-@HandleSignal("TYPE_CLASS")
+@HandleSignal(TYPE_CLASS)
 class TypeClassPrinter(basic.PrintSemanticsImpl):
     def __call__(self, value, top=None, data=None):
         return_list = ["TYPECLASS"]

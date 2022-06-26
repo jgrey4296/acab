@@ -87,3 +87,17 @@ class Structure_i(_Structure_p[T], Generic[T]):
     """ The structures which semantics operate on """
     root       : T              = field()
     components : dict[str, T]  = field(init=False, default_factory=dict)
+
+
+@dataclass
+class StructView:
+    """
+    Simple Container for pairing a retrieved node,
+    and the semantics its is associated with
+    """
+    node : Node_i                = field()
+    sem  : AT.StructureSemantics = field()
+
+    @property
+    def value(self):
+        return self.node.value

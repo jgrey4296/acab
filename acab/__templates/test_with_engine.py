@@ -2,8 +2,11 @@
 """
 A Bare minimum template for testing with a set up acab engine
 """
+from __future__ import annotations
+
 import logging as logmod
 import unittest
+import warnings
 from os import listdir
 from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
                      splitext)
@@ -12,7 +15,6 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from unittest import mock
 from unittest.mock import create_autospec
-import warnings
 
 logging = logmod.getLogger(__name__)
 
@@ -22,10 +24,10 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-from acab.modules.engines.basic_engine import AcabBasicEngine
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.printing.default import DEFAULT_PRINTER
-from acab.modules.semantics.default import DEFAULT_SEMANTICS
+    from acab.modules.engines.basic_engine import AcabBasicEngine
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.printing.default import DEFAULT_PRINTER
+    from acab.modules.semantics.default import DEFAULT_SEMANTICS
 
 
 class _ENGINE_TEST_TEMPLATE(unittest.TestCase):
@@ -39,7 +41,6 @@ class _ENGINE_TEST_TEMPLATE(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
 
         cls.eng = AcabBasicEngine(parser=EXLO_Parser,

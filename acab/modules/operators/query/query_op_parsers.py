@@ -6,7 +6,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.engine.util import prep_op_path
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.annotation import ValueRepeatAnnotation
-from acab.core.value.instruction import ProductionComponent
+from acab.core.util.sentences import ProductionComponent
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory as VF
 
@@ -22,7 +22,7 @@ def construct_tag_query(toks):
     value_tags = toks[0].words
 
     return ValueRepeatAnnotation(CONSTRAINT_S,
-                                 ProductionComponent(value=tag_op_path, params=value_tags))
+                                 ProductionComponent(tag_op_path, params=value_tags))
 
 
 tagList = PU.tagSen.copy()

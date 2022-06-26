@@ -18,16 +18,16 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-import acab.core.defaults.value_keys as DS
-from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.node import AcabNode
-from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.error.base import AcabException
-from acab.error.semantic import AcabSemanticException
-from acab.modules.semantics.values import (BasicNodeSemantics,
-                                           ExclusionNodeSemantics)
+    import acab.core.defaults.value_keys as DS
+    from acab.core.data.acab_struct import BasicNodeStruct
+    from acab.core.data.node import AcabNode
+    from acab.core.value.instruction import Instruction
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.error.base import AcabException
+    from acab.error.semantic import AcabSemanticException
+    from acab.modules.semantics.values import (BasicNodeSemantics,
+                                            ExclusionNodeSemantics)
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.enums[EXOP]

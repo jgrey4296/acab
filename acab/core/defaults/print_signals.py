@@ -17,20 +17,26 @@ if TYPE_CHECKING:
     pass
 
 from acab.core.config.config import AcabConfig
+from acab.interfaces.value import ValueFactory as VF
 
 config = AcabConfig()
 
-
-ATOM               = config.attr.Print.Signals.ATOM
+# Print signals with no semantic component are Str's
+TYPE_INSTANCE      = config.attr.Value.Structure.TYPE_INSTANCE
+MODAL              = config.attr.Print.Signals.MODAL
+SYMBOL             = config.attr.Print.Signals.SYMBOL
 ANNOTATIONS        = config.attr.Print.Signals.ANNOTATIONS
 ANNOTATIONS_FINAL  = config.attr.Print.Signals.ANNOTATIONS_FINAL
-SENTENCE           = config.attr.Print.Signals.SENTENCE
-SYMBOL             = config.attr.Print.Signals.SYMBOL
 CONSTRAINT         = config.attr.Print.Signals.CONSTRAINT
-CONTAINER          = config.attr.Print.Signals.CONTAINER
 IMPLICIT_CONTAINER = config.attr.Print.Signals.IMPLICIT_CONTAINER
-MODAL              = config.attr.Print.Signals.MODAL
-COMPONENT          = config.attr.Print.Signals.COMPONENT
-TYPE_INSTANCE      = config.attr.Print.Signals.TYPE_INSTANCE
-STRUCTURE          = config.attr.Print.Signals.STRUCTURE
 TAGS               = config.attr.Print.Signals.TAGS
+
+# Signals with semantic/type relevance are Sentences
+INSTR              = VF.sen() << config.attr.Type.Primitive.INSTRUCT
+CONTAINER          = INSTR << config.attr.Type.Primitive.CONTAINER
+STRUCTURE          = INSTR << config.attr.Type.Primitive.STRUCTURE
+
+SENTENCE           = VF.sen() << config.attr.Type.Primitive.SENTENCE
+COMPONENT          = SENTENCE << config.attr.Type.Primitive.COMPONENT
+
+ATOM               = VF.sen() << config.attr.Data.TYPE_BASE

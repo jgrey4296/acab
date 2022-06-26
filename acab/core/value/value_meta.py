@@ -94,7 +94,12 @@ class ValueMeta(ProtocolMeta):
 
     @staticmethod
     def _build_tags_and_params(tags:None|Iterable[Any], params:None|Iterable[Any]) -> tuple[list[VI.Value_i[str]], frozenset[VI.Value_i[str]]]:
-        """ Standardized conversion of tags and params to values """
+        """ Standardized conversion of tags and params to values
+
+        Enforces invariants:
+        params are a list of vars
+        tags are a frozenset of values
+        """
         if params is None:
             params = []
         param_vals : list[VI.Value_i[str]] = list([VI.ValueFactory.value(x, data={DS.BIND:True}) for x in params])

@@ -13,7 +13,8 @@ with warnings.catch_warnings():
 
 from acab.core.value.sentence import Sentence
 from acab.core.value import action
-from acab.core.value.instruction import ProductionComponent, ProductionOperator, ProductionStructure
+from acab.core.value.instruction import ProductionOperator, ProductionStructure
+from acab.core.util.sentences import ProductionComponent
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP

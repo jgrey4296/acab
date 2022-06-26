@@ -37,8 +37,8 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
     @classmethod
     def tearDownClass(cls):
@@ -120,29 +120,6 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertFalse(result.data[DS.NEGATION])
 
 
-    def test_valbind_flatten(self):
-        FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
-        result = FP.SEN_WORD.parse_string('$x(♭).')[0]
-        self.assertIsInstance(result, Value_i)
-        self.assertTrue(result.data[DS.FLATTEN])
-
-    def test_valbind_no_flatten(self):
-        FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
-        result = FP.SEN_WORD.parse_string('$x(~♭).')[0]
-        self.assertIsInstance(result, Value_i)
-        self.assertFalse(result.data[DS.FLATTEN])
-
-    def test_valbind_no_flatten_as_sharp(self):
-        FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
-        result = FP.SEN_WORD.parse_string('$x(♯).')[0]
-        self.assertIsInstance(result, Value_i)
-        self.assertFalse(result.data[DS.FLATTEN])
-
-    def test_valbind_flatten_as_not_sharp(self):
-        FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
-        result = FP.SEN_WORD.parse_string('$x(~♯).')[0]
-        self.assertIsInstance(result, Value_i)
-        self.assertTrue(result.data[DS.FLATTEN])
 
     def test_constraint(self):
         annotation = pp.Literal("blah")
@@ -196,3 +173,11 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(DS.CONSTRAINT in result.data)
         self.assertEqual(len(result.data[DS.CONSTRAINT][0].params), 3)
         self.assertTrue(all([isinstance(x, Value_i) for x in result.data[DS.CONSTRAINT][0].params]))
+
+    def test_simple_sentence(self):
+        result = FP.SENTENCE.parse_string("a")[0]
+        self.assertIsInstance(result, Sentence_i)
+
+    def test_simple_sentence_top_entry(self):
+        result = FP.parse_string("a")[0]
+        self.assertIsInstance(result, Sentence_i)

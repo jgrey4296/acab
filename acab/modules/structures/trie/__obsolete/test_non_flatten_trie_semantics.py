@@ -24,11 +24,13 @@ import acab
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
+    from acab.modules.operators.query.query_operators import (EQ, AlwaysMatch,
+                                                              SimpleTypeMatch)
 
 import acab.core.defaults.value_keys as DS
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
-from acab.core.value.instruction import ProductionComponent
+from acab.core.util.sentences import ProductionComponent
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler_i
@@ -36,8 +38,6 @@ from acab.interfaces.value import ValueFactory
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)
-from acab.modules.operators.query.query_operators import (EQ, AlwaysMatch,
-                                                          SimpleTypeMatch)
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.structures.trie.breadth_semantics import BreadthTrieSemantics
@@ -157,7 +157,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
-        ctx_set = ContextSet()
+        ctx_set = ContextSet(ops={"[τ=]": SimpleTypeMatch()})
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "sentence"])
         # Run query
@@ -178,7 +178,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
-        ctx_set = ContextSet()
+        ctx_set = ContextSet(ops={"[τ=]": SimpleTypeMatch()})
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -200,7 +200,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
-        ctx_set = ContextSet()
+        ctx_set = ContextSet(ops={"[τ=]": SimpleTypeMatch()})
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "x", "x"])
         query_sen[-2].data[BIND_V] = True
@@ -224,8 +224,7 @@ class TrieSemanticTests(unittest.TestCase):
         # Construct context set for operators
         op_loc_path       = ValueFactory.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
         operator_instance = EQ()
-        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set           = ContextSet(op_ctx)
+        ctx_set           = ContextSet({str(op_loc_path): operator_instance})
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -445,8 +444,7 @@ class TrieSemanticTests(unittest.TestCase):
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
         operator_instance = SimpleTypeMatch()
-        op_ctx            = ContextInstance(data={"τ=": operator_instance})
-        ctx_set           = ContextSet(op_ctx)
+        ctx_set           = ContextSet({"[τ=]": operator_instance})
         results           = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # check
         self.assertEqual(len(results), 1)
@@ -469,9 +467,7 @@ class TrieSemanticTests(unittest.TestCase):
         sen2 = ValueFactory.sen(["a", Sentence(["not", "match"])])
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
-        operator_instance = SimpleTypeMatch()
-        op_ctx            = ContextInstance(data={"τ=": operator_instance})
-        ctx_set           = ContextSet(op_ctx)
+        ctx_set = ContextSet({"[τ=]": SimpleTypeMatch()})
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # check
         self.assertEqual(len(results), 0)
@@ -567,7 +563,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         top = ctx_set.pop()
-        ctx_set.push(top.bind_dict({"x": Sentence(["test", "sentence"], data={DS.FLATTEN: False})}))
+        ctx_set.push(top.progress({"x": Sentence(["test", "sentence"], data={DS.FLATTEN: False})}, {}))
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # check
         self.assertEqual(len(results), 1)
@@ -591,7 +587,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         top = ctx_set.pop()
-        ctx_set.push(top.bind_dict({"x": Sentence(["test", "blah"])}))
+        ctx_set.push(top.progress({"x": Sentence(["test", "blah"])}, {}))
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # check
         self.assertEqual(len(results), 0)
@@ -615,7 +611,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         top = ctx_set.pop()
-        ctx_set.push(top.bind_dict({"x": Sentence(["test", "sentence"])}))
+        ctx_set.push(top.progress({"x": Sentence(["test", "sentence"])}))
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # Manual run_delayed, because it's not going through a semantic's `call`
         results.run_delayed()
@@ -641,7 +637,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         top = ctx_set.pop()
-        ctx_set.push(top.bind_dict({"x": Sentence(["test", AcabValue("y", data={DS.BIND: True})])}))
+        ctx_set.push(top.progress({"x": Sentence(["test", AcabValue("y", data={DS.BIND: True})])}, {}))
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         results.run_delayed()
         # check

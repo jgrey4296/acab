@@ -39,11 +39,9 @@ QUERY_COMPONENT     = DS.QUERY_COMPONENT
 TRANSFORM_COMPONENT = DS.TRANSFORM_COMPONENT
 ACTION_COMPONENT    = DS.ACTION_COMPONENT
 
-RULE_PRIM           : str = config.attr.Type.Primitive.RULE
-
-QUERY_SIGNAL     = ValueFactory.sen() << config.attr.Semantic.Signals.QUERY
-ACTION_SIGNAL    = ValueFactory.sen() << config.attr.Semantic.Signals.ACTION
-TRANSFORM_SIGNAL = ValueFactory.sen() << config.attr.Semantic.Signals.TRANSFORM
-RULE_SIGNAL      = ValueFactory.sen() << config.attr.Semantic.Signals.RULE
+STRUCT    : str = config.attr.Type.Primitive.STRUCTURE
+INSTR     : str = config.attr.Type.Primitive.INSTRUCT
+CONTAINER : str = config.attr.Type.Primitive.CONTAINER
+RULE_PRIM : str = config.attr.Type.Primitive.RULE
 
 COLLAPSE_CONTEXT = DSym.COLLAPSE_CONTEXT

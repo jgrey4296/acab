@@ -3,16 +3,19 @@ Definitions of initial Comparison operators
 """
 import re
 
+from acab import AcabConfig
 from acab import types as AT
 from acab.core.value.instruction import ProductionOperator
 from acab.core.util.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
 from acab.core.util.decorators.semantic import OperatorSugar
 
+config = AcabConfig()
+
 Value    = AT.Value
 Sentence = AT.Sentence
 CtxIns   = AT.CtxIns
 
-@OperatorSugar("==")
+@OperatorSugar(config.attr.Operator.Sugar.EQ)
 class EQ(ProductionOperator):
 
     @OperatorArgUnWrap
@@ -20,14 +23,14 @@ class EQ(ProductionOperator):
         return a == b
 
 
-@OperatorSugar("!=")
+@OperatorSugar(config.attr.Operator.Sugar.NEQ)
 class NEQ(ProductionOperator):
 
     @OperatorArgUnWrap
     def __call__(self, a, b, *, data=None, ctx=None):
         return a != b
 
-@OperatorSugar("~=")
+@OperatorSugar(config.attr.Operator.Sugar.REGEX_MATCH)
 class RegMatch(ProductionOperator):
 
     # TODO implement sub-binds
@@ -41,10 +44,9 @@ class RegMatch(ProductionOperator):
             result = True
         return result
 
-@OperatorSugar("∈")
+@OperatorSugar(config.attr.Operator.Sugar.ELEM)
 class ELEM(ProductionOperator):
 
-    @OperatorArgUnWrap
     def __call__(self, a:Value, b:Sentence, *, data=None, ctx=None):
         return a in b
 
@@ -56,7 +58,7 @@ class HasTag(ProductionOperator):
         return value.has_tag(*tags)
 
 
-@OperatorSugar("τ=")
+@OperatorSugar(config.attr.Operator.Sugar.TYPEMATCH)
 class SimpleTypeMatch(ProductionOperator):
     """ Match a value's type to a passed in sentence """
 

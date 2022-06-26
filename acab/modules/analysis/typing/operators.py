@@ -29,24 +29,6 @@ class TypeUnion(ProductionOperator):
     """
     Unify two data structures to get a substitution list
     """
-
     def __call__(self, *args):
         pass
 
-@OperatorSugar("⊢")
-class UnifyTypeMatch(ProductionOperator):
-    """ Match a value's type to a passed in sentence """
-
-    def __call__(self, to_check:Node, the_type:TypeStatement, *, data=None, ctx:CtxIns=None):
-        # Add unique var prefix
-        to_check = VF.sen() << to_check.value
-        as_sens  = the_type.to_sentences()
-        new_var  = gen_f()
-        appended = [new_var.add(x) for x in as_sens]
-        # TODO get to_check down to depth of max(as_sens)
-
-        # unify them:
-        unified  = tuf.type_unify(to_check, appended[0], ctx)
-        result   = tuf.type_unify.apply(appended[0], unified)
-
-        return result

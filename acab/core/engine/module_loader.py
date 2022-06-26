@@ -41,7 +41,7 @@ class ModuleLoader(ModuleLoaderImpl, ModuleLoader_i):
         Only searches descendents of the original module,
         and only those descendents' __init__ files.
         """
-        logging.info("Extracting module: {}", module)
+        logging.debug("Extracting module: {}", module)
         base_path      = module.__package__
         # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue            = [(base_path, module)]
@@ -56,7 +56,7 @@ class ModuleLoader(ModuleLoaderImpl, ModuleLoader_i):
                 package_file = split(curr_mod.__name__)[1]
                 if package_file != MODULE_TARGET and curr_mod.__name__ == curr_mod.__package__:
                     mod = importlib.import_module(f"{curr_path}.{MODULE_TARGET}")
-                    logging.info(f"Found a `module` file for: {curr_path}")
+                    logging.debug(f"Found a `module` file for: {curr_path}")
                     queue += [(mod.__package__, mod)]
                     continue
             except ModuleNotFoundError:

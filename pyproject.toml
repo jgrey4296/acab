@@ -25,5 +25,6 @@ reportUnnecessaryIsInstance = "warning"
 
 [tool.pytest.ini_options]
 log_cli       = false
-log_level     = "DEBUG"
-log_cli_level = "DEBUG"
+log_level     = "INFO"
+log_cli_level = "WARN"
+log_format    = "%(levelname)s %(shortname)s : %(message)s"

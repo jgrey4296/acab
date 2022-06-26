@@ -12,13 +12,11 @@ end
 
 """
 
-import pyparsing as pp
-
-from acab.core.parsing.consts import ARROW, END, COLON, s
 import acab.core.parsing.parsers as PU
+import pyparsing as pp
+from acab.core.parsing.consts import ARROW, COLON, END, s
+from acab.core.util.sentences import ProductionComponent
 
-
-from acab.core.value.instruction import ProductionComponent
 
 def build_transform_component(toks):
     component = ProductionComponent()

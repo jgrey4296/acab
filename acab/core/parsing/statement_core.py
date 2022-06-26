@@ -79,7 +79,7 @@ class StatementCore(pp.ParseExpression):
         if args:
             arg_p = Fwd_ArgList(PDS.ARG)
 
-        head = ParamCore(req_mid=type_annotation_p, end=PConst.COLON)
+        head = ParamCore(req_mid=type_annotation_p, end=PConst.COLON, simple=True)
         parser = (NG(PDS.NAME, head) + line_end_p
                 + op(arg_p + emptyLine)
                 + op(Fwd_TagList + emptyLine)

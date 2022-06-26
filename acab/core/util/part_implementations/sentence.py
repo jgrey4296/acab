@@ -17,18 +17,20 @@ import acab.interfaces.protocols.value as VP
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.interfaces.value import ValueFactory
 from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
+from acab.interfaces.context import ContextInstance_i
 from acab.interfaces.sieve import AcabSieve
+from acab.interfaces.value import ValueFactory
 
 logging        = logmod.getLogger(__name__)
 
 config         = AcabConfig()
-BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+BIND_SYMBOL    = config.attr.Symbols.BIND
+FALLBACK_MODAL = config.attr.Symbols.FALLBACK_MODAL
 
-UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
+UUID_CHOP  = bool(int(config.attr.Print.Data.UUID_CHOP))
+ANON_VALUE = config.attr.Symbols.ANON_VALUE
 
 T              = TypeVar('T', bound=AT.ValueCore)
 
@@ -43,43 +45,47 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
     """
     @cache
     def __str__(self):
-        return "{}".format(FALLBACK_MODAL.join([str(x) for x in self.words]))
+        if self.name != ANON_VALUE:
+            return f"'{self.name}'"
+
+        words = [f"{x}" for x in self.words]
+        return "[{}]".format(FALLBACK_MODAL.join(words))
 
     @cache
     def __repr__(self):
-        name_str = self.key()
-        val_str  = str(self)
+        if len(self) == 1 and self.type == "_:SENTENCE":
+            return f"<[{self[0]}]>"
 
-        if self.is_at_var:
-            name_str = BIND_SYMBOL + name_str
-        elif self.is_var:
-            name_str = BIND_SYMBOL + name_str
+        name_str = self.name
+        words    = [f"{x}" for x in self.words]
+        val_str  = "[{}]".format(FALLBACK_MODAL.join(words))
 
-        type_str = str(self.type)
+        type_str = "::" + str(self.type) if self.type != "_:SENTENCE" else ""
 
-        return "<{}::{} [{}]>".format(name_str, type_str, val_str)
+
+        return "<{}{} {}>".format(name_str, type_str, val_str)
 
     def __eq__(self, other):
-        if isinstance(other, str) and other[:2] == "_:":
-            # Utility for str comparison. underscore colon signifies sen str
-            return str(self) == other[2:]
-        elif isinstance(other, str):
-            # If not a sen str, just compare to the name
-            return self.key() == other
-        elif not isinstance(other, VI.Sentence_i):
-            # anything not a sentence isn't equal
-            return False
-        elif len(self) != len(other):
-            # Lengths not equal mean difference
-            return False
-        elif len(self.params) != len(other.params):
-            return False
-        elif not all([x == y for x,y in zip(self.params, other.params)]):
-            return False
-        else:
-            # finally, words match exactly
-            return all([x == y for x,y in zip(self, other)])
+        match other:
+            case str() if other[:2] == "_:":
+                # Utility for str comparison. underscore colon signifies sen str
+                return str(self) == f"[{other[2:]}]"
+            case str():
+                # If not a sen str, just compare to the key
+                return self.key() == other
+            case VI.Sentence_i() if len(self) != len(other):
+                return False
+            case VI.Sentence_i() if len(self.params) != len(other.params):
+                return False
+            case VI.Sentence_i() if all([x == y for x,y in zip(self, other)]):
+                return True
+            case _:
+                return False
 
+
+    def key(self) -> str:
+        words = [f"{x}" for x in self.words]
+        return "[{}]".format(FALLBACK_MODAL.join(words))
 
     def copy(self, **kwargs) -> Sen_A:
         if 'value' not in kwargs:
@@ -135,9 +141,15 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
 class _SentenceCollectionImpl(VI.Sentence_i, Collection):
 
     def __contains__(self, value) -> bool:
-        assert(isinstance(value, (str, VI.Value_i)))
-        words = cast(list[VI.Value_i], self.words)
-        return value in words or value in [x.name for x in words]
+        match value:
+            case str():
+                return value in [x.name for x in self.words]
+            case VI.Sentence_i():
+                return value.key() in self.words
+            case VI.Value_i():
+                return value.key() in self.words
+            case _:
+                raise TypeError("Unknown type passed to Sentence.contains")
 
     def __len__(self):
         return len(self.words)
@@ -158,7 +170,7 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
 
         raise ValueError("Unrecognised argument to Sentence.__getitem__", i)
 
-class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
+class _SentenceReductionImpl(VI.Sentence_i):
     def attach_statement(self, value:Instruction_A) -> Sen_A:
         """
         for this S: first..last
@@ -204,17 +216,6 @@ class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
 
         sen_copy = self.copy(value=out_words) #type:ignore
         return (sen_copy, statements)
-
-
-    def to_sentences(self) -> list[Sen_A]:
-        simple_sen, statements = self.detach_statement()
-        # TODO turn statements to sentences
-        return [simple_sen] #type:ignore
-
-    @staticmethod
-    def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:
-        return cast(list[Instruction_A], sens)
-
 
 
     def to_word(self) -> Value_A:

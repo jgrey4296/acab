@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging as logmod
 import re
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -68,9 +69,19 @@ HEAD_ANNOTATIONS = BIND | AT_BIND | HOTLOAD_HEAD_ANNOTATIONS
 POST_ANNOTATIONS = HOTLOAD_POST_ANNOTATIONS
 
 VALBIND = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
-           + NG(PDS.VALUE, BASIC_VALUE | HOTLOAD_VALUES)
+           + NG(PDS.VALUE, HOTLOAD_VALUES | BASIC_VALUE)
            + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
 VALBIND.set_parse_action(Pfunc.make_value)
+
+SIMPLE_VALUE = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
+                + NG(PDS.VALUE, BASIC_VALUE)
+                + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
+SIMPLE_VALUE.set_parse_action(Pfunc.make_value)
+
+EXTENSION_VALUE = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
+                   + NG(PDS.VALUE, HOTLOAD_VALUES | BASIC_VALUE)
+                   + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
+EXTENSION_VALUE.set_parse_action(Pfunc.make_value)
 
 Fwd_ArgList <<= PConst.VBAR + pp.delimited_list(VALBIND, delim=PConst.COMMA) + PConst.VBAR
 

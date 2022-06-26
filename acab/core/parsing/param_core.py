@@ -24,7 +24,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
                                       opLn, orm, s, s_key, s_lit, zrm)
-from acab.core.parsing.parsers import MODAL, VALBIND
+from acab.core.parsing.parsers import MODAL, VALBIND, SIMPLE_VALUE
 config = AcabConfig()
 
 
@@ -40,7 +40,8 @@ class ParamCore(pp.ParseExpression):
 
     def __init__(self, mid:None|ParserElement=None,
                  end:None|ParserElement=None,
-                 req_mid:None|ParserElement=None):
+                 req_mid:None|ParserElement=None,
+                 simple=False):
         if mid is None and req_mid is None:
             mid_p = pp.Empty()
         elif mid is not None:
@@ -54,7 +55,11 @@ class ParamCore(pp.ParseExpression):
         elif not isinstance(end, pp.ParserElement):
             end = pp.Empty()
 
-        parser = pp.Group(VALBIND + mid_p + end )
+        base = VALBIND
+        if simple:
+            base = SIMPLE_VALUE
+
+        parser = pp.Group(base + mid_p + end)
         parser.set_parse_action(Pfunc.add_annotations)
         super().__init__(parser)
 

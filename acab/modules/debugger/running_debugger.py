@@ -59,7 +59,10 @@ class RunningDebugger(AcabDebugger_i, metaclass=SingletonMeta):
 
 
     def set_running_trace(self, frame=None):
-        """ Start debugging from frame, without pausing execution. """
+        """ Start debugging from frame, without pausing execution.
+        This is to allow setting a future breakpoint, without having
+        to enter the debugger and exit again.
+        """
         self.running = True
         if frame is None:
             frame = sys._getframe().f_back

@@ -77,4 +77,3 @@ class AcabValueTests(unittest.TestCase):
         self.assertIsInstance(value, Instruction)
         basic = value.to_word()
         self.assertIsInstance(basic, AcabValue)
-

@@ -41,6 +41,7 @@ class BasicNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
 
     def verify(self, instruction) -> bool:
         return isinstance(instruction, VI.Value_i)
+
     def make(self, val, data=None) -> Node:
         return self.up(AcabNode(val), data=data)
 

@@ -35,4 +35,10 @@ WALK_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.WALK
 Sen_Val_Frag = Semantic_Fragment(handlers=[SVS.SenQuerySemantics().as_handler(signal=WALK_SEM_HINT)])
 
 Sen_Val_Parser = DSL_Fragment(specs=[ppDSL.PyParse_Spec("sentence", struct=SVP.HOTLOAD_SENTENCE)],
-                              handlers=[ppDSL.PyParse_Handler("word.value", func=SVP.sen_value)])
+                              handlers=[ppDSL.PyParse_Handler("word.value"               , func=SVP.sen_value),
+                                        ppDSL.PyParse_Handler("word.annotation"          , func=SVP.flatten_annotation),
+                                        ppDSL.PyParse_Handler("word.annotation.head"     , func=SVP.flatten_annotation),
+                                        ppDSL.PyParse_Handler("word.annotation.post"     , func=SVP.flatten_annotation),
+                                        ppDSL.PyParse_Handler("sentence.annotation.head" , func=SVP.flatten_annotation),
+                                        ppDSL.PyParse_Handler("sentence.annotation.post" , func=SVP.flatten_annotation),
+                                        ])

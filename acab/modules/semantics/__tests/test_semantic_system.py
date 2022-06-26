@@ -2,31 +2,33 @@
 import logging as logmod
 import sys
 import unittest
-from os.path import abspath, expanduser, split, splitext
 from enum import Enum
+from os.path import abspath, expanduser, split, splitext
 
 logging = logmod.getLogger(__name__)
 
 sys.path.append(abspath(expanduser("~/github/acab")))
 
-import acab
 import warnings
+
+import acab
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-import acab.core.defaults.value_keys as DS
-import acab.error.base as AE
-from acab.core.semantics import basic
-from acab.core.value.instruction import (ProductionComponent,
-                                         ProductionContainer,
-                                         ProductionOperator,
-                                         ProductionStructure)
-from acab.core.value.sentence import Sentence
-from acab.interfaces.handler_system import Handler_i
-from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.values import ExclusionNodeSemantics
+    import acab.core.defaults.value_keys as DS
+    import acab.error.base as AE
+    from acab.core.semantics import basic
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import (ProductionContainer,
+                                            ProductionOperator,
+                                            ProductionStructure)
+    from acab.core.value.sentence import Sentence
+    from acab.interfaces.handler_system import Handler_i
+    from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
+    from acab.modules.semantics.basic_system import BasicSemanticSystem
+    from acab.modules.semantics.values import ExclusionNodeSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
@@ -38,18 +40,14 @@ BIND_V          = DS.BIND
 CONSTRAINT_V    = DS.CONSTRAINT
 SEMANTIC_HINT_V = DS.SEMANTIC_HINT
 
-QUERY_V      = config.attr.Parse.Structure.QUERY
-TRANSFORM_V  = config.attr.Parse.Structure.TRANSFORM
-ACTION_V     = config.attr.Parse.Structure.ACTION
+CONTAINER_SEN          = Sentence() << config.attr.Type.Primitive.CONTAINER
+STRUCT_SEN             = Sentence() << config.attr.Type.Primitive.STRUCTURE
 
+QUERY_SIGNAL           = CONTAINER_SEN << config.attr.Type.Primitive.QUERY
+ACTION_SIGNAL          = CONTAINER_SEN << config.attr.Type.Primitive.ACTION
+TRANSFORM_SIGNAL       = CONTAINER_SEN << config.attr.Type.Primitive.TRANSFORM
 
-QUERY_SIGNAL     = Sentence() << config.attr.Semantic.Signals.QUERY
-ACTION_SIGNAL    = Sentence() << config.attr.Semantic.Signals.ACTION
-TRANSFORM_SIGNAL = Sentence() << config.attr.Semantic.Signals.TRANSFORM
-RULE_SIGNAL      = Sentence() << config.attr.Semantic.Signals.RULE
-AGENDA_SIGNAL    = Sentence() << config.attr.Semantic.Signals.AGENDA
-LAYER_SIGNAL     = Sentence() << config.attr.Semantic.Signals.LAYER
-PIPELINE_SIGNAL  = Sentence() << config.attr.Semantic.Signals.PIPELINE
+RULE_SIGNAL            = STRUCT_SEN << config.attr.Type.Primitive.RULE
 
 class StubAbsSemantic(basic.StatementSemantics, StatementSemantics_i):
     def __call__(self, ins, semSys, ctxs=None, data=None):

@@ -12,18 +12,18 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
-from acab import types as AT
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.context as CtxInt
+import acab.interfaces.data as DI
 import acab.interfaces.value as VI
 from acab import AcabConfig
+from acab import types as AT
 from acab.core.util.delayed_commands import DelayedCommands_i
-from acab.core.value.instruction import (ProductionComponent,
-                                         ProductionContainer)
+from acab.core.util.sentences import ProductionComponent
+from acab.core.value.instruction import ProductionContainer
 from acab.error.context import AcabContextException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
-
 config = AcabConfig()
 
 CONSTRAINT_S     = DS.CONSTRAINT
@@ -38,7 +38,7 @@ Operator         = 'ProductionOperator'
 Value            = AT.Value
 Statement        = AT.Instruction
 Sen              = Sentence_i
-Node             = AT.Node
+Node             = AT.StructView
 ModuleFragment   = AT.ModuleFragment
 NamedCtxSet      = "NamedCtxSet"
 
@@ -46,6 +46,7 @@ DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE"
 
 NamedCtxSet      = CtxInt.NamedCtxSet_d
 ContextFailState = CtxInt.ContextFailState_d
+
 
 @dataclass(frozen=True)
 class ContextInstance(CtxInt.ContextInstance_i):
@@ -81,18 +82,10 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def __getitem__(self, value: Value):
         # TODO maybe handle AT_BINDs
         key = str(value)
-        match value:
-            case VI.Value_i() if value.is_at_var:
-                logging.warning("Tried to ctxinst.__getitem__ an @var")
-                key = value.key()
-            case VI.Sentence_i() if value.is_var:
-                key = value[0].key()
-            case VI.Sentence_i():
-                key = str(value)
-            case VI.Value_i():
-                key = value.key()
-            case _, self.exact:
-                raise AcabContextException("Not Found in Context", context=value)
+        if hasattr(value, "key"):
+            key = value.key()
+        if isinstance(value, VI.Sentence_i) and value.is_var:
+            key = value[0].key()
 
         if key in self.data:
             return self.data[key]
@@ -109,8 +102,10 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     def __bool__(self):
         return bool(self.data)
+
     def __len__(self):
         return len(self.data)
+
     def __iter__(self):
         return iter(self.data.values())
 
@@ -118,12 +113,18 @@ class ContextInstance(CtxInt.ContextInstance_i):
         binds  = ", ".join([x for x in self.data.keys()])
         return f"(CtxInst: Bindings: {binds})"
 
-    def copy(self, **kwargs):
+    @property
+    def current_node(self):
+        return self._current
+    def copy(self, mask=None, **kwargs):
         logging.debug("Copied Ctx Instance")
         if 'data' not in kwargs:
             kwargs['data'] = self.data.copy()
         if 'nodes' not in kwargs:
             kwargs['nodes'] = self.nodes.copy()
+
+        if mask is not None:
+            kwargs['data'] = {x:y for x,y in kwargs['data'].items() if x not in mask}
 
         copied = replace(self,
                          uuid=uuid1(),
@@ -136,17 +137,32 @@ class ContextInstance(CtxInt.ContextInstance_i):
         assert(self.uuid in copied._lineage)
         return copied
 
-    def bind(self, word, nodes, sub_binds=None) -> list[CtxIns]:
+    def progress(self, word, nodes, sub_binds=None) -> list[CtxIns]:
         """
-        create a binding between word and the nodes provided, generating len(nodes)
-        new ctxInstances
+        Create either:
+        a single new ctxinst, with multiple new bindings, or
+        multiple new ctxinsts, with a single new binding in each
+
+        sub_binds specifies sub-structural binds to make.
+        ie: binding a value to $x, and its type to $y
         """
-        if sub_binds is None:
-            sub_binds = []
+        match word, nodes:
+            case dict(), dict():
+                return self._dict_progress(word, nodes)
+            case VI.Value_i(), list():
+                return self._val_progress(word, nodes, sub_binds=sub_binds)
+            case _, _:
+                raise TypeError(f"Unexpected type for ContextInstance.Progress: {type(word)}, {type(nodes)}")
+
+    def _val_progress(self, word, nodes, sub_binds=None):
+        """
+        Create multiple new ctx instances, one for each node
+        """
+        sub_binds = sub_binds or []
         # Make len(nodes) new ctxins for the new bindings
         extensions = [(self.copy(), x) for x in nodes]
         # Get the binding name. ie: $x
-        word_str = str(word)
+        word_str = word.key()
         # Now bind
         for ctxInst, node in extensions:
             ctxInst.set_current_node(node)
@@ -154,35 +170,39 @@ class ContextInstance(CtxInt.ContextInstance_i):
                 ctxInst.data[word_str]  = node.value
                 ctxInst.nodes[word_str] = node
 
-            matches = []
             for key, bind in sub_binds:
+                assert(bind.is_var)
+                if bind[0].key() in ctxInst:
+                    bind_val = ctxInst[bind[0].key()]
+                else:
+                    bind_val = None
+
                 if key in node.value.data:
-                    val = node.value.data
+                    val = node.value.data[key]
                 elif hasattr(node.value, key):
                     val = getattr(node.value, key)
                 else:
                     raise AcabContextException("Bad SubBind, no value to bind", context=(key, bind))
 
-                matches += bind.match(val)
+                if bind_val and bind_val != val:
+                    raise AcabContextException("Subbind doesn't match", context=(key, bind_val, val))
+                elif not bind_val:
+                    ctxInst.data[bind[0].key()] = val
 
-            for x,y in matches:
-                if x not in ctxInst.data:
-                    ctxInst.data[str(x)] = y
-
+        # Then return the new ctxinsts
         return [x[0] for x in extensions]
 
-    def bind_dict(self, val_binds:dict[str, Any]=None, node_binds:dict[str,Node]=None) -> CtxIns:
+    def _dict_progress(self, val_binds:dict[str, Any]=None, node_binds:dict[str,Node]=None) -> [CtxIns]:
         """
         bind multiple values simulatenously, creating a single new ctxInstance
         """
-        data_copy = self.data.copy()
-        nodes_copy = self.nodes.copy()
+        data_copy   = self.data.copy()
+        nodes_copy  = self.nodes.copy()
 
-        if val_binds is not None:
-            data_copy.update(val_binds)
-        if node_binds is not None:
-            nodes_copy.update(node_binds)
-        return self.copy(data=data_copy, nodes=nodes_copy)
+        data_copy  |= (val_binds or {})
+        nodes_copy |= (node_binds or {})
+
+        return [self.copy(data=data_copy, nodes=nodes_copy)]
 
     def set_current_node(self, node):
         object.__setattr__(self, "_current", node)
@@ -204,24 +224,27 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     Changes are inserted into the dictionary, until context is exited
     exit creates a new CtxIns, integrating changes """
 
-    parent       : None|CtxSet = field()
-    base         : CtxIns           = field()
-    data         : dict[Any, Any]   = field(default_factory=dict)
-    uuid         : UUID             = field(default_factory=uuid1)
-    exact        : bool             = field(default=False)
+    parent       : None|CtxSet    = field()
+    base         : CtxIns         = field()
+    data         : dict[Any, Any] = field(default_factory=dict)
+    uuid         : UUID           = field(default_factory=uuid1)
+    exact        : bool           = field(default=False)
 
     _finished    : None | CtxIns    = field(init=False, default=None)
+
     class EarlyExitException(BaseException):
         pass
 
     def __contains__(self, value: int|str|Value):
-        key = value
-        if isinstance(value, VI.Sentence_i):
-            key = str(value)
-        elif isinstance(value, VI.Value_i):
-            key = value.key()
+        match value:
+            case VI.Sentence_i():
+                key = str(value)
+            case VI.Value_i():
+                key = value.key()
+            case _:
+                key = value
 
-        direct = str(key) in self.data
+        direct   = str(key) in self.data
         indirect = value in self.base
         return direct or indirect
 
@@ -229,11 +252,13 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
         if self.base.exact and value not in self:
             raise AcabContextException("Not Found in Context", context=value)
 
-        key = value
-        if isinstance(value, VI.Sentence_i):
-            key = str(value)
-        elif isinstance(value, VI.Value_i):
-            key = value.key()
+        match value:
+            case VI.Sentence_i():
+                key = str(value)
+            case VI.Value_i():
+                key = value.key()
+            case _:
+                key = value
 
         if str(key) in self.data:
             return self.data[str(key)]
@@ -241,13 +266,15 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
         return self.base[value]
 
     def __setitem__(self, key: Value, value: Value):
-        if isinstance(key, VI.Sentence_i):
-            key = str(key)
-        elif isinstance(key, VI.Value_i):
-            key = key.key()
+        match key:
+            case VI.Sentence_i():
+                key = str(key)
+            case VI.Value_i():
+                key = key.key()
+            case _:
+                pass
 
         self.data[str(key)] = value
-
 
     def __getattribute__(self, value):
         try:
@@ -267,16 +294,17 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
         if early_exit:
             # Don't complain about early exits
+            # as everything went fine
             return True
 
         # Do complain about anything else
         return False
 
-    def __iter__(self):
-        raise NotImplementedError("Iteration on a MutableContextInstance is nonsensical")
+    def __len__(self):
+        return len(self.data) + len(self.base)
 
     def finish(self):
-        self._finished = self.base.bind_dict(self.data)
+        self._finished = self.base.progress(self.data, {})[0]
         if self.parent is not None:
             self.parent.push(self._finished)
 
@@ -285,18 +313,36 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
         assert(self._finished is not None)
         return self._finished
 
+    def progress(self, words, nodes, sub_binds=None) -> list[CtxIns]:
+        """
+        Create either:
+        a single new ctxinst, with multiple new bindings, or
+        multiple new ctxinsts, with a single new binding in each
+
+        """
+        match words, nodes:
+            case dict(), dict():
+                self.data |= (words or {})
+            case _, _:
+                raise TypeError(f"Unexpected type for ContextInstance.Progress: {type(word)}, {type(nodes)}")
+
+        # assert(not any([x in self.data for x in the_dict])), breakpoint()
+        # assert(not any([x in self.base for x in the_dict])), breakpoint()
+
+        return self
+
     def bind(self, word, nodes):
         raise NotImplementedError()
 
     def bind_dict(self, the_dict):
-        # assert(not any([x in self.data for x in the_dict])), breakpoint()
-        # assert(not any([x in self.base for x in the_dict])), breakpoint()
-
-        self.data.update(the_dict)
-        return self
+        raise DeprecationWarning()
 
     def to_sentences(self):
         raise NotImplementedError()
 
-    def __len__(self):
-        return len(self.data) + len(self.base)
+    def __iter__(self):
+        raise NotImplementedError("Iteration on a MutableContextInstance is nonsensical")
+
+    @property
+    def current_node(self):
+        self.base.current_node

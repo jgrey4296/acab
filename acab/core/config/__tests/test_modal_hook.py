@@ -1,20 +1,21 @@
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
 import logging as logmod
 import unittest
 import unittest.mock as mock
-from os.path import split, splitext
-
-from acab import setup
 import warnings
+from os.path import split, splitext
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+
+import acab
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    config = setup()
-from acab.core.config.config import AcabConfig, ConfigSpec, ConfigSingletonMeta
+    config = acab.setup()
+
+from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
 from acab.error.config import AcabConfigException
+
 
 class ModalConfigTests(unittest.TestCase):
 
@@ -27,11 +28,11 @@ class ModalConfigTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         # Setup default config with default files
-        cls.config = setup()
+        cls.config = config
 
     @classmethod
     def tearDownClass(cls):

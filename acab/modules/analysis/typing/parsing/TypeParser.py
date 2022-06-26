@@ -1,5 +1,7 @@
 """
 Pyparsing based DSL Fragment for types annotation
+ie:
+a.b.c(::a.type)
 """
 import logging as logmod
 import pyparsing as pp

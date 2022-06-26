@@ -28,8 +28,8 @@ from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
+from acab.interfaces.fragments import DSL_Fragment_i
 
-DSL_Fragment = ppDSL.DSL_Fragment
 
 class TestEngine(unittest.TestCase):
 
@@ -51,7 +51,7 @@ class TestEngine(unittest.TestCase):
 
     def test_basic(self):
         """ Test the engine can be created in the most basic way"""
-        parser                                = create_autospec(DSL_Fragment)
+        parser                                = create_autospec(DSL_Fragment_i)
         parser.query_parsers                  = mock.Mock(return_value=(1,2))
         semantics                             = create_autospec(BasicSemanticSystem)
         printer                               = create_autospec(BasicPrinter)

@@ -43,21 +43,14 @@ class _InstructionBasicsImpl(VI.Instruction_i, VSI._ValueBasicsImpl, VP.ValueBas
     """
     @cache
     def __str__(self):
-        return "{}".format(FALLBACK_MODAL.join([str(x) for x in self.value]))
+        # return "{}".format(FALLBACK_MODAL.join([str(x) for x in self.value]))
+        return f"'{self.name}'"
+
 
     @cache
     def __repr__(self):
-        name_str = self.key()
-        val_str  = len(self.value)
-
-        if self.is_at_var:
-            name_str = BIND_SYMBOL + name_str
-        elif self.is_var:
-            name_str = BIND_SYMBOL + name_str
-
-        type_str = str(self.type)
-
-        return "<{}::{} [{}]>".format(name_str, type_str, val_str)
+        type_str = f"::{self.type}" if self.type != f"_:{self.name}" else ""
+        return f"<{self.key()}{type_str} ({len(self.value)})>"
 
     def __eq__(self, other):
         if isinstance(other, str) and other[:2] == "_:":
@@ -139,19 +132,11 @@ class _InstructionCollectionImpl(VI.Instruction_i, Collection):
 
         raise ValueError("Unrecognised argument to Instruction.__getitem__", i)
 
-class _InstructionReductionImpl(VI.Instruction_i, VP.AcabReducible_p):
+class _InstructionReductionImpl(VI.Instruction_i):
     def attach_statement(self, value:Instruction_A) -> Sen_A:
         raise TypeError("Instructions can't attach statements to themselves")
     def detach_statement(self) -> Tuple[VI.Instruction_i, list[Instruction_A]]:
         raise TypeError("Instructions can't detach statements from themselves")
-    def to_sentences(self) -> list[Sen_A]:
-        raise NotImplementedError()
-
-    @staticmethod
-    def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:
-        raise NotImplementedError()
-
-
 
     def to_word(self) -> Value_A:
         """ Convert a Statement to just an AcabValue, of it's name """

@@ -1,3 +1,6 @@
+"""
+Check the components of type checking work, manually
+"""
 from __future__ import annotations
 
 import logging as logmod
@@ -7,32 +10,33 @@ import warnings
 from functools import partial
 from os.path import split, splitext
 
-from acab import setup
+import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    config = setup()
+    config = acab.setup()
+    from acab.core.parsing import pyparse_dsl as ppDSL
 
-from acab.core.data.acab_struct import AcabNode
-from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.defaults.value_keys import BIND
-from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.context import ContextSet_i
-from acab.modules.analysis.typing import exceptions as TE
-from acab.modules.analysis.typing.module import TypingDSL
-from acab.modules.analysis.typing.unify import type_unify_fns as tuf
-from acab.modules.analysis.typing.unify import unifier
-from acab.modules.analysis.typing.unify.util import gen_f
-from acab.modules.context.context_instance import MutableContextInstance
-from acab.modules.context.context_set import ContextInstance as CtxIns
-from acab.modules.operators.dfs.module import DFS_DSL
-from acab.modules.operators.dfs.semantics import DFSSemantics
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.semantics.default import DEFAULT_SEMANTICS
-from acab.modules.structures.trie.default import DEFAULT_TRIE
+    from acab.interfaces.value import ValueFactory as VF
+    from acab.core.data.acab_struct import AcabNode
+    from acab.core.defaults.value_keys import BIND
+    from acab.core.parsing.annotation import ValueAnnotation
+    from acab.core.value.instruction import Instruction
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.context import ContextSet_i
+    from acab.modules.analysis.typing import exceptions as TE
+    from acab.modules.analysis.typing.module import TypeSpecFragment
+    from acab.modules.analysis.typing.unify import type_unify_fns as tuf
+    from acab.modules.analysis.typing.unify import unifier
+    from acab.modules.analysis.typing.unify.util import gen_f
+    from acab.modules.context.context_instance import MutableContextInstance
+    from acab.modules.context.context_set import ContextInstance as CtxIns
+    from acab.modules.operators.dfs.module import DFSExtension
+    from acab.modules.operators.dfs.semantics import DFSSemantics
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.semantics.default import DEFAULT_SEMANTICS
+    from acab.modules.structures.trie.default import DEFAULT_TRIE
 
 ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
 
@@ -56,7 +60,7 @@ class TypeCheckTests(unittest.TestCase):
         global dsl
         # Set up the parser to ease test setup
         dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingDSL).register(DFS_DSL)
+        dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl()).register(DFSExtension().build_dsl())
         dsl.build()
 
     @classmethod
@@ -72,7 +76,7 @@ class TypeCheckTests(unittest.TestCase):
         a_sen    = dsl("a.test.sen(::def).sub.blah")[0]
         chopped  = a_sen.remove_prefix(dsl("a.test")[0])
         type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
-        as_sens  = type_.to_sentences()
+        as_sens  = type_[:]
         new_var  = gen_f()
         # Add unique var prefix
         appended = [new_var.add(x) for x in as_sens]
@@ -86,7 +90,7 @@ class TypeCheckTests(unittest.TestCase):
         # remove initial prefix
         chopped  = a_sen.remove_prefix(dsl("a.test")[0])
         type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
-        as_sens  = type_.to_sentences()
+        as_sens  = type_[:]
         new_var  = gen_f()
         # Add unique var prefix
         appended = [new_var.add(x) for x in as_sens]
@@ -99,7 +103,7 @@ class TypeCheckTests(unittest.TestCase):
         # remove initial prefix
         chopped  = a_sen.remove_prefix(dsl("a.test")[0])
         type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
-        as_sens  = type_.to_sentences()
+        as_sens  = type_[:]
         new_var  = gen_f()
         # Add unique var prefix
         appended = [new_var.add(x) for x in as_sens]
@@ -110,34 +114,50 @@ class TypeCheckTests(unittest.TestCase):
 
     def test_operator_typing(self):
         transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::second) -> $z(::first)\nend")[0][0]
-        op_def    = dsl("a.b.c(::λ): $g(::first).$h(::second).$i(::first)")[0][-1]
+        op_def    = dsl("a.b.c(::λ): $g(::first) $h(::second) -> $i(::first)")[0][-1]
         # t -> sen
-        t_sen = transform.to_sentences()[0][1]
-        self.assertEqual(t_sen.name, "Params")
+        t_sen = transform[0][1:].flatten()
         # def -> sen
-        def_sen = op_def.to_sentences()[0]
+        def_sen = op_def[0].flatten()
         # unify
         unified = tuf.type_unify(t_sen, def_sen, CtxIns())
-        self.assertIsInstance(unified.x, ValueAnnotation)
-        self.assertEqual(unified.y, "h")
+        self.assertIsInstance(unified[str(t_sen[:1])], ValueAnnotation)
+        self.assertEqual(unified[str(t_sen[:2])].value, "_:SENTENCE")
 
+    def test_operator_typing2(self):
+        transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y -> $z(::first)\nend")[0][0]
+        op_def    = dsl("a.b.c(::λ): $g(::first) $h(::second) -> $i(::first)")[0][-1]
+        # t -> sen
+        t_sen = transform[0][1:].flatten()
+        # def -> sen
+        def_sen = op_def[0].flatten()
+        # unify
+        unified = tuf.type_unify(t_sen, def_sen, CtxIns())
+        self.assertIn(str(t_sen[:1]), unified)
+        self.assertIn(str(t_sen[:2]), unified)
 
     def test_operator_typing_conflict(self):
         transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::other) -> $z(::first)\nend")[0][0]
-        op_def    = dsl("a.b.c(::λ): $g(::first).$h(::second).$i(::first)")[0][-1]
+        op_def    = dsl("a.b.c(::λ): $g(::first) $h(::second) -> $g(::first)")[0][-1]
         # t -> sen
-        t_sen = transform.to_sentences()[0][1]
-        self.assertEqual(t_sen.name, "Params")
+        t_sen = transform[0][1:]
         # def -> sen
-        def_sen = op_def.to_sentences()[0]
+        def_sen = op_def[0]
         # unify
+        # breakpoint()
         with self.assertRaises(TE.AcabUnifyVariableInconsistencyException):
-            tuf.type_unify(t_sen, def_sen, CtxIns())
-
+            ctx = tuf.type_unify(t_sen, def_sen, CtxIns())
 
     @unittest.skip("TODO")
     def test_query_condition_typechecking(self):
-       pass
+        """
+        a.b.$x(∈ a.b.c)?
+
+        ⊢ $x    : :ATOM
+        ⊢ a.b.c : SENTENCE
+
+        """
+        pass
 
     @unittest.skip("TODO")
     def test_container_typing(self):
