@@ -89,7 +89,7 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
         if suffix is None:
             return key
 
-        key_mod = key[:-1] + FALLBACK_MODAL + suffix + "]"
+        key_mod = key[:-1] + (FALLBACK_MODAL if bool(self) else "") + suffix + "]"
         return key_mod
 
     def copy(self, **kwargs) -> Sen_A:
@@ -119,6 +119,8 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
         if not bool(self):
             return False
         if len(self) > 1:
+            return False
+        if isinstance(self[0], VI.Sentence_i):
             return False
 
         return cast(bool, self[0].is_var)

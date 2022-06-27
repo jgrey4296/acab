@@ -138,8 +138,8 @@ class TestParser(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]), 2)
         self.assertEqual(result[0], "_:[[x].[y]].[returns.z]")
-        self.assertEqual(result[0][0][0].type, "_:SENTENCE.blah")
-        self.assertEqual(result[0][0][1].type, "_:SENTENCE.bloo")
+        self.assertEqual(result[0][0][0].type, "_:SENTENCE")
+        self.assertEqual(result[0][0][1].type, "_:SENTENCE")
         self.assertEqual(result[0][1][-1].type, "_:awef")
 
     def test_op_multi_spec(self):
@@ -149,8 +149,8 @@ class TestParser(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(len(result[0]), 2)
         self.assertEqual(result[0], "_:[[x].[y]].[returns.z]")
-        self.assertEqual(result[0][0][0].type, "_:SENTENCE.blah")
-        self.assertEqual(result[0][0][1].type, "_:SENTENCE.bloo")
+        self.assertEqual(result[0][0][0].type, "_:SENTENCE")
+        self.assertEqual(result[0][0][1].type, "_:SENTENCE")
         self.assertEqual(result[0][1][1].type, "_:awef")
         self.assertEqual(result[1], "_:[[x]].[returns.y]")
 

@@ -19,6 +19,7 @@ with warnings.catch_warnings():
     #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
     import acab.core.defaults.value_keys as DS
     from acab.core.parsing.annotation import ValueAnnotation
+    from acab.interfaces.value import ValueFactory as VF
     from acab.core.parsing.component_dsl import Component_DSL
     from acab.core.value.value import AcabValue
     from acab.interfaces import value as VI
@@ -382,3 +383,49 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(sen1c, "_:a.test.[blah]")
         self.assertEqual(sen1c[-1], "_:blah")
         self.assertEqual(sen1c[-1][0].type, "_:bloo")
+
+    def test_full_sen_bind(self):
+        sen1 = self.dsl("$x")[0]
+        sen2 = self.dsl("a.b.c")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        sen1c = tuf.type_unify.apply(sen1, result)
+        self.assertEqual(sen1c, VF.sen() << sen2)
+
+    def test_full_sen_bind_flatten(self):
+        sen1 = self.dsl("$x(♭)")[0]
+        sen2 = self.dsl("a.b.c")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        sen1c = tuf.type_unify.apply(sen1, result)
+        self.assertEqual(sen1c, sen2)
+
+    def test_full_sen_bind_type_preserve(self):
+        sen1 = self.dsl("a.b.$x(::SENTENCE.blah)")[0]
+        sen2 = self.dsl("a.b.[[a.b.c(::blah)]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        sen1c = tuf.type_unify.apply(sen1, result)
+        self.assertEqual(sen2, sen1c)
+
+    def test_full_sen_bind_type_preserve_2(self):
+        sen1 = self.dsl("[[$x(::SENTENCE.blah, ♭)]]")[0]
+        sen2 = self.dsl("[[a.b.c(::blah)]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        sen1c = tuf.type_unify.apply(sen1, result)
+        self.assertEqual(sen1c, sen2)
+
+    def test_nested_double_var(self):
+        sen1 = self.dsl("[[$x]]")[0]
+        sen2 = self.dsl("[[$y(::blah)]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        sen1c = tuf.type_unify.apply(sen1, result)
+        self.assertEqual(sen1c, sen2)
+
+        # $x -> a
+        # $x -> a.b.c
+        # [$x] -> [a]
+        # [$x] -> [a.b.c]
+        # [[$x]] -> [[a]]
+        # [[$x]] -> [[a.b.c]]
+        # a.b.$x -> a.b.c
+        # a.b.$x -> a.b.[d.e.f]
+
+        # (params:[ 1:[$a].2:[a.b.$x] ]).[returns.$y]

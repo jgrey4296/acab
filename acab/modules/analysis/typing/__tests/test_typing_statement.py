@@ -150,8 +150,8 @@ class TestTypingStatement(unittest.TestCase):
         trans_sen = trans_use[1:]
 
         ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
-        self.assertEqual(ctx['[x__type]'], "_:test.sen")
-        self.assertEqual(ctx['[y__type]'], "_:val.var")
+        self.assertEqual(ctx['x__type'], "_:test.sen")
+        self.assertEqual(ctx['y__type'], "_:val.var")
         self.assertEqual(ctx.y, 'z__type')
 
     def test_op_call(self):
@@ -164,8 +164,8 @@ class TestTypingStatement(unittest.TestCase):
         semsys_mock = mock.MagicMock()
         semsys_mock.return_value = mock_ctx
         ctx = CheckStatementFragment().op_check(trans_use, semsys_mock, ctxs=CtxSet())
-        self.assertEqual(ctx['[x__type]'], "_:test.sen")
-        self.assertEqual(ctx['[y__type]'], "_:val.var")
+        self.assertEqual(ctx['x__type'], "_:test.sen")
+        self.assertEqual(ctx['y__type'], "_:val.var")
         self.assertEqual(ctx.y, 'z__type')
 
     def test_op_param_apply_check(self):
@@ -174,8 +174,11 @@ class TestTypingStatement(unittest.TestCase):
         trans_use = self.dsl['transform.core'].parse_string("λan.op.def $a $b -> $y")[0]
         trans_sen = trans_use[1:]
         ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
-        self.assertEqual(ctx[str(trans_sen[0][:1])].value, "_:SENTENCE")
-        self.assertEqual(ctx[str(trans_sen[0][:2])].value, "_:SENTENCE")
+
+        self.assertEqual(ctx.a.type, "_:blah")
+        self.assertEqual(ctx.b.type, "_:bloo")
+        self.assertEqual(ctx.y.type, "_:ATOM")
+
 
     def test_op_type_return_check(self):
         trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y -> $z(::blah)")[0]
@@ -184,6 +187,7 @@ class TestTypingStatement(unittest.TestCase):
         trans_sen = trans_use[1:]
         ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
         self.assertEqual(ctx[str(trans_sen.flatten())].value, trans_def[0][1][1].type)
+        self.assertEqual(ctx.y.type, "_:blah")
 
     def test_op_type_no_return(self):
         trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y")[0]
@@ -191,6 +195,8 @@ class TestTypingStatement(unittest.TestCase):
         trans_use = self.dsl['action.core'].parse_string("λan.op.def test.sen val.$var")[0]
         trans_sen = trans_use[1:]
         ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
+        self.assertEqual(ctx.x__type, "_:test.sen")
+        self.assertEqual(ctx.y__type, "_:val.var")
 
     def test_op_type_return_use_specified(self):
         trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y -> $z")[0]
@@ -198,6 +204,7 @@ class TestTypingStatement(unittest.TestCase):
         trans_use = self.dsl['transform.core'].parse_string("λan.op.def test.sen val.$var -> $y(::blah)")[0]
         trans_sen = trans_use[1:]
         ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
+        self.assertEqual(ctx[trans_sen.key()].value, "_:blah")
 
 
     def test_op_type_return_check_fail(self):
@@ -236,7 +243,6 @@ class TestTypingStatement(unittest.TestCase):
         sen1 = self.dsl("$a")[0]
         sen2 = self.dsl("a.b.$x(::test)")[0]
         sen2_re = rectx(sen2, ctx={}, name_suff="_type")
-
         ctx = CheckStatementFragment().structural_check([sen1], [sen2], None, ctxs=CtxSet())
         self.assertEqual(ctx.a, sen2_re)
 

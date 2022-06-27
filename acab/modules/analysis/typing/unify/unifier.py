@@ -79,7 +79,7 @@ class Unifier:
         with ctx_prime:
             # PREPARATION AND EARLY EXIT #######################################
             if (logic.early_exit is not None and
-                logic.early_exit(first, second, ctx_prime) is unify_enum.END):
+                logic.early_exit(first, second, ctx_prime, unifier=self) is unify_enum.END):
                 logging.debug("Early Exit Success")
                 raise ctx_prime.EarlyExitException()
 

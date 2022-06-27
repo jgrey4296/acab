@@ -208,8 +208,8 @@ class CheckStatementFragment(UnifiedFragment_p):
         unify a list of sentences against a list of applicable definition sentences
         """
         subctx                                = {}
-        flat_types                            = [x.flatten() for x in type_sens]
+        flat_types                            = type_sens #[x.flatten() for x in type_sens]
         clean_type_sens : list[VI.Sentence_i] = [VC.rectx(x, ctx=subctx, name_suff="_type") for x in flat_types]
-        to_check_flat                         = [x.flatten() for x in to_check]
+        to_check_flat                         = to_check #[x.flatten() for x in to_check]
         unified                               = tuf.type_unify.repeat(to_check_flat, clean_type_sens, ctxs[0])
         return unified

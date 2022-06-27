@@ -73,10 +73,17 @@ def gen_type_vars(first, second, ctx, gen_var=None) -> AT.CtxIns:
                 continue
 
             # Create canonical references
-            if a.is_var and a not in ctx_p:
-                ctx_p[a]          = a
-            if b.is_var and b not in ctx_p:
-                ctx_p[b]          = b
+            match a, a.is_var, a not in ctx_p:
+                case VI.Sentence_i(), True, True:
+                    ctx_p[a[0].key()]  = a[0]
+                case VI.Value_i(), True, True:
+                    ctx_p[a.key()] = a
+
+            match b, b.is_var, b not in ctx_p:
+                case VI.Sentence_i(), True, True:
+                    ctx_p[b[0].key()]  = b[0]
+                case VI.Value_i(), True, True:
+                    ctx_p[b.key()] = b
 
             for var in (a.type.vars + b.type.vars):
                 if var not in ctx_p:
@@ -97,6 +104,8 @@ def var_handler_basic(index, first, second, ctx, unifier=None):
     s_var   = s_word.is_var
 
     if not (f_var or s_var):
+        return result
+    if isinstance(f_word, VI.Sentence_i) and isinstance(s_word, VI.Sentence_i):
         return result
 
     f_canon = util.top_var(f_word, ctx)
@@ -214,15 +223,15 @@ def whole_sentence_bind_simple(first, second, ctx, unifier=None):
     Early exit if all you have is a variable
     """
     result = unify_enum.NA
-    if first.is_var and len(first) == 1:
-        result = unify_enum.END
-        ctx[first[0].key()] = second
-        ctx[first.key()]    = second
-
-    elif second.is_var and len(second) == 1:
-        result = unify_enum.END
-        ctx[second[0].key()] = first
-        ctx[second.key()]    = first
+    match (first.is_var, len(first), second.is_var, len(second)):
+        case _, 1, _, 1:
+            pass
+        case True, 1, _, _:
+            result = unify_enum.END
+            ctx[first[0].key()] = second
+        case _, _, True, 1:
+            result = unify_enum.END
+            ctx[second[0].key()] = first
 
     return result
 
@@ -265,7 +274,7 @@ def var_consistency_check(logic, index, first, second, ctx, unifier=None):
             #     ctx[word.type] = update_typing
 
     except TE.AcabTypingException as err:
-        raise TE.AcabUnifyVariableInconsistencyException(err.left, err.right, ctx=err.ctx) from err
+        raise TE.AcabUnifyVariableInconsistencyException(err.left, err.right, ctx=word) from err
 
     return unify_enum.NA
 
@@ -336,6 +345,17 @@ def unify_type_sens(logic, index, first, second, ctx, unifier=None):
 
 
 #  ############################################################################
+
+def early_fail_one(index, first, second, ctx, unifier=None):
+    f_word = ctx[first[index]]
+    s_word = ctx[second[index]]
+
+    match f_word.is_var, s_word.is_var, f_word == s_word, all([isinstance(x, VI.Instruction_i) for x in [f_word, s_word]]):
+        case False, False, False, False:
+            raise TE.AcabTypingException(f_word, s_word, ctx=ctx, msg="Word Mismatch")
+
+
+
 # ::a.b.c
 def apply_sen_type_sub(sen, ctx) -> AT.Sentence:
     """
@@ -354,7 +374,7 @@ def apply_sen_type_sub(sen, ctx) -> AT.Sentence:
     return sen.copy(value=values)
 
 
-def apply_typed_sen_sub(sen, ctx, prefix=None) -> AT.Sentence:
+def apply_typed_sen_sub(sen, ctx, prefix=None, top=True) -> AT.Sentence:
     """
     Apply Substitutions to sentences and each word's type sentence
     ie: a.test.sentence(::$x), {$x: ::a.type} == a.test.sentence(::a.type)
@@ -364,7 +384,7 @@ def apply_typed_sen_sub(sen, ctx, prefix=None) -> AT.Sentence:
     for index in range(len(sen)):
         word = sen[index]
         if isinstance(word, VI.Sentence_i):
-            words.append(apply_typed_sen_sub(word, ctx, prefix=sen[:index]))
+            words.append(apply_typed_sen_sub(word, ctx, prefix=sen[:index], top=False))
 
         elif word.is_var:
             canon_var    = util.top_var(word, ctx)
@@ -376,7 +396,10 @@ def apply_typed_sen_sub(sen, ctx, prefix=None) -> AT.Sentence:
             if len(canon_type) == 1 and isinstance(canon_type[0], VI.Sentence_i):
                 canon_type = canon_type[0]
 
-            words.append(canon_word.copy(data={TYPE_INSTANCE : canon_type}))
+            if DS.FLATTEN in canon_var.data and canon_var.data[DS.FLATTEN] and isinstance(canon_word, VI.Sentence_i):
+                words += canon_word[:]
+            else:
+                words.append(canon_word.copy(data={TYPE_INSTANCE : canon_type}))
 
         elif sen[:index+1].key() in ctx:
             binding = ctx[sen[:index+1].key()]
@@ -397,8 +420,9 @@ def apply_typed_sen_sub(sen, ctx, prefix=None) -> AT.Sentence:
         else:
             words.append(word)
 
+    applied = sen.copy(value=words)
 
-    return sen.copy(value=words)
+    return applied
 
 
 
@@ -418,14 +442,15 @@ type_sen_unify = Unifier(type_as_sen_logic)
 # a.b.c(::d.e.f)
 typed_sen_logic = UnifyLogic(
     entry_transform=lambda x,y,c: (x, y, gen_type_vars(x, y, c)),
-    early_exit=None, #whole_sentence_bind,
+    early_exit=whole_sentence_bind_simple,
     truncate=util.sen_extend,
-    sieve=[var_handler_basic,
+    sieve=[early_fail_one,
+           var_handler_basic,
            suf.check_modality,
            typed_sentence_recurse_handler,
            test_word_equality,
            skip_atom_types,
-           # var_consistency_check(type_as_sen_logic),
+           var_consistency_check(type_as_sen_logic),
            unify_type_sens(type_as_sen_logic),
            fail_handler_type],
     apply=apply_typed_sen_sub
