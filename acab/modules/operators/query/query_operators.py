@@ -5,6 +5,7 @@ import re
 
 from acab import AcabConfig
 from acab import types as AT
+from acab.interfaces import value as VI
 from acab.core.value.instruction import ProductionOperator
 from acab.core.util.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
 from acab.core.util.decorators.semantic import OperatorSugar
@@ -18,9 +19,11 @@ CtxIns   = AT.CtxIns
 @OperatorSugar(config.attr.Operator.Sugar.EQ)
 class EQ(ProductionOperator):
 
-    @OperatorArgUnWrap
     def __call__(self, a, b, *, data=None, ctx=None):
-        return a == b
+        if isinstance(b, VI.Sentence_i) and len(b) == 1:
+            return a == b[0]
+        else:
+            return a == b
 
 
 @OperatorSugar(config.attr.Operator.Sugar.NEQ)

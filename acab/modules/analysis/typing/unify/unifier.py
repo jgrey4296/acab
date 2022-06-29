@@ -36,6 +36,7 @@ class UnifyLogic:
     apply           : Callable[[AT.Sentence, AT.CtxIns], AT.Sentence]
     entry_transform : None | Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], Tuple[AT.Sentence, AT.Sentence]] = field(default=None)
     early_exit      : None | Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], unify_enum]                      = field(default=None)
+    sub_logic       : None | UnifyLogic = field(default=None)
 
 
 
@@ -79,7 +80,8 @@ class Unifier:
         with ctx_prime:
             # PREPARATION AND EARLY EXIT #######################################
             if (logic.early_exit is not None and
-                logic.early_exit(first, second, ctx_prime) is unify_enum.END):
+                logic.early_exit(first, second, ctx_prime, unifier=self) is unify_enum.END):
+                logging.debug("Early Exit Success")
                 raise ctx_prime.EarlyExitException()
 
             if logic.truncate is not None:

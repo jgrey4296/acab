@@ -50,16 +50,12 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     def _preprocess(cls, *args, **kwargs):
         value = args[0] or []
         assert(isinstance(value, Iterable))
-        processed = [VI.ValueFactory.value(x) for x in value]
+        processed = [VI.ValueFactory.value(x) if not isinstance(x, VI.Value_i) else x for x in value]
         return processed
 
     def __post_init__(self):
         if self.data[DS.BIND] != False:
             raise TypeError("Sentences Shouldn't be variables")
-        if self.is_var and self[0].type != "_:ATOM" and self.type == "_:SENTENCE":
-            # If sentence is just a var, promote the var's type
-            # to the entire sentence
-            self.data[DS.TYPE_INSTANCE] = self.type << self[0].type.words
 
     def match(self, sen:Sen_A) -> list[Tuple[Value_A, Value_A]]:
         """ Match a target sentence's variables to self's target
@@ -80,13 +76,6 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
 
         return results
 
-    def do_break(self) -> None: pass
-
-    @property
-    def should_break(self) -> bool:
-        return bool(self.breakpoint)
-
-
     def __lshift__(self, other):
         """
         For easy programmatic creation of sentences:
@@ -100,7 +89,6 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
             other = [other]
         words = self.words + other
         return self.copy(value=words)
-
 
     def __call__(self, *args, **kwargs):
         raise AcabOperatorMissingException("Attempted to call a sentence, likely instead of an operator", context=[self])

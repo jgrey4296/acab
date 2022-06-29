@@ -101,12 +101,12 @@ class Sentence_i(Instruction_i, VSubP.Sentence_p):
 class Operator_i(Value_i[None], Generic[T_Cov]):
     def is_operator(self) -> Literal[True]: return True
     @abc.abstractmethod
-    def __call__(self, *params: Value_A, data:None|dict[str,Any]=None, ctx:CtxInst=None) -> T_Cov: pass
+    def __call__(self, *params: Sen_A, data:None|dict[str,Any]=None, ctx:CtxInst=None) -> T_Cov: pass
 
 class Action_i(Value_i[None]):
     def is_action(self) -> Literal[True] : return True
     @abc.abstractmethod
-    def __call__(self, *params: Value_A, data:None|dict[str,Any]=None, semsys:None|SemSys=None) -> None: pass
+    def __call__(self, *params: Sen_A, data:None|dict[str,Any]=None, semsys:None|SemSys=None) -> None: pass
 
 
 # Factory

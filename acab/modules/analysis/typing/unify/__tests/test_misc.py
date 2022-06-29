@@ -27,7 +27,6 @@ from .. import type_unify_fns as tuf
 from .. import unifier as unify
 from .. import util
 
-dsl = None
 
 gen_f = util.gen_f
 
@@ -50,10 +49,9 @@ class UnifierTests(unittest.TestCase):
         logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
 
-        global dsl
-        dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())
-        dsl.build()
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())
+        cls.dsl.build()
 
     @classmethod
     def tearDownClass(cls):
@@ -69,27 +67,27 @@ class UnifierTests(unittest.TestCase):
 
 
     def test_unify_types(self):
-        sen1 = dsl("a.test.sentence")[0]
-        sen2 = dsl("a.test.sentence(::blah)")[0]
+        sen1 = self.dsl("a.test.sentence")[0]
+        sen2 = self.dsl("a.test.sentence(::blah)")[0]
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
         self.assertTrue(ctx_r)
         self.assertEqual(ctx_r[str(sen1)], ValueAnnotation(DS.TYPE_INSTANCE,
-                                                           dsl("blah")[0]))
+                                                           self.dsl("blah")[0]))
         self.assertEqual(sen1[-1].type, "_:ATOM")
 
     def test_types_check_simple(self):
-        sen1 = dsl("a(::blah).test.sentence")[0]
-        sen2 = dsl("$x(::blah).test.sentence(::bloo)")[0]
+        sen1 = self.dsl("a(::blah).test.sentence")[0]
+        sen2 = self.dsl("$x(::blah).test.sentence(::bloo)")[0]
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
 
         self.assertTrue(ctx_r)
         self.assertIn(str(sen1[:]), ctx_r)
         self.assertEqual(ctx_r[str(sen1[:])], ValueAnnotation(DS.TYPE_INSTANCE,
-                                                              dsl("bloo")[0]))
+                                                              self.dsl("bloo")[0]))
 
     def test_check_simple_fail(self):
-        sen1 = dsl("a(::blah).blah.bloo")[0]
-        sen2 = dsl("$x(::blah).test.sentence")[0]
+        sen1 = self.dsl("a(::blah).blah.bloo")[0]
+        sen2 = self.dsl("$x(::blah).test.sentence")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             tuf.type_unify(sen1, sen2, CtxIns())
@@ -97,16 +95,16 @@ class UnifierTests(unittest.TestCase):
 
 
     def test_types_check_simple_fail(self):
-        sen1 = dsl("a(::blah).test.sentence(::aweg)")[0]
-        sen2 = dsl("$x(::blah).test.sentence(::bloo)")[0]
+        sen1 = self.dsl("a(::blah).test.sentence(::aweg)")[0]
+        sen2 = self.dsl("$x(::blah).test.sentence(::bloo)")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
 
 
     def test_apply_types_generalise(self):
-        sen1 = dsl("a.test(::blah.bloo).sentence(::a.b.c)")[0]
-        sen2 = dsl("a.test(::blah).sentence(::a.b)")[0]
+        sen1 = self.dsl("a.test(::blah.bloo).sentence(::a.b.c)")[0]
+        sen2 = self.dsl("a.test(::blah).sentence(::a.b)")[0]
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
 
@@ -115,26 +113,24 @@ class UnifierTests(unittest.TestCase):
         self.assertIsInstance(ctx_r['[a.test]'], ValueAnnotation)
         self.assertIsInstance(ctx_r['[a.test.sentence]'], ValueAnnotation)
         self.assertEqual(ctx_r['[a.test]'], ValueAnnotation(DS.TYPE_INSTANCE,
-                                                          dsl("blah")[0]))
+                                                          self.dsl("blah")[0]))
         self.assertEqual(ctx_r['[a.test.sentence]'], ValueAnnotation(DS.TYPE_INSTANCE,
-                                                                   dsl("a.b")[0]))
+                                                                   self.dsl("a.b")[0]))
 
     def test_apply_types_with_vars(self):
-        sen1 = dsl("a.test.sentence")[0]
-        sen2 = dsl("a.test.$x(::blah!$y)")[0]
+        sen1 = self.dsl("a.test.sentence")[0]
+        sen2 = self.dsl("a.test.$x(::blah!$y)")[0]
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
         sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
         sen2c = tuf.typed_sen_logic.apply(sen2, ctx_r)
-
         self.assertEqual(sen1c[-1].type, "_:blah.y")
         self.assertTrue(sen1c[-1].type[-1].is_var)
-        self.assertIn("y", ctx_r)
         self.assertIn(str(sen1), ctx_r)
 
     def test_apply_types_with_vars_completed(self):
-        sen1 = dsl("a.test.sentence.bloo(::aweg.awg)")[0]
-        sen2 = dsl("a.test.$x(::blah!$y).$z(::$y)")[0]
+        sen1 = self.dsl("a.test.sentence.bloo(::aweg.awg)")[0]
+        sen2 = self.dsl("a.test.$x(::blah!$y).$z(::$y)")[0]
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
         sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
@@ -151,10 +147,10 @@ class UnifierTests(unittest.TestCase):
 
 
     def test_repeat_unify_one_to_many(self):
-        a_sen    = dsl("a.test.sen(::def).sub.blah")[0]
+        a_sen    = self.dsl("a.test.sen(::def).sub.blah")[0]
         # remove initial prefix
-        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
-        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        chopped  = a_sen.remove_prefix(self.dsl("a.test")[0])
+        type_    = self.dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
         as_sens  = type_.to_sentences()
         new_var  = gen_f()
         # Add unique var prefix
@@ -166,10 +162,10 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(chopped, result)
 
     def test_repeat_unify_one_to_many_fail(self):
-        a_sen    = dsl("a.test.sen(::def).awef.blah")[0]
+        a_sen    = self.dsl("a.test.sen(::def).awef.blah")[0]
         # remove initial prefix
-        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
-        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        chopped  = a_sen.remove_prefix(self.dsl("a.test")[0])
+        type_    = self.dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
         as_sens  = type_.to_sentences()
         new_var  = gen_f()
         # Add unique var prefix
@@ -180,9 +176,9 @@ class UnifierTests(unittest.TestCase):
 
     def test_repeat_unify_many_to_many(self):
         # NOTE: sentences will always have same head
-        a_sen    = dsl("sen(::def).sub.blah")[0]
-        b_sen    = dsl("sen(::def).seb.bloo")[0]
-        type_    = dsl("def(::σ):\n sub.$x(::test)\n seb.$y\nend")[0][-1]
+        a_sen    = self.dsl("sen(::def).sub.blah")[0]
+        b_sen    = self.dsl("sen(::def).seb.bloo")[0]
+        type_    = self.dsl("def(::σ):\n sub.$x(::test)\n seb.$y\nend")[0][-1]
         as_sens  = type_.to_sentences()
         new_var1 = gen_f()
         # Add unique var prefix
@@ -193,13 +189,23 @@ class UnifierTests(unittest.TestCase):
         self.assertTrue(unified)
 
     def test_unify_with_prior_ctx(self):
-        sen1 = dsl("a.test.sentence")[0]
-        sen2 = dsl("a.test.$x(::blah!$y)")[0]
+        sen1 = self.dsl("a.test.sentence")[0]
+        sen2 = self.dsl("a.test.$x(::blah!$y)")[0]
 
-        ctx = CtxIns(data={"x": dsl("sentence(::blah)")[0][0]})
+        ctx = CtxIns(data={"x": self.dsl("sentence(::blah)")[0][0]})
         ctx_r = tuf.type_unify(sen1, sen2, ctx)
         sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
         sen2c = tuf.typed_sen_logic.apply(sen2, ctx_r)
-        self.assertEqual(sen1c[-1].type, "_:blah")
-        self.assertIn("y", ctx_r)
+        self.assertEqual(sen1c[-1].type, "_:blah.y")
+        self.assertIn(str(sen1), ctx_r)
+
+    def test_unify_with_prior_ctx_2(self):
+        sen1 = self.dsl("a.test.sentence")[0]
+        sen2 = self.dsl("a.test.$x(::blah!$y)")[0]
+
+        ctx = CtxIns(data={"x": self.dsl("sentence(::blah)")[0][0], "y": self.dsl("aweg")[0]})
+        ctx_r = tuf.type_unify(sen1, sen2, ctx)
+        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
+        sen2c = tuf.typed_sen_logic.apply(sen2, ctx_r)
+        self.assertEqual(sen1c[-1].type, "_:blah.[aweg]")
         self.assertIn(str(sen1), ctx_r)

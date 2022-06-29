@@ -43,9 +43,11 @@ class _ValueBasicsImpl(VI.Value_i, VP.ValueBasics_p):
     """
     A Utility class for default implementations of Value_i methods
     """
+    @cache
     def __str__(self):
         return str(self.name)
 
+    @cache
     def __repr__(self):
         name_str = self.name
 
@@ -58,7 +60,7 @@ class _ValueBasicsImpl(VI.Value_i, VP.ValueBasics_p):
 
         return "<{}{}>".format(name_str, type_str)
 
-
+    @cache
     def __hash__(self):
         return hash(repr(self))
 
@@ -105,6 +107,7 @@ class _ValueMetaDataImpl(VI.Value_i, VP.ValueMetaData_p):
     """
     Utility Class providing methods for handling value meta data
     """
+    @cache
     def key(self) -> str:
         return str(self.name)
 
@@ -170,6 +173,7 @@ class _VariableTestsImpl(VI.Value_i, VP.VariableTests_p):
         return self.data[DS.BIND] == DS.AT_BIND #type:ignore
 
     @property #type:ignore
+    @cache
     def has_var(self) -> bool:
         if self.is_var:
             return True

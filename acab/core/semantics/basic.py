@@ -17,6 +17,7 @@ Meanwhile ValueSemantics_i are concerned only with the values and structures the
 """
 # pylint: disable=multiple-statements,protected-access,too-many-ancestors
 from __future__ import annotations
+
 import abc
 import logging as logmod
 from dataclasses import InitVar, dataclass, field
@@ -32,15 +33,18 @@ if TYPE_CHECKING:
 
 logging = logmod.getLogger(__name__)
 
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.handler_system as HS
+from acab import AcabConfig
 from acab import types as AT
 from acab.core.defaults.value_keys import QUERY
+from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
-from acab.interfaces.value import Sentence_i, Value_i
-from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.interfaces import semantic as SI
+from acab.interfaces.bind import Bind_i
 from acab.interfaces.fragments import Semantic_Fragment_i
+from acab.interfaces.value import Sentence_i, Value_i
 
 Value              : TypeAlias = AT.Value
 Sen_A              : TypeAlias = AT.Sentence
@@ -58,6 +62,9 @@ ValueSemantics     : TypeAlias = AT.ValueSemantics
 StatementSemantics : TypeAlias = AT.StatementSemantics
 SemanticSystem     : TypeAlias = AT.SemanticSystem
 
+
+config = AcabConfig()
+Bind   = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
 
 # Protocol Implementations #############################################################
 class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
@@ -115,9 +122,15 @@ class StructureSemantics(HSImpl.HandlerSystem, HSImpl.HandlerComponent, SI.Struc
             logging.debug("Firing Query Semantics")
             return self.query(sen, struct, ctxs=ctxs, data=data)
 
-        logging.debug("Firing Insert Semantics")
-        return self.insert(sen, struct, ctxs=ctxs, data=data)
+        if DS.NEGATION in sen.data and sen.data[DS.NEGATION]:
+            logging.debug("Firing Delete Semantics")
+            self.delete(sen, struct, data=data, ctxs=ctxs)
+            return ctxs
 
+        logging.debug("Firing Insert Semantics")
+        for ctx in ctxs:
+            bound_sen = Bind.bind(sen, ctx)
+            self.insert(bound_sen, struct, ctxs=ctxs, data=data)
 
 
 class ValueSemantics(HSImpl.HandlerComponent, SI.ValueSemantics_i):

@@ -147,15 +147,6 @@ class Sentence_p(Value_p, Collection[Value_p], AcabSentenceable_p, Protocol):
 
 @runtime_checkable
 class Instruction_p(Value_p, Collection[Any], AcabSentenceable_p, Protocol):
-    @abc.abstractmethod
-    def do_break(self) -> None: pass
-    # self.breakpoint = not self.breakpoint #type:ignore[has-type]
-
-    @property
-    @abc.abstractmethod
-    def should_break(self) -> bool: pass
-        # return bool(self.breakpoint)
-
     @property
     def vars(self) -> list[Value_A]:
         return []

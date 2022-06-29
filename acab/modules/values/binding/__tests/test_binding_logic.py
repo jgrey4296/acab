@@ -86,7 +86,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(result, VI.Value_i)
         self.assertEqual(source, result)
 
-    def test_basic(self):
+    def test_basic_word(self):
         source = self.dsl("$x")[0][0]
         self.assertIsInstance(source, VI.Value_i)
         target = self.dsl("target")[0][0]
@@ -107,9 +107,9 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(result, VI.Sentence_i)
         self.assertEqual(source, result)
 
-    def test_basic_sentence_simple_var_sub(self):
+    def test_basic_sentence_simple_var_sub_word(self):
         source = self.dsl("a.test.$x")[0]
-        target = self.dsl("sentence")[0]
+        target = self.dsl("sentence")[0][0]
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target})
 
@@ -118,9 +118,21 @@ class BindingLogicTests(unittest.TestCase):
         self.assertNotEqual(source, result)
         self.assertEqual(result, "_:a.test.sentence")
 
+    def test_basic_sentence_simple_var_sub_sen(self):
+        source = self.dsl("a.test.$x")[0]
+        target = self.dsl("sentence")[0]
+        self.assertIsInstance(source, VI.Value_i)
+        ctx = ContextInstance({"x": target})
+
+        result = Bind.bind(source, ctx)
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertNotEqual(source, result)
+        self.assertEqual(result, "_:a.test.[sentence]")
+
+
     def test_basic_sentence_repeat_sub(self):
         source = self.dsl("a.test.$x.$x")[0]
-        target = self.dsl("sentence")[0]
+        target = self.dsl("sentence")[0][0]
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target})
 
@@ -131,8 +143,8 @@ class BindingLogicTests(unittest.TestCase):
 
     def test_basic_sentence_multi_sub(self):
         source = self.dsl("a.test.$x.$y")[0]
-        target = self.dsl("sentence")[0]
-        target2 = self.dsl("blah")[0]
+        target = self.dsl("sentence")[0][0]
+        target2 = self.dsl("blah")[0][0]
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target, "y": target2})
 
@@ -141,7 +153,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertNotEqual(source, result)
         self.assertEqual(result, "_:a.test.sentence.blah")
 
-    def test_basic_sentence_sub_sentence_default_flatten(self):
+    def test_basic_sentence_sub_sentence_default_sharp(self):
         source = self.dsl("a.test.$x")[0]
         target = self.dsl("sentence.blah")[0]
         self.assertIsInstance(source, VI.Value_i)
@@ -150,9 +162,9 @@ class BindingLogicTests(unittest.TestCase):
         result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
-        self.assertEqual(result, "_:a.test.sentence.blah")
+        self.assertEqual(result, "_:a.test.[sentence.blah]")
         self.assertIsInstance(result[-1], VI.Value_i)
-        self.assertEqual(result[-1], "blah")
+        self.assertEqual(result[-1][-1], "blah")
 
     def test_basic_sentence_sub_sentence_explicit_flatten(self):
         source = self.dsl("a.test.$x(♭)")[0]
@@ -202,7 +214,7 @@ class BindingLogicTests(unittest.TestCase):
     def test_container_bind(self):
         source = self.dsl['sentence.ends'].parse_string("test(::γ):\n a.b.$x?\nend")[0]
 
-        ctx = ContextInstance({'x': self.dsl("val")[0]})
+        ctx = ContextInstance({'x': self.dsl("val")[0][0]})
         result = Bind.bind(source, ctx)
 
         self.assertEqual(result.type[:2], "_:INSTRUCT.CONTAINER")
@@ -221,7 +233,7 @@ class BindingLogicTests(unittest.TestCase):
     def test_sen_bind_container(self):
         source = self.dsl("a.container.test(::γ):\n a.b.$x?\nend")[0]
 
-        ctx = ContextInstance({'x': self.dsl("val")[0]})
+        ctx = ContextInstance({'x': self.dsl("val")[0][0]})
 
         result = Bind.bind(source, ctx)
 
@@ -241,7 +253,7 @@ class BindingLogicTests(unittest.TestCase):
 
     def test_sen_bind_container_in_container(self):
         source = self.dsl("a.container.test(::α):\n !! a.b.$x\n !! another.container(::γ):\n  a.b.$x?\n end\nend")[0]
-        ctx = ContextInstance({'x': self.dsl("val")[0]})
+        ctx = ContextInstance({'x': self.dsl("val")[0][0]})
         result = Bind.bind(source, ctx)
         self.assertEqual(result.type[:2], "_:SENTENCE")
         self.assertEqual(result, "_:a.container.'test'")
@@ -273,3 +285,10 @@ class BindingLogicTests(unittest.TestCase):
         self.assertEqual(result[-1][1], "_:[!!].[[another.'container']].[returns.unit]")
         self.assertEqual(result[-1][1][1][0][-1].type[:2], "_:INSTRUCT.CONTAINER")
         self.assertEqual(result[-1][1][1][0][-1][0], "_:a.b.x")
+
+
+    def test_solo_var_sen_bind(self):
+        sen1 = self.dsl("$x")[0]
+        ctx = ContextInstance({"x": self.dsl("a.b.c")[0]})
+        result = Bind.bind(sen1, ctx)
+        self.assertEqual(result, "_:a.b.c")

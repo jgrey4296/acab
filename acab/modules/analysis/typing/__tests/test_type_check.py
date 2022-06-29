@@ -40,7 +40,6 @@ with warnings.catch_warnings():
 
 ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
 
-dsl = None
 
 class TypeCheckTests(unittest.TestCase):
 
@@ -57,11 +56,10 @@ class TypeCheckTests(unittest.TestCase):
         logging.root.addHandler(cls.file_h)
 
 
-        global dsl
         # Set up the parser to ease test setup
-        dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl()).register(DFSExtension().build_dsl())
-        dsl.build()
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl()).register(DFSExtension().build_dsl())
+        cls.dsl.build()
 
     @classmethod
     def tearDownClass(cls):
@@ -73,9 +71,9 @@ class TypeCheckTests(unittest.TestCase):
         Manually check the type and structure of a sentence against
         a definition.
         """
-        a_sen    = dsl("a.test.sen(::def).sub.blah")[0]
-        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
-        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        a_sen    = self.dsl("a.test.sen(::def).sub.blah")[0]
+        chopped  = a_sen.remove_prefix(self.dsl("a.test")[0])
+        type_    = self.dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
         as_sens  = type_[:]
         new_var  = gen_f()
         # Add unique var prefix
@@ -86,10 +84,10 @@ class TypeCheckTests(unittest.TestCase):
         self.assertEqual(chopped, result)
 
     def test_typing_conflict(self):
-        a_sen    = dsl("a.test.sen(::def).sub.blah(::bloo)")[0]
+        a_sen    = self.dsl("a.test.sen(::def).sub.blah(::bloo)")[0]
         # remove initial prefix
-        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
-        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        chopped  = a_sen.remove_prefix(self.dsl("a.test")[0])
+        type_    = self.dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
         as_sens  = type_[:]
         new_var  = gen_f()
         # Add unique var prefix
@@ -99,10 +97,10 @@ class TypeCheckTests(unittest.TestCase):
             tuf.type_unify(chopped, appended[0], CtxIns())
 
     def test_sub_typing(self):
-        a_sen    = dsl("a.test.sen(::def).sub.blah(::test.bloo)")[0]
+        a_sen    = self.dsl("a.test.sen(::def).sub.blah(::test.bloo)")[0]
         # remove initial prefix
-        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
-        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        chopped  = a_sen.remove_prefix(self.dsl("a.test")[0])
+        type_    = self.dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
         as_sens  = type_[:]
         new_var  = gen_f()
         # Add unique var prefix
@@ -113,40 +111,63 @@ class TypeCheckTests(unittest.TestCase):
         self.assertEqual(result[-1].type, "_:test")
 
     def test_operator_typing(self):
-        transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::second) -> $z(::first)\nend")[0][0]
-        op_def    = dsl("a.b.c(::λ): $g(::first) $h(::second) -> $i(::first)")[0][-1]
+        transform = self.dsl("transform(::χ):\n λa.b.c $x(::first) $y(::second) -> $z(::first)\nend")[0][0]
+        op_def    = self.dsl("a.b.c(::λ): $g(::first) $h(::second) -> $i(::first)")[0][-1]
         # t -> sen
         t_sen = transform[0][1:].flatten()
         # def -> sen
         def_sen = op_def[0].flatten()
         # unify
         unified = tuf.type_unify(t_sen, def_sen, CtxIns())
-        self.assertIsInstance(unified[str(t_sen[:1])], ValueAnnotation)
-        self.assertEqual(unified[str(t_sen[:2])].value, "_:SENTENCE")
+        applied = tuf.type_unify.apply(t_sen, unified)
+        self.assertEqual(applied[0][0][0].type, "_:first")
+        self.assertEqual(applied[0][1][0].type, "_:second")
+        self.assertEqual(applied[1][1].type, "_:first")
 
     def test_operator_typing2(self):
-        transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y -> $z(::first)\nend")[0][0]
-        op_def    = dsl("a.b.c(::λ): $g(::first) $h(::second) -> $i(::first)")[0][-1]
-        # t -> sen
-        t_sen = transform[0][1:].flatten()
-        # def -> sen
-        def_sen = op_def[0].flatten()
-        # unify
-        unified = tuf.type_unify(t_sen, def_sen, CtxIns())
-        self.assertIn(str(t_sen[:1]), unified)
-        self.assertIn(str(t_sen[:2]), unified)
-
-    def test_operator_typing_conflict(self):
-        transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::other) -> $z(::first)\nend")[0][0]
-        op_def    = dsl("a.b.c(::λ): $g(::first) $h(::second) -> $g(::first)")[0][-1]
+        transform = self.dsl("transform(::χ):\n λa.b.c $x(::first) $y -> $z(::first)\nend")[0][0]
+        op_def    = self.dsl("a.b.c(::λ): $g(::first) $h(::second) -> $i(::first)")[0][-1]
         # t -> sen
         t_sen = transform[0][1:]
         # def -> sen
         def_sen = op_def[0]
         # unify
-        # breakpoint()
-        with self.assertRaises(TE.AcabUnifyVariableInconsistencyException):
+        unified = tuf.type_unify(t_sen, def_sen, CtxIns())
+        applied = tuf.type_unify.apply(t_sen, unified)
+        self.assertEqual(applied[0][0][0].type, "_:first")
+        self.assertEqual(applied[0][1][0].type, "_:second")
+        self.assertEqual(applied[1][1].type, "_:first")
+
+    def test_operator_typing_none_on_use(self):
+        transform = self.dsl("transform(::χ):\n λa.b.c $x $y -> $z\nend")[0][0]
+        op_def    = self.dsl("a.b.c(::λ): $g(::first) $h(::second) -> $i(::first)")[0][-1]
+        # t -> sen
+        t_sen = transform[0][1:].flatten()
+        # def -> sen
+        def_sen = op_def[0].flatten()
+        # unify
+        unified = tuf.type_unify(t_sen, def_sen, CtxIns())
+        applied = tuf.type_unify.apply(t_sen, unified)
+        self.assertEqual(applied[0][0][0].type, "_:first")
+        self.assertEqual(applied[0][1][0].type, "_:second")
+        self.assertEqual(applied[1][1].type, "_:first")
+
+
+    def test_operator_typing_conflict(self):
+        transform = self.dsl("transform(::χ):\n λa.b.c $x(::first) $y(::other) -> $z(::first)\nend")[0][0]
+        op_def    = self.dsl("a.b.c(::λ): $g(::first) $h(::second) -> $g(::first)")[0][-1]
+        # t -> sen
+        t_sen = transform[0][1:]
+        # def -> sen
+        def_sen = op_def[0]
+        # unify
+        with self.assertRaises(TE.AcabUnifyVariableInconsistencyException) as cm:
             ctx = tuf.type_unify(t_sen, def_sen, CtxIns())
+
+        self.assertEqual(cm.exception.left, "other")
+        self.assertEqual(cm.exception.right, "second")
+        self.assertEqual(cm.exception.ctx, "y")
+
 
     @unittest.skip("TODO")
     def test_query_condition_typechecking(self):

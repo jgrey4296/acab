@@ -36,6 +36,7 @@ FUNC_HEAD       = s(pp.Word(config.prepare("Symbols", "FUNC")()))
 STRUCT_HEAD.set_name("StructHead")
 FUNC_HEAD.set_name("FuncHead")
 
+DEC_SEN = VF.sen() << DS.SENTENCE_PRIM << "type" << "declaration"
 
 def make_simple_def(toks):
     value    = toks[0]
@@ -88,7 +89,7 @@ def make_type_dec(toks):
 
     return ValueAnnotation(TYU.TYPE_INSTANCE_S,
                            VI.ValueFactory.sen(path, params=args,
-                                               data={TYPE_INSTANCE_S: "type.declaration"}))
+                                               data={TYPE_INSTANCE_S: DEC_SEN}))
 
 
 def make_type_class(toks):
