@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 import logging as logmod
 
-from acab import types as AT
-import acab.interfaces.semantic as SI
-import acab.interfaces.data as DI
+import acab.core.defaults.value_keys as DS
 import acab.error.semantic as ASErr
+import acab.interfaces.data as DI
+import acab.interfaces.semantic as SI
+from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.semantics import basic
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
-from acab.interfaces.value import Sentence_i
-import acab.core.defaults.value_keys as DS
-from acab.core.semantics import basic
 from acab.error.protocol import AcabProtocolError as APE
+from acab.interfaces.bind import Bind_i
+from acab.interfaces.value import Sentence_i
 
 from .flatten_query_manager import FlattenQueryManager
 
@@ -24,7 +25,6 @@ Value         = AT.Value
 Structure     = AT.DataStructure
 Engine        = AT.Engine
 Contexts      = AT.CtxSet
-
 
 @APE.assert_implements(SI.StructureSemantics_i)
 class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
@@ -46,10 +46,6 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         # TODO can insert handle @vars?
         data = data or {}
 
-        if DS.NEGATION in sen.data and sen.data[DS.NEGATION]:
-            self._delete(sen, struct, data=data, ctxs=ctxs)
-            return ctxs
-
         data.update({'source_semantics': self})
         logging.info("Inserting: {!r} into {!r}", sen, struct)
         # Get the root
@@ -67,18 +63,18 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
         return current
 
-    def _delete(self, sen, struct, *, data=None, ctxs=None):
+    def delete(self, sen, struct, *, data=None, ctxs=None):
         logging.debug("Removing: {!r} from {!r}", sen, struct)
 
         pos_sen = sen.copy(data={DS.NEGATION:False})
         results = self.query(pos_sen, struct, data=data, ctxs=ctxs)
 
         for ctx in results:
-            assert(ctx._current is not None)
-            assert(ctx._current.node.parent is not None)
+            assert(ctx.current_node is not None)
+            assert(ctx.current_node.node.parent is not None)
             # At leaf:
             # remove current from parent
-            current  = ctx._current.node
+            current  = ctx.current_node.node
             parent   = current.parent()
             spec     = self.lookup(parent)
             spec[0].remove(parent, current.value, data=data)

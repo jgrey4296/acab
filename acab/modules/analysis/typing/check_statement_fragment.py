@@ -190,7 +190,7 @@ class CheckStatementFragment(UnifiedFragment_p):
         transform    : λa.b.c $x $y -> $z
         action       : λa.b.c $x $y
         """
-        assert(clause.type == "_:SENTENCE.COMPONENT")
+        assert(clause.type[:2] == "_:SENTENCE.COMPONENT")
         logging.debug("Checking an operator usage")
         # Get the operator
         sub_ctx = semSys(clause[0].copy(data={DS.QUERY: True}))
@@ -208,8 +208,8 @@ class CheckStatementFragment(UnifiedFragment_p):
         unify a list of sentences against a list of applicable definition sentences
         """
         subctx                                = {}
-        flat_types                            = [x.flatten() for x in type_sens]
+        flat_types                            = type_sens #[x.flatten() for x in type_sens]
         clean_type_sens : list[VI.Sentence_i] = [VC.rectx(x, ctx=subctx, name_suff="_type") for x in flat_types]
-        to_check_flat                         = [x.flatten() for x in to_check]
+        to_check_flat                         = to_check #[x.flatten() for x in to_check]
         unified                               = tuf.type_unify.repeat(to_check_flat, clean_type_sens, ctxs[0])
         return unified

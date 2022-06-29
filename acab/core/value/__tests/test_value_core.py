@@ -143,4 +143,3 @@ class AcabValueTests(unittest.TestCase):
         val = AcabValue("test", params=["a", "b", "c"])
         self.assertTrue(all([isinstance(x, AcabValue) for x in val.params]))
         self.assertTrue(all([x.is_var for x in val.params]))
-

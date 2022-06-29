@@ -80,7 +80,7 @@ def top_var(val:Value, gamma:CtxIns) -> Value:
     """
     last = None
     current = val
-    while (isinstance(current, str) or current.is_var) and last != val:
+    while (isinstance(current, str) or current.is_var) and last != current:
         last    = current
         current = gamma[current]
 
@@ -114,7 +114,7 @@ def type_len(sen):
     _:ATOM == ∞ - 1
     $x == ∞
     """
-    if sen.is_var:
+    if sen[0].is_var and len(sen) == 1:
         return INFINITY
     if sen == ATOM:
         return INFINITY - 1

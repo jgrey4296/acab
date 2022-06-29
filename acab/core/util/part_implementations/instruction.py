@@ -16,6 +16,7 @@ import acab.core.util.part_implementations.value as VSI  # type:ignore
 import acab.interfaces.protocols.value as VP
 import acab.interfaces.value as VI
 from acab import types as AT
+from acab.core.util.decorators.util import cache
 from acab.core.config.config import AcabConfig
 from acab.interfaces.value import ValueFactory
 from acab.core.util.decorators.util import cache
@@ -53,31 +54,29 @@ class _InstructionBasicsImpl(VI.Instruction_i, VSI._ValueBasicsImpl, VP.ValueBas
         return f"<{self.key()}{type_str} ({len(self.value)})>"
 
     def __eq__(self, other):
-        if isinstance(other, str) and other[:2] == "_:":
-            # Utility for str comparison. underscore colon signifies sen str
-            return str(self) == other[2:]
-        elif isinstance(other, str):
-            # If not a sen str, just compare to the name
-            return self.key() == other
-        elif not isinstance(other, VI.Instruction_i):
+        match other:
+            case str() if other[:2] == "_:":
+                # Utility for str comparison. underscore colon signifies sen str
+                return str(self) == other[2:]
+            case str():
+                # If not a sen str, just compare to the name
+                return self.key() == other
+
+        if not isinstance(other, VI.Instruction_i):
             # anything not a sentence isn't equal
             return False
-        elif len(self) != len(other):
-            # Lengths not equal mean difference
-            return False
-        elif len(self.params) != len(other.params):
-            return False
-        elif not all([x == y for x,y in zip(self.params, other.params)]):
-            return False
-        else:
-            # finally, clauses match exactly
-            return all([x == y for x,y in zip(self, other)])
+
+        match (len(other), len(other.params)):
+            case len(self), len(other.params):
+                return all([x == y for x,y in zip(self, other)]) and all([x == y for x,y in zip(self.params, other.params)])
+            case _:
+                return False
 
 
     def copy(self, **kwargs) -> Sen_A:
-        if 'value' not in kwargs:
-            assert(isinstance(self.value, Iterable))
-            kwargs['value'] = [x.copy() if hasattr(x, 'copy') else x for x in cast(Iterable, self.value)]
+        # if 'value' not in kwargs:
+        #     assert(isinstance(self.value, Iterable))
+        #     kwargs['value'] = [x.copy() if hasattr(x, 'copy') else x for x in cast(Iterable, self.value)]
 
         if 'params' not in kwargs:
             kwargs['params'] = self.params.copy()
@@ -95,12 +94,17 @@ class _InstructionBasicsImpl(VI.Instruction_i, VSI._ValueBasicsImpl, VP.ValueBas
 
 class _InstructionVariableTestsImpl(VI.Instruction_i, VP.VariableTests_p):
     @property
+    @cache
     def is_var(self) -> bool:
         return False
+
     @property
+    @cache
     def is_at_var(self) -> bool:
         return False
+
     @property
+    @cache
     def has_var(self) -> bool:
         if not bool(self):
             return False
@@ -109,6 +113,7 @@ class _InstructionVariableTestsImpl(VI.Instruction_i, VP.VariableTests_p):
         return any([x.is_var for x in self.params]) or any([x.has_var for x in self.value])
 
     @property
+    @cache
     def vars(self) -> list[Value_A]:
         return {x for x in self.value if x.is_var} + {x for x in self.params if x.is_var}
 
@@ -120,6 +125,7 @@ class _InstructionCollectionImpl(VI.Instruction_i, Collection):
         val = cast(list[VI.Value_i], self.value)
         return value in val
 
+    @cache
     def __len__(self):
         return len(self.value)
 

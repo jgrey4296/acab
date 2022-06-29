@@ -48,9 +48,6 @@ class Bind(Bind_i):
 
         result = _bind_top(val, bindings,)
 
-        if isinstance(result, Sentence_i):
-            result = result.flatten()
-
         if Bind.recorded_depth > bind_depth_max:
             logging.warning("Binding Reached Depth {} for: {}", Bind.recorded_depth, val)
 
@@ -74,7 +71,11 @@ def _bind_top(val, bindings, depth=0):
             result = _bind_node(val[0], bindings)
         case VI.Sentence_i():
             words = [_bind_top(x, bindings, depth=depth+1) for x in val]
-            result = val.copy(value=words).flatten()
+            result = val.copy(value=words)
+            if any([DS.FLATTEN in x.data and x.data[DS.FLATTEN] for x in result]):
+                result = result.flatten()
+            if val.is_var and len(words) == 1 and isinstance(words[0], VI.Sentence_i):
+                result = words[0]
         case VI.Instruction_i() if val.type[:2] == "_:INSTRUCT.CONTAINER":
             masked = bindings.copy(mask=val.params)
             clauses = [_bind_top(x, masked,depth=depth+1) for x in val.clauses]
@@ -98,6 +99,7 @@ def _bind_top(val, bindings, depth=0):
     return result
 
 def _bind_val(val:VI.Value_i, bindings):
+    # TODO recursive
     result = bindings[val.key()]
     match result:
         case str() if result == val.key():
@@ -107,6 +109,8 @@ def _bind_val(val:VI.Value_i, bindings):
             return result
         case FunctionType() | DI.Node_i() | DI.StructView():
             return result
+        case VI.Value_i() if result.is_var and result.key() in bindings:
+            logging.warning("Binding returned an applicable variable: {} -> {} -> {}")
 
     # Run bind transforms here
     assert(isinstance(result, VI.Value_i)), result

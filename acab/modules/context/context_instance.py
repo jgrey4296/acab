@@ -154,7 +154,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
             case _, _:
                 raise TypeError(f"Unexpected type for ContextInstance.Progress: {type(word)}, {type(nodes)}")
 
-    def _val_progress(self, word, nodes, sub_binds=None):
+    def _val_progress(self, word, nodes, sub_binds=None) -> list[CtxIns]:
         """
         Create multiple new ctx instances, one for each node
         """
@@ -267,14 +267,15 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def __setitem__(self, key: Value, value: Value):
         match key:
-            case VI.Sentence_i():
-                key = str(key)
+            case str():
+                pass
             case VI.Value_i():
                 key = key.key()
             case _:
-                pass
+                raise TypeError("Unrecognised key for binding", key)
 
-        self.data[str(key)] = value
+        logging.debug("CtxIns: {} -> {}", key, value)
+        self.data[key] = value
 
     def __getattribute__(self, value):
         try:
@@ -303,6 +304,9 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     def __len__(self):
         return len(self.data) + len(self.base)
 
+    def copy(self, mask=None, **kwargs):
+        return self.base.progress(self.data, {})[0]
+
     def finish(self):
         self._finished = self.base.progress(self.data, {})[0]
         if self.parent is not None:
@@ -329,7 +333,7 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
         # assert(not any([x in self.data for x in the_dict])), breakpoint()
         # assert(not any([x in self.base for x in the_dict])), breakpoint()
 
-        return self
+        return [self]
 
     def bind(self, word, nodes):
         raise NotImplementedError()

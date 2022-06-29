@@ -139,8 +139,8 @@ class BreakCmd:
         if (len(self._cmd.state.ctxs) == 1 and
             isinstance(self._cmd.state.ctxs[0]._current.value, Instruction_i)):
             curr = self._cmd.state.ctxs[0]._current.value
-            curr.do_break()
-            if curr.should_break:
+            curr.breakpoint = not curr.breakpoint
+            if curr.breakpoint:
                 print(f"Breakpoint Set: {repr(curr)} : {curr.uuid}")
             else:
                 print(f"Breakpoint Unset: {repr(curr)} : {curr.uuid}")
@@ -150,7 +150,7 @@ class BreakCmd:
             for inst in self._cmd.state.ctxs:
                 for bind in inst.data.items():
                     if isinstance(bind, Instruction_i):
-                        bind.do_break()
+                        bind.breakpoint = not bind.breakpoint
                         count += 1
 
             print(f"{count} Breakpoints Set: {ctxs.semantic}")
