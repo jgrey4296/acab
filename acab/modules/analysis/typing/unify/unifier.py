@@ -36,6 +36,7 @@ class UnifyLogic:
     apply           : Callable[[AT.Sentence, AT.CtxIns], AT.Sentence]
     entry_transform : None | Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], Tuple[AT.Sentence, AT.Sentence]] = field(default=None)
     early_exit      : None | Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], unify_enum]                      = field(default=None)
+    sub_logic       : None | UnifyLogic = field(default=None)
 
 
 

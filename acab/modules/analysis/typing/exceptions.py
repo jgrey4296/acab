@@ -55,6 +55,9 @@ class TypeRedefinitionException(AcabTypingException):
 class TypeConflictException(AcabTypingException):
     msg : str = field(default=f"Type Conflict: Not a subtype")
 
+    def __str__(self):
+        return f"{self.msg} : {self.left} : {self.right}"
+
 @dataclass(repr=False)
 class TypeUndefinedException(AcabTypingException):
     msg : str = field(default="Exception: Attempted to declare as missing type")

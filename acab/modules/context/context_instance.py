@@ -154,7 +154,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
             case _, _:
                 raise TypeError(f"Unexpected type for ContextInstance.Progress: {type(word)}, {type(nodes)}")
 
-    def _val_progress(self, word, nodes, sub_binds=None):
+    def _val_progress(self, word, nodes, sub_binds=None) -> list[CtxIns]:
         """
         Create multiple new ctx instances, one for each node
         """
@@ -333,7 +333,7 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
         # assert(not any([x in self.data for x in the_dict])), breakpoint()
         # assert(not any([x in self.base for x in the_dict])), breakpoint()
 
-        return self
+        return [self]
 
     def bind(self, word, nodes):
         raise NotImplementedError()

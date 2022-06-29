@@ -285,3 +285,10 @@ class BindingLogicTests(unittest.TestCase):
         self.assertEqual(result[-1][1], "_:[!!].[[another.'container']].[returns.unit]")
         self.assertEqual(result[-1][1][1][0][-1].type[:2], "_:INSTRUCT.CONTAINER")
         self.assertEqual(result[-1][1][1][0][-1][0], "_:a.b.x")
+
+
+    def test_solo_var_sen_bind(self):
+        sen1 = self.dsl("$x")[0]
+        ctx = ContextInstance({"x": self.dsl("a.b.c")[0]})
+        result = Bind.bind(sen1, ctx)
+        self.assertEqual(result, "_:a.b.c")

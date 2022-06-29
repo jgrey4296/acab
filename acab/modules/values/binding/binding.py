@@ -74,6 +74,8 @@ def _bind_top(val, bindings, depth=0):
             result = val.copy(value=words)
             if any([DS.FLATTEN in x.data and x.data[DS.FLATTEN] for x in result]):
                 result = result.flatten()
+            if val.is_var and len(words) == 1 and isinstance(words[0], VI.Sentence_i):
+                result = words[0]
         case VI.Instruction_i() if val.type[:2] == "_:INSTRUCT.CONTAINER":
             masked = bindings.copy(mask=val.params)
             clauses = [_bind_top(x, masked,depth=depth+1) for x in val.clauses]

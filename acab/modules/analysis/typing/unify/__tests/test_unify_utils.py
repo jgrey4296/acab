@@ -128,7 +128,6 @@ class UnifyUtilTests(unittest.TestCase):
         sen2 = dsl.parse_string("a.test(::blah.bloo)")[0]
 
         ctx_r = tuf.gen_type_vars(sen1, sen2, CtxIns())
-
         self.assertIn(sen1[-1].type[0], ctx_r)
         self.assertNotIn(sen1[-1], ctx_r)
 
@@ -156,7 +155,7 @@ class UnifyUtilTests(unittest.TestCase):
 
     def test_apply_substitutions_2(self):
         sen1 = dsl.parse_string("a.b.$x")[0]
-        sen1s = suf.apply_substitutions(sen1, CtxIns({"x" : "blah"}))
+        sen1s = suf.apply_substitutions(sen1, CtxIns({"x" : AcabValue("blah")}))
 
         sen_target = dsl.parse_string("a.b.blah")[0]
 
