@@ -15,8 +15,13 @@ from uuid import UUID, uuid1
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.error.config import AcabConfigException
-import acab.interfaces.protocols.value as VSubP
-import acab.core.defaults.value_keys as DS
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    from acab.interfaces import value as VI
+    from acab.interfaces import context as CI
+
 
 logging       = logmod.getLogger(__name__)
 
@@ -28,4 +33,4 @@ class Bind_i(Protocol):
 
     @staticmethod
     @abc.abstractmethod
-    def bind(val, bindings, semSys=None): pass
+    def bind(val:VI.Value_i, bindings:CI.ContextInstance_i, semSys=None): pass

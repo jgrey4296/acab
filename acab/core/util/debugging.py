@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import logging as logmod
+
 from acab.core.config.config import AcabConfig
+
 logging = logmod.getLogger(__name__)
 
-config         = AcabConfig()
+config  = AcabConfig()
 
 # Destructor Debugging ########################################################
 DEBUG_DEL      = config.attr.LOGGING.DEL

@@ -2,7 +2,7 @@
 """
 Provides Metaclasses for creating Singletons
 
-Note: superclass is tyep(Protocol) so classes which
+Note: superclass is type(Protocol) so classes which
 implement protocol's don't get a metaclass conflict
 """
 import logging as logmod

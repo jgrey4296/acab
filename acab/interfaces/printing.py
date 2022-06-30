@@ -11,10 +11,6 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
                     TypeVar, cast, final, overload, runtime_checkable)
 
-if TYPE_CHECKING:
-    # tc only imports
-    pass
-
 from acab import AcabConfig
 from acab import types as AT
 from acab.core.config.config import AcabConfig
@@ -27,14 +23,17 @@ from acab.interfaces.protocols import handler_system as HSubP
 logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
-Config_A         : TypeAlias = AT.Config
-Value_A          : TypeAlias = "AT.Value[AT.ValueCore]"
-Sentence         : TypeAlias = AT.Sentence
-ModuleFragment   : TypeAlias = AT.ModuleFragment
-ConfigSpec       : TypeAlias = AT.ConfigSpec
-GenFunc          : TypeAlias = AT.fns.GenFunc
-Handler_A        : TypeAlias = AT.Handler
-HandlerSpec_A    : TypeAlias = AT.HandlerSpec
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    Config_A         : TypeAlias = AT.Config
+    Value_A          : TypeAlias = "AT.Value[AT.ValueCore]"
+    Sentence         : TypeAlias = AT.Sentence
+    ModuleFragment   : TypeAlias = AT.ModuleFragment
+    ConfigSpec       : TypeAlias = AT.ConfigSpec
+    GenFunc          : TypeAlias = AT.fns.GenFunc
+    Handler_A        : TypeAlias = AT.Handler
+    HandlerSpec_A    : TypeAlias = AT.HandlerSpec
 
 # Protocols  ##################################################################
 @runtime_checkable

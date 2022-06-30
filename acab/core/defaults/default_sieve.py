@@ -12,9 +12,6 @@ from acab.core.defaults import print_signals as DS
 
 from enum import Enum
 
-
-
-
 # Default Highest Priority Sieve tests
 default_sieve_top       : list[Callable] = [
     # override tuple : 1 -> 1 : any

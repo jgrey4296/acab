@@ -1,14 +1,15 @@
+from __future__ import annotations
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
                     Iterator, Mapping, Match, MutableMapping, Protocol,
                     Sequence, Tuple, TypeAlias, TypeGuard, TypeVar, cast)
 
-if TYPE_CHECKING:
-    # tc only imports
-    pass
-
 from functools import wraps
 
 from acab.error.parse import AcabParseException
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
 
 T = TypeVar('T')
 

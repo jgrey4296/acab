@@ -11,11 +11,10 @@ import logging as logmod
 from dataclasses import InitVar, dataclass, field, replace
 from enum import Enum
 from types import MethodType
-from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, NewType, Protocol,
-                    Sequence, Tuple, Type, TypeAlias, TypeVar, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
+                    Iterator, Mapping, Match, MutableMapping, NewType,
+                    Protocol, Sequence, Tuple, Type, TypeAlias, TypeVar, cast)
 
-from acab import types as AT
 from acab import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.error.handler import AcabHandlerException
@@ -27,21 +26,22 @@ from acab.interfaces.protocols import handler_system as HSubP
 from acab.interfaces.sieve import AcabSieve
 from acab.interfaces.value import Sentence_i, Value_i
 
-logging                = logmod.getLogger(__name__)
-config                 = AcabConfig()
-SPACER                 = int(config.prepare("Print.Data", "SPACER_SIZE")())
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    ModuleFragment     : TypeAlias = AT.ModuleFragment
+    Overrider          : TypeAlias = AT.HandlerOverride
+    Sen_A              : TypeAlias = AT.Sentence
+    Structure          : TypeAlias = "AT.DataStructure[AT.Node]"
+    Value              : TypeAlias = "AT.Value[AT.ValueCore]"
+    Handler_A          : TypeAlias = AT.Handler
+    HandlerSpec_A      : TypeAlias = AT.HandlerSpec
+    HandlerComponent_A : TypeAlias = AT.HandlerComponent
+    Handler_System_A   : TypeAlias = AT.HandlerSystem
 
-ModuleFragment     : TypeAlias = AT.ModuleFragment
-Overrider          : TypeAlias = AT.HandlerOverride
-Sen_A              : TypeAlias = AT.Sentence
-Structure          : TypeAlias = "AT.DataStructure[AT.Node]"
-Value              : TypeAlias = "AT.Value[AT.ValueCore]"
-Handler_A          : TypeAlias = AT.Handler
-HandlerSpec_A      : TypeAlias = AT.HandlerSpec
-HandlerComponent_A : TypeAlias = AT.HandlerComponent
-Handler_System_A   : TypeAlias = AT.HandlerSystem
 
-PASSTHROUGH         = "_"
+logging     = logmod.getLogger(__name__)
+config      = AcabConfig()
 
 
 @APE.assert_concrete

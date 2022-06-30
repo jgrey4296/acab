@@ -25,12 +25,11 @@ from enum import Enum, EnumMeta
 from os import listdir
 from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
                      splitext)
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Protocol,
-                    Sequence, Set, Tuple, Type, TypeAlias, TypeVar, Union,
-                    cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
+                    Iterable, Iterator, List, Mapping, Match, MutableMapping,
+                    Optional, Protocol, Sequence, Set, Tuple, Type, TypeAlias,
+                    TypeVar, Union, cast)
 
-from acab import types as AT
 from acab.core.config import actions as CA
 from acab.core.config.attr_gen import AttrGenerator
 from acab.core.util.singletons import SingletonMeta
@@ -41,7 +40,12 @@ from acab.interfaces.config import Config_i, ConfigSpec_d
 
 logging = logmod.getLogger(__name__)
 
-GenFunc : TypeAlias = AT.fns.GenFunc
+
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    GenFunc : TypeAlias = AT.fns.GenFunc
+
 override_constructor : Callable[..., defaultdict[str,Any]] = lambda: defaultdict(lambda: {})
 
 #--------------------------------------------------

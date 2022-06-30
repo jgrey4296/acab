@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-from uuid import UUID
-from dataclasses import InitVar, dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
-from enum import Enum
+
 import logging as logmod
+from dataclasses import InitVar, dataclass, field
+from enum import Enum
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
+                    Iterable, Iterator, List, Mapping, Match, MutableMapping,
+                    Sequence, Set, Tuple, TypeVar, Union, cast)
+from uuid import UUID
+
 logging = logmod.getLogger(__name__)
 
 from acab import types as AT
-# Type declarations:
-CtxSet     = AT.CtxSet
-CtxIns     = AT.CtxIns
-Value      = AT.Value
-MaybeDelayValue = 'UUID | CtxIns | CtxSet | None'
+
+if TYPE_CHECKING:
+    # tc only imports
+    CtxSet          = AT.CtxSet
+    CtxIns          = AT.CtxIns
+    Value           = AT.Value
+    MaybeDelayValue = 'UUID | CtxIns | CtxSet | None'
 
 
 @dataclass

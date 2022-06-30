@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
 import abc
+import logging as logmod
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
                     Iterator, Mapping, Match, MutableMapping, Protocol,
                     Sequence, Tuple, TypeAlias, TypeGuard, TypeVar, cast)
 
-import logging as logmod
 logging = logmod.getLogger(__name__)
 
+from acab.core.util.part_implementations import handler_system as HSImpl
+from acab.error.parse import AcabParseException
 from acab.interfaces import dsl
 from acab.interfaces import handler_system as HS
 
 if TYPE_CHECKING:
     # tc only imports
-    pass
+    from acab import types as AT
+    Parser           : TypeAlias = AT.Parser
+    Sentence         : TypeAlias = AT.Sentence
+    Query            : TypeAlias = AT.Container
+    ModuleFragment   : TypeAlias = AT.ModuleFragment
+else:
+    Sentence = "Sentence_i"
+    ModuleFragment   : TypeAlias = "ModuleFragment"
 
-from acab import types as AT
-from acab.core.util.part_implementations import handler_system as HSImpl
-from acab.error.parse import AcabParseException
-
-Parser           : TypeAlias = AT.Parser
-Sentence         : TypeAlias = AT.Sentence
-Query            : TypeAlias = AT.Container
-ModuleFragment   : TypeAlias = AT.ModuleFragment
-DSL_Spec_A       : TypeAlias = AT.DSL_Spec
+DSL_Spec_A       : TypeAlias = dsl.DSL_Spec_i
 
 class DSL_Spec(HSImpl.HandlerSpec, dsl.DSL_Spec_i):
 

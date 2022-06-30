@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import abc
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
@@ -9,9 +10,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import pyparsing as pp
-import logging as logmod
+
 logging = logmod.getLogger(__name__)
 
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     # tc only imports
     pass

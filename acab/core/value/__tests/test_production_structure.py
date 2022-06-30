@@ -98,5 +98,3 @@ class StructureTests(unittest.TestCase):
         self.assertIsInstance(val, PO.ProductionStructure)
         self.assertIsInstance(val['test'], PO.ProductionContainer)
         self.assertIsInstance(val['blah'], PO.ProductionContainer)
-
-

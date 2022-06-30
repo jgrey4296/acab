@@ -31,10 +31,13 @@ def import_hook(self):
     # and override the key with it
     pass
 
-def packrat_hook(self):
-    spec = self.prepare("Parse", "PP_PACKRAT", _type=bool)
-    val  = self.value(spec)
-
-    if val:
+def pyparsing_hook(self):
+    packrat_spec = self.prepare("Parse", "PP_PACKRAT", _type=bool)
+    if self.value(packrat_spec):
         import pyparsing as pp
         pp.ParserElement.enable_packrat()
+
+    debug_spec = self.prepare("Parse", "DEBUG_PARSERS", _type=bool)
+    if self.value(debug_spec):
+        import acab.core.parsing.debug_funcs as DBF
+        DBF.debug_pyparsing()

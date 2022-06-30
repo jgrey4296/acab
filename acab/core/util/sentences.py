@@ -1,4 +1,12 @@
-#!/usr/bin/env python3
+#/usr/bin/env python3
+"""
+A Module of utility sentence constructors for building standardized patterns.
+
+eg: A ProductionComponent has the form:
+[[operator path].[ parameter sentences ].[returns.$variable]]
+of type SENTENCE.component
+
+"""
 from __future__ import annotations
 
 import abc

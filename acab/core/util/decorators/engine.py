@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import logging as logmod
 from functools import wraps
-logging = logmod.getLogger(__name__)
 
 from acab.error.parse import AcabParseException
+
+logging = logmod.getLogger(__name__)
 
 def MaybeBuildOperatorCtx(method):
     """ Wrap an Engine method to:

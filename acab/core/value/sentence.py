@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
 from functools import reduce
 from re import Pattern
-from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Sequence, Tuple, Type,
                     TypeAlias, TypeVar, cast)
 from uuid import UUID, uuid1
 from weakref import ref
 
-import acab.core.util.part_implementations.sentence as SSI  # type:ignore
 import acab.core.defaults.value_keys as DS
+import acab.core.util.part_implementations.sentence as SSI  # type:ignore
 import acab.interfaces.value as VI
-from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.value.value_meta import ValueMeta
 from acab.error.base import AcabBasicException
@@ -22,20 +23,24 @@ from acab.error.protocol import AcabProtocolError as APE
 from acab.error.semantic import AcabOperatorMissingException
 from acab.interfaces.value import ValueFactory
 
+if TYPE_CHECKING:
+    from acab import types as AT
+    ValueData : TypeAlias = str
+    ValueCore : TypeAlias = AT.ValueCore
+else:
+    ValueCore = "ValueTypes"
+
+Value_A       : TypeAlias = VI.Value_i
+Sen_A         : TypeAlias = VI.Sentence_i
+Instruction_A : TypeAlias = VI.Instruction_i
+T                         = TypeVar('T', bound=ValueCore)
+
 logging        = logmod.getLogger(__name__)
-
 config         = AcabConfig()
-BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
+BIND_SYMBOL    = config.attr.Symbols.BIND
 FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+UUID_CHOP      = config.prepare("Print.Data", "UUID_CHOP", _type=bool)()
 
-UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
-
-T              = TypeVar('T', bound=AT.ValueCore)
-
-Value_A       : TypeAlias = AT.Value
-Sen_A         : TypeAlias = AT.Sentence
-Instruction_A : TypeAlias = AT.Instruction
-ValueData     : TypeAlias = str
 
 @APE.assert_implements(VI.Sentence_i)
 @dataclass(frozen=True, repr=False, eq=False)

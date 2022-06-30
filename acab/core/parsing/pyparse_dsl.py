@@ -3,39 +3,44 @@
 A DSL interface for the system, which
 
 """
+from __future__ import annotations
+
 import logging as logmod
 import traceback
 from dataclasses import dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
+                    Iterable, Iterator, List, Mapping, Match, MutableMapping,
+                    Optional, Sequence, Set, Tuple, TypeVar, Union, cast)
 
-import acab.core.parsing.debug_funcs as DBF
 import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
 
+import acab.core.parsing.debug_funcs as DBF
 import acab.interfaces.dsl as dsl
 from acab import AcabConfig
 from acab import types as AT
-from acab.core.util.decorators.dsl import EnsureDSLInitialised
 from acab.core.parsing import dsl_builder as DSLImpl
 from acab.core.parsing.funcs import clear_parser_names, deep_update_names
+from acab.core.util.decorators.dsl import EnsureDSLInitialised
 from acab.core.util.part_implementations import handler_system as HS
 from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
-from acab.interfaces.dsl import DSL_Builder_i, DSL_Spec_i
 from acab.error.protocol import AcabProtocolError as APE
+from acab.interfaces.dsl import DSL_Builder_i, DSL_Spec_i
+
+if TYPE_CHECKING:
+    # tc only imports
+    Parser           = "pp.ParserElement"
+    Sentence         = AT.Sentence
+    Query            = AT.Container
+    ModuleFragment   = AT.ModuleFragment
+    PyParse_Spec_A   = "PyParse_Spec"
+    File             = 'FileObj'
 
 config                 = AcabConfig()
-DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+DEFAULT_HANDLER_SIGNAL = config.attr.Handler.System.DEFAULT_SIGNAL
 
-Parser           = "pp.ParserElement"
-Sentence         = AT.Sentence
-Query            = AT.Container
-ModuleFragment   = AT.ModuleFragment
-PyParse_Spec_A   = "PyParse_Spec"
-File             = 'FileObj'
 
 #----------------------------------------
 

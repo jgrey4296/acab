@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
 from functools import reduce
 from re import Pattern
-from typing import (Any, Callable, ClassVar, Collection, Generic, Iterable,
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection, Generic, Iterable,
                     Iterator, Mapping, Match, MutableMapping, Sequence, Tuple,
                     Type, TypeAlias, TypeVar, cast)
 from uuid import UUID, uuid1
@@ -25,19 +27,20 @@ from acab.interfaces.value import ValueFactory
 
 logging        = logmod.getLogger(__name__)
 
+if TYPE_CHECKING:
+    Value_A       : TypeAlias = AT.Value
+    Sen_A         : TypeAlias = AT.Sentence
+    Instruction_A : TypeAlias = AT.Instruction
+    ValueData     : TypeAlias = str
+
+T              = TypeVar('T', bound=AT.ValueCore)
+
 config         = AcabConfig()
 BIND_SYMBOL    = config.attr.Symbols.BIND
 FALLBACK_MODAL = config.attr.Symbols.FALLBACK_MODAL
 
-UUID_CHOP  = bool(int(config.attr.Print.Data.UUID_CHOP))
+UUID_CHOP  = config.prepare("Print.Data", "UUID_CHOP", _type=bool)
 ANON_VALUE = config.attr.Symbols.ANON_VALUE
-
-T              = TypeVar('T', bound=AT.ValueCore)
-
-Value_A       : TypeAlias = AT.Value
-Sen_A         : TypeAlias = AT.Sentence
-Instruction_A : TypeAlias = AT.Instruction
-ValueData     : TypeAlias = str
 
 class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p):
     """

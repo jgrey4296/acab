@@ -3,6 +3,8 @@
 Defines functions for parsers and parse -> data transform
 
 """
+from __future__ import annotations
+
 import logging as logmod
 
 import acab.core.defaults.value_keys as DS
@@ -22,7 +24,7 @@ logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 
-ATOM = TYPE_BASE
+ATOM : str = TYPE_BASE
 
 DEFAULT_TERM_DATA = {}
 # TODO figure out a better way to do term defaults

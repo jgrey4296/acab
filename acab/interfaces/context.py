@@ -10,29 +10,33 @@ import collections.abc as cABC
 import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
-from typing import (Any, Callable, ClassVar, Collection, Generic, Hashable,
-                    Iterable, Iterator, Literal, Mapping, Match,
-                    MutableMapping, Protocol, Sequence, Set, Tuple, TypeAlias,
-                    TypeVar, cast, overload, runtime_checkable, ContextManager)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection,
+                    ContextManager, Generic, Hashable, Iterable, Iterator,
+                    Literal, Mapping, Match, MutableMapping, Protocol,
+                    Sequence, Set, Tuple, TypeAlias, TypeVar, cast, overload,
+                    runtime_checkable)
 from uuid import UUID
 
-logging = logmod.getLogger(__name__)
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    GenFunc             : TypeAlias = AT.fns.GenFunc
+    CtxSet              : TypeAlias = AT.CtxSet
+    View                : TypeAlias = AT.StructView
+    Sen                 : TypeAlias = AT.Sentence
+    ProductionContainer : TypeAlias = AT.Container
+    ModuleFragment      : TypeAlias = AT.ModuleFragment
 
-from acab import types as AT
+    DelayValue = 'UUID | CtxIns | CtxSet | None'
+
+CtxIns              : TypeAlias = "ContextInstance_i"
+Value               : TypeAlias = "Value_i"
+
+logging = logmod.getLogger(__name__)
 from acab.interfaces.protocols.value import AcabFinishable_p
 
 # Type declarations:
 T = TypeVar('T')
-GenFunc             : TypeAlias = AT.fns.GenFunc
-CtxSet              : TypeAlias = AT.CtxSet
-CtxIns              : TypeAlias = AT.CtxIns
-Value               : TypeAlias = "AT.Value[AT.ValueCore]"
-View                : TypeAlias = AT.StructView
-Sen                 : TypeAlias = AT.Sentence
-ProductionContainer : TypeAlias = AT.Container
-ModuleFragment      : TypeAlias = AT.ModuleFragment
-
-DelayValue = 'UUID | CtxIns | CtxSet | None'
 
 # Interfaces:
 

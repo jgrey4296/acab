@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
@@ -15,7 +16,6 @@ from acab.core.util.fragments import DSL_Fragment
 
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
-
 
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler

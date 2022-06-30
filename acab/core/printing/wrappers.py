@@ -13,16 +13,15 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
 
-if TYPE_CHECKING:
-    # tc only imports
-    pass
-
-
 import acab.core.defaults.value_keys as DS
 from acab.core.config.config import AcabConfig
 from acab.core.defaults import print_symbols as DSYM
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory as VF
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
 
 config = AcabConfig()
 
@@ -31,8 +30,7 @@ REGEX_SEN  = VF.sen([DS.REGEX_PRIM])
 
 all_modals = config.prepare("MODAL", _type=list)
 
-
-def _maybe_wrap_str(PS, value, current):
+def _maybe_wrap_str(PS, value, current) -> str:
     if value.type != STRING_SEN:
         return current
 
@@ -40,14 +38,14 @@ def _maybe_wrap_str(PS, value, current):
     return output
 
 
-def _maybe_wrap_regex(PS, value, current):
+def _maybe_wrap_regex(PS, value, current) -> str:
     if not isinstance(value.value, Pattern) or value.type != REGEX_SEN:
         return current
 
     return [DSYM.REGEX_WRAP_P] + current + [DSYM.REGEX_WRAP_P]
 
 
-def _maybe_wrap_var(PS, value, current):
+def _maybe_wrap_var(PS, value, current) -> str:
     if not value.is_var:
         return current
 
@@ -58,7 +56,7 @@ def _maybe_wrap_var(PS, value, current):
     return [sym] + current
 
 
-def _maybe_wrap_modals(PS, value, current):
+def _maybe_wrap_modals(PS, value, current) -> str:
     """ Add any defined modalities to the end of the string """
     use_modals = PS.check(all_modals)
     modals = []
@@ -68,7 +66,7 @@ def _maybe_wrap_modals(PS, value, current):
 
     return current + modals
 
-def _focus_wrap_modal(PS, value, current):
+def _focus_wrap_modal(PS, value, current) -> str:
     """ Add a *specific* modality to the string, or its default """
     use_modal = PS.check("MODAL")
     if not use_modal:
@@ -79,31 +77,31 @@ def _focus_wrap_modal(PS, value, current):
 
     return current + [symbol]
 
-def _maybe_wrap_rebind(PS, value, current):
+def _maybe_wrap_rebind(PS, value, current) -> str:
     if value.rebind is None:
         return current
 
     return current + [DSYM.REBIND_SYM, value.rebind]
 
-def _maybe_wrap_question(PS, value, current):
+def _maybe_wrap_question(PS, value, current) -> str:
     if DSYM.QUERY_V not in value.data or not value.data[DS.QUERY]:
         return current
 
     return current + [DSYM.QUERY_SYM]
 
-def _maybe_wrap_negation(PS, value, current):
+def _maybe_wrap_negation(PS, value, current) -> str:
     if DS.NEGATION not in value.data or not value.data[DS.NEGATION]:
         return current
 
     return [DSYM.NEGATION_SYM] + current
 
-def _wrap_fallback(PS, value, current):
+def _wrap_fallback(PS, value, current) -> str:
     if DS.QUERY_FALLBACK not in value.data:
         return current
 
     return current + [DSYM.FALLBACK_SYM] + value.data[DS.QUERY_FALLBACK]
 
-def _wrap_tags(PS, value, current):
+def _wrap_tags(PS, value, current) -> str:
     if not bool(value.tags):
         return current
 
@@ -113,7 +111,7 @@ def _wrap_tags(PS, value, current):
     return current + list(tags)
 
 
-def _wrap_var_list(PS, value, current):
+def _wrap_var_list(PS, value, current) -> str:
     if DS.PARAMS not in value:
         return current
 
@@ -123,7 +121,7 @@ def _wrap_var_list(PS, value, current):
             + [DSYM.PARAM_WRAP, DSYM.CONTAINER_JOIN_P])
 
 
-def _sep_list(PS, value, current, *, sep=" "):
+def _sep_list(PS, value, current, *, sep=" ") -> str:
     """ given a list, add separators """
     ret_list = []
     if bool(current):
@@ -134,6 +132,6 @@ def _sep_list(PS, value, current, *, sep=" "):
         ret_list.pop()
     return ret_list
 
-def _suppress_modal(PS, value):
+def _suppress_modal(PS, value) -> str:
     """ Wrap the list with a meta instruction to ignore modals"""
     return PS.override(False, value, data={"no_modal": True})

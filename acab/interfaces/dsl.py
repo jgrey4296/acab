@@ -14,22 +14,24 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
                     Sequence, Tuple, TypeAlias, TypeVar, cast,
                     runtime_checkable)
 
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    # tc only imports
     import io
+    from acab import types as AT
+    Parser           : TypeAlias = AT.Parser
+    Sentence         : TypeAlias = AT.Sentence
+    Query            : TypeAlias = AT.Container
+    ModuleFragment   : TypeAlias = AT.ModuleFragment
+    DSL_Spec_A       : TypeAlias = AT.DSL_Spec
+    File             : TypeAlias = 'io.TextIOBase'
 
 logging = logmod.getLogger(__name__)
 
-from acab import types as AT
 from acab.core.util.decorators.dsl import EnsureDSLInitialised
 from acab.interfaces import handler_system as HS
 from acab.interfaces.protocols import handler_system as HSubP
 
-Parser           : TypeAlias = AT.Parser
-Sentence         : TypeAlias = AT.Sentence
-Query            : TypeAlias = AT.Container
-ModuleFragment   : TypeAlias = AT.ModuleFragment
-DSL_Spec_A       : TypeAlias = AT.DSL_Spec
-File             : TypeAlias = 'io.TextIOBase'
 
 class DSL_Parser_i(Protocol):
     @abc.abstractmethod
