@@ -71,8 +71,7 @@ class Unifier:
         the logic sieve of handlers is tried
         """
         logging.debug("Starting Unify for: {}, {}", first, second)
-        if logic is None:
-            logic = self.logic
+        logic = logic or self.logic
 
         # TODO first, second : (list[Sentences], list[Sentence])
         # TODO add exhaustive / inclusive typing options
