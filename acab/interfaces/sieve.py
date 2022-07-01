@@ -14,10 +14,14 @@ from acab import AcabConfig
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
-from acab import types as AT
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    pass
 
+from acab import types as AT
 GenFunc : TypeAlias = AT.fns.GenFunc
-T = TypeVar('T')
+T                   = TypeVar('T')
 
 @dataclass
 class _AcabSieve_d(Generic[T]):

@@ -38,11 +38,11 @@ def whole_sentence_bind(first, second, ctx, unifier=None):
         case True, 1, _, _:
             assert(first[0] not in ctx)
             result = unify_enum.END
-            ctx[first[0].key()] = second
+            ctx[first] = second
         case _, _, True, 1:
             assert(second[0] not in ctx)
             result = unify_enum.END
-            ctx[second[0].key()] = first
+            ctx[second] = first
 
     return result
 
@@ -57,6 +57,8 @@ def var_handler(index, first, second, ctx, unifier=None):
     s_var   = s_word.is_var
 
     if not (f_var or s_var):
+        return result
+    if isinstance(f_word, VI.Sentence_i) or isinstance(s_word, VI.Sentence_i):
         return result
 
     f_canon = util.top_var(f_word, ctx)
@@ -87,12 +89,12 @@ def equality_check(index, first, second, ctx, unifier=None):
     if isinstance(f_word, VI.Sentence_i) or isinstance(s_word, VI.Sentence_i):
         return result
     elif not (f_var or s_var) and f_word != s_word:
-        raise TE.AcabTypingException(f_word, s_word, ctx=ctx)
+        raise TE.AcabTypingException(f_word, s_word, ctx=ctx, msg="Equality Failure")
 
     f_canon = util.top_var(f_word, ctx)
     s_canon = util.top_var(s_word, ctx)
     if (f_var or s_var) and ctx[f_canon] != ctx[s_canon]:
-        raise TE.AcabUnifyVariableInconsistencyException(f_word, s_word, ctx=ctx)
+        raise TE.AcabUnifyVariableInconsistencyException(f_word, s_word, ctx=ctx, msg="Canon Equality Failure")
 
 
     return result
@@ -127,21 +129,31 @@ def check_modality(index, first, second, ctx, unifier=None):
 
 def sentence_recursion(index, first, second, ctx, unifier=None):
     result = unify_enum.NA
-    f_word  = first[index]
-    s_word  = second[index]
+    f_word, s_word  = first[index], second[index]
 
-    if isinstance(f_word, VI.Sentence_i) and isinstance(s_word, VI.Sentence_i):
-        # TODO handle var args in the type constructors,
-        # recursively unify
-        unifier(f_word, s_word, ctx)
-        result = unify_enum.NEXT_WORD
-    elif ((isinstance(f_word, VI.Sentence_i) and not s_word.is_var)
-          or (isinstance(s_word, VI.Sentence_i) and not f_word.is_var)):
-        raise TE.TypeConflictException(f_word, s_word, ctx=ctx)
+    if not (isinstance(f_word, VI.Sentence_i) or isinstance(s_word, VI.Sentence_i)):
+        return result
+
+    match f_word, s_word:
+        case VI.Sentence_i(), VI.Sentence_i() if not (f_word.is_var or s_word.is_var):
+            # TODO handle var args in the type constructors,
+            # recursively unify
+            unifier(f_word, s_word, ctx)
+            result = unify_enum.NEXT_WORD
+        case VI.Sentence_i(), _ if s_word.is_var and s_word not in ctx:
+            ctx[s_word] = f_word
+        case VI.Sentence_i(), _ if s_word.is_var and ctx[s_word] != f_word:
+            raise TE.AcabUnifyFailure(f_word, s_word, ctx=ctx)
+        case _, VI.Sentence_i() if f_word.is_var and f_word not in ctx:
+            ctx[f_word] = s_word
+        case _, VI.Sentence_i() if f_word.is_var and ctx[f_word] != s_word:
+            raise TE.AcabUnifyFailure(f_word, s_word, ctx=ctx)
+        case _:
+            raise TE.AcabUnifyFailure(f_word, s_word, ctx=ctx)
 
     return result
 
-def fail_handler_basic(index, first, second, ctx, unifier=None):
+def fail_handler(index, first, second, ctx, unifier=None):
     raise TE.AcabUnifySieveFailure(first[index], second[index], ctx=ctx)
 
 def next_word(index, first, second, ctx, unifier=None):

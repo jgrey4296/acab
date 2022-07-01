@@ -13,15 +13,16 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 from uuid import UUID, uuid1
 from weakref import ref
 
+from acab.error.protocol import AcabProtocolError as APE
+from acab.interfaces import fragments as FI
+from acab.interfaces import handler_system as HS
+
 logging = root_logger.getLogger(__name__)
 
 if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab.interfaces import fragments as FI
-from acab.interfaces import handler_system as HS
-from acab.error.protocol import AcabProtocolError as APE
 
 @APE.assert_concrete
 class HandlerFragment(FI.HandlerFragment_i):

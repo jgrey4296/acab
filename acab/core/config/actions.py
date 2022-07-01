@@ -18,9 +18,8 @@ from enum import Enum, EnumMeta
 
 if TYPE_CHECKING:
     # tc only imports
-    pass
+    from acab import types as AT
 
-from acab import types as AT
 from acab.core.util.decorators.util import mapToEnum
 
 
@@ -130,3 +129,10 @@ def default_type(ret_section:Any, actions=None, spec=None, config=None) -> Any:
         value = action(value, **spec.args)
 
     return value
+
+
+@mapToEnum(TYPE_ACTIONS, "for_sen")
+def prep_for_sentence(ret_section:Any, actions=None, spec=None, config=None) -> Any:
+    assert(spec.key is not None)
+    value = ret_section[spec.key]
+    return value.split(" ")

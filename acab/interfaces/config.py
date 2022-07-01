@@ -11,6 +11,10 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator, Contai
                     TypeAlias, TypeVar, cast, runtime_checkable)
 from logging import Logger, getLogger
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    pass
 
 from acab import types as AT
 

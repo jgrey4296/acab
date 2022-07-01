@@ -5,9 +5,10 @@ from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
 from functools import reduce
 from re import Pattern
-from typing import (Any, Callable, ClassVar, Collection, Generic, Iterable,
-                    Iterator, Mapping, Match, MutableMapping, Sequence, Tuple,
-                    Type, TypeAlias, TypeVar, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection,
+                    Generic, Iterable, Iterator, Mapping, Match,
+                    MutableMapping, Sequence, Tuple, Type, TypeAlias, TypeVar,
+                    cast)
 from uuid import UUID, uuid1
 from weakref import ref
 
@@ -16,27 +17,29 @@ import acab.core.util.part_implementations.value as VSI  # type:ignore
 import acab.interfaces.protocols.value as VP
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab.core.util.decorators.util import cache
 from acab.core.config.config import AcabConfig
-from acab.interfaces.value import ValueFactory
 from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
+from acab.interfaces.value import ValueFactory
 
 logging        = logmod.getLogger(__name__)
 
-config         = AcabConfig()
-BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+if TYPE_CHECKING:
+    ValueData     : TypeAlias = str
 
-UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
+Value_A       : TypeAlias = VI.Value_i
+Sen_A         : TypeAlias = VI.Sentence_i
+Instruction_A : TypeAlias = VI.Instruction_i
 
 T              = TypeVar('T', bound=AT.ValueCore)
 
-Value_A       : TypeAlias = AT.Value
-Sen_A         : TypeAlias = AT.Sentence
-Instruction_A : TypeAlias = AT.Instruction
-ValueData     : TypeAlias = str
+config         = AcabConfig()
+FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+UUID_CHOP      = config.prepare("Print.Data", "UUID_CHOP", _type=bool)()
+BIND_SYMBOL    = config.attr.Symbols.BIND
+
+
 
 class _InstructionBasicsImpl(VI.Instruction_i, VSI._ValueBasicsImpl, VP.ValueBasics_p):
     """
@@ -46,7 +49,6 @@ class _InstructionBasicsImpl(VI.Instruction_i, VSI._ValueBasicsImpl, VP.ValueBas
     def __str__(self):
         # return "{}".format(FALLBACK_MODAL.join([str(x) for x in self.value]))
         return f"'{self.name}'"
-
 
     @cache
     def __repr__(self):
@@ -61,6 +63,8 @@ class _InstructionBasicsImpl(VI.Instruction_i, VSI._ValueBasicsImpl, VP.ValueBas
             case str():
                 # If not a sen str, just compare to the name
                 return self.key() == other
+            case _:
+                raise TypeError("Unknown comparison", other)
 
         if not isinstance(other, VI.Instruction_i):
             # anything not a sentence isn't equal

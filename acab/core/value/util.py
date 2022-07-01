@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+from __future__ import annotations
 
 from re import Pattern
 
-from acab.core.config.config import AcabConfig
 import acab.interfaces.value as VI
+from acab.core.config.config import AcabConfig
 
 config           = AcabConfig()
 ANON_VALUE       = config.attr.Symbols.ANON_VALUE

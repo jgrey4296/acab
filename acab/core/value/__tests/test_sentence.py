@@ -195,6 +195,24 @@ class SentenceTests(unittest.TestCase):
             self.assertIsInstance(x, Value_i)
             self.assertEqual(x.value, y)
 
+    def test_get_item_subslice(self):
+        val = VF.sen() << "a" << "test" << (VF.sen() << "sub" << "sen")
+        self.assertEqual(val, "_:a.test.[sub.sen]")
+        sub_sen= val[:,:-1]
+        self.assertEqual(sub_sen, "_:a.test.[sub]")
+
+    def test_get_item_multi_subslice(self):
+        val = VF.sen() << "a" << "test" << (VF.sen() << "sub" << (VF.sen() << "subsub" << "sen"))
+        self.assertEqual(val, "_:a.test.[sub.[subsub.sen]]")
+        sub_sen= val[:,:,:-1]
+        self.assertEqual(sub_sen, "_:a.test.[sub.[subsub]]")
+
+    def test_subslice_mod(self):
+        val = VF.sen() << "a" << "test" << (VF.sen() << "sub" << (VF.sen() << "subsub" << "sen"))
+        self.assertEqual(val, "_:a.test.[sub.[subsub.sen]]")
+        sub_sen= val[:,:,1:]
+        self.assertEqual(sub_sen, "_:a.test.[sub.[sen]]")
+
     def test_attach_statement(self):
         """ Check a statement can be attached to the end of a sentence,
         taking the name of the last word """

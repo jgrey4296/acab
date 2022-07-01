@@ -12,11 +12,6 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import pyparsing as pp
-
-if TYPE_CHECKING:
-    # tc only imports
-    pass
-
 from acab import AcabConfig
 from acab.core.config.config import AcabConfig
 from acab.core.defaults import parse_keys as PDS
@@ -28,6 +23,10 @@ from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       opLn, orm, s, s_key, s_lit, zrm)
 from acab.core.parsing.param_core import ParamCore
 from acab.core.parsing.parsers import Fwd_ArgList, Fwd_TagList
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
 
 config               = AcabConfig()
 aliases              = config.attr.Aliases

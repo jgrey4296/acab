@@ -1,25 +1,26 @@
 #!/usr/bin/env python
 from __future__ import annotations
-from typing import Tuple, Any
-from typing import Callable, Iterator, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic, TypeAlias
-from typing import TYPE_CHECKING, Protocol, TypeGuard
-from typing import Final, final, overload, Protocol, runtime_checkable
-from types import ModuleType
-from importlib import import_module
+
 import logging as logmod
+from importlib import import_module
+from types import ModuleType
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
+                    cast, final, overload, runtime_checkable)
+
 logging = logmod.getLogger(__name__)
-
-from acab.interfaces.module_loader import ModuleLoader_i
-from acab.error.importer import AcabImportException
-from acab import types as AT
-
-ModuleFragment = AT.ModuleFragment
 
 if TYPE_CHECKING:
     # tc only imports
-    pass
+    from acab import types as AT
+    ModuleFragment : TypeAlias = AT.ModuleFragment
+else:
+    ModuleFragment : TypeAlias = "ModuleFragment"
+
+from acab.error.importer import AcabImportException
+from acab.interfaces.module_loader import ModuleLoader_i
+
 
 class ModuleLoaderImpl(ModuleLoader_i):
     """

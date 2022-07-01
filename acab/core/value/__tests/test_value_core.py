@@ -1,7 +1,9 @@
 #https://docs.python.org/3/library/unittest.html
+from __future__ import annotations
 import logging as logmod
 import unittest
 from os.path import split, splitext
+from typing import Any
 
 logging = logmod.getLogger(__name__)
 
@@ -15,11 +17,8 @@ with warnings.catch_warnings():
     config = acab.setup()
 
 import acab.core.defaults.value_keys as DS
-from acab.core.data.node import AcabNode
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
 import acab.interfaces.value as VI
-from acab.interfaces.value import ValueFactory as VF
+from acab.core.value.value import AcabValue
 
 AT_BIND_S = DS.AT_BIND
 BIND_S    = DS.BIND
@@ -49,11 +48,11 @@ class AcabValueTests(unittest.TestCase):
     def test_build(self):
         """ Check a value can be created safely with "build" """
         value = AcabValue("test",
-                                name="test value",
-                                data={"test data" : True})
+                          name="test value",
+                          data={"test data" : True})
         self.assertIsInstance(value, AcabValue)
         self.assertEqual(value.value, "test")
-        self.assertEqual(value.name, "test_value")
+        self.assertEqual(value.name, "test value")
         self.assertTrue("test data" in value.data)
 
     def test_construction(self):
@@ -81,7 +80,7 @@ class AcabValueTests(unittest.TestCase):
         value = AcabValue("test", tags=["a", "b", "c"])
         self.assertFalse(value.has_tag(*[AcabValue(x) for x in ["a", "b", "c", "q"]]))
 
-    def test_build(self):
+    def test_build_2(self):
         """ Check a value doesn't build to contain a value """
         value = AcabValue("test")
         self.assertIsInstance(value, AcabValue)
@@ -133,13 +132,13 @@ class AcabValueTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             AcabValue(2.5)
 
-        AcabValue.extend_core(float)
+        VI.Value_i.extend_core(float)
         self.assertEqual(float | AT.ValueCore, AT.ValueCore)
-        val = AcabValue(2.5)
+        val  = AcabValue(2.5)
         self.assertIsInstance(val, VI.Value_i)
 
 
     def test_value_params(self):
-        val = AcabValue("test", params=["a", "b", "c"])
+        val : VI.Value_i[str] = AcabValue("test", params=["a", "b", "c"])
         self.assertTrue(all([isinstance(x, AcabValue) for x in val.params]))
         self.assertTrue(all([x.is_var for x in val.params]))

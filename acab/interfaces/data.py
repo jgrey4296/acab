@@ -11,15 +11,18 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator, Contai
                     Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
                     TypeAlias, TypeVar, cast, runtime_checkable)
 
-from acab import types as AT
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    Value     : TypeAlias = "AT.Value[AT.ValueCore]"
+    CtxIns    : TypeAlias = AT.CtxIns
+    Sen       : TypeAlias = AT.Sentence
 
-T = TypeVar('T', covariant=True, bound=AT.Node)
+Node      : TypeAlias = "Node_i"
+Structure : TypeAlias = "Structure_i"
+T = TypeVar('T', covariant=True, bound=Node)
 
-Value     : TypeAlias = "AT.Value[AT.ValueCore]"
-Node      : TypeAlias = AT.Node
-CtxIns    : TypeAlias = AT.CtxIns
-Sen       : TypeAlias = AT.Sentence
-Structure : TypeAlias = "AT.DataStructure[AT.TNode]"
 
 @runtime_checkable
 class _Node_p(cABC.Hashable, Protocol):

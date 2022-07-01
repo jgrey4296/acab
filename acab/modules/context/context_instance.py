@@ -72,20 +72,25 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     def __contains__(self, value: int|str|Value):
         key = value
-        if isinstance(value, VI.Sentence_i):
-            key = str(value)
-        elif isinstance(value, VI.Value_i):
-            key = value.key()
+        match value:
+            case str():
+                key = value
+            case VI.Value_i():
+                key = value.key()
+            case _:
+                raise TypeError("Unknown type queried to context instance")
 
-        return str(key) in self.data
+        return key in self.data
 
     def __getitem__(self, value: Value):
         # TODO maybe handle AT_BINDs
-        key = str(value)
-        if hasattr(value, "key"):
-            key = value.key()
-        if isinstance(value, VI.Sentence_i) and value.is_var:
-            key = value[0].key()
+        match value:
+            case str():
+                key = value
+            case VI.Value_i():
+                key = value.key()
+            case _:
+                raise TypeError("Unknown type queried to context instance")
 
         if key in self.data:
             return self.data[key]
@@ -107,7 +112,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
         return len(self.data)
 
     def __iter__(self):
-        return iter(self.data.values())
+        return iter(self.data.items())
 
     def __repr__(self):
         binds  = ", ".join([x for x in self.data.keys()])
@@ -237,14 +242,14 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def __contains__(self, value: int|str|Value):
         match value:
-            case VI.Sentence_i():
-                key = str(value)
             case VI.Value_i():
                 key = value.key()
-            case _:
+            case str():
                 key = value
+            case _:
+                raise TypeError("Unrecognized type queried to mutable context instance")
 
-        direct   = str(key) in self.data
+        direct   = key in self.data
         indirect = value in self.base
         return direct or indirect
 
@@ -253,15 +258,13 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
             raise AcabContextException("Not Found in Context", context=value)
 
         match value:
-            case VI.Sentence_i():
-                key = str(value)
             case VI.Value_i():
                 key = value.key()
-            case _:
+            case str():
                 key = value
 
-        if str(key) in self.data:
-            return self.data[str(key)]
+        if key in self.data:
+            return self.data[key]
 
         return self.base[value]
 
@@ -304,6 +307,9 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     def __len__(self):
         return len(self.data) + len(self.base)
 
+    def __iter__(self):
+        raise NotImplementedError("Iteration on a MutableContextInstance is nonsensical")
+
     def copy(self, mask=None, **kwargs):
         return self.base.progress(self.data, {})[0]
 
@@ -325,10 +331,10 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
         """
         match words, nodes:
-            case dict(), dict():
+            case dict(), _:
                 self.data |= (words or {})
             case _, _:
-                raise TypeError(f"Unexpected type for ContextInstance.Progress: {type(word)}, {type(nodes)}")
+                raise TypeError(f"Unexpected type for ContextInstance.Progress: {type(words)}, {type(nodes)}")
 
         # assert(not any([x in self.data for x in the_dict])), breakpoint()
         # assert(not any([x in self.base for x in the_dict])), breakpoint()
@@ -343,9 +349,6 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def to_sentences(self):
         raise NotImplementedError()
-
-    def __iter__(self):
-        raise NotImplementedError("Iteration on a MutableContextInstance is nonsensical")
 
     @property
     def current_node(self):

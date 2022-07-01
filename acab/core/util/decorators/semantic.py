@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
-
-from functools import wraps
-from enum import Enum
-
-from acab import types as AT
-from acab.core.config.config import AcabConfig
-from acab.core.value.instruction import ProductionOperator
-from acab.core.util.delayed_commands import DelayedCommands_i
-from acab.interfaces.value import ValueFactory as VF
+from __future__ import annotations
 
 import logging as logmod
+from enum import Enum
+from functools import wraps
+from typing import TYPE_CHECKING
+
+from acab.core.config.config import AcabConfig
+from acab.core.util.delayed_commands import DelayedCommands_i
+from acab.core.value.instruction import ProductionOperator
+from acab.interfaces.value import ValueFactory as VF
+
 logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
 
 def BuildCtxSetIfMissing(f):
     """ Utility to Build a default CtxSet if one isnt provided """

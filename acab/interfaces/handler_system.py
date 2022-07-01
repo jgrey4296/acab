@@ -1,43 +1,45 @@
 #!/opts/anaconda3/envs/ENV/python
 # pylint: disable=multiple-statements,abstract-method,invalid-sequence-index
 from __future__ import annotations
+
 import abc
 import collections.abc as cABC
 import logging as logmod
 from dataclasses import InitVar, dataclass, field, replace
 from enum import Enum, EnumMeta
 from types import MethodType
-from typing import (Any, Callable, ClassVar, Collection, Container, Final,
-                    Generic, Iterable, Iterator, Mapping, Match,
-                    MutableMapping, NewType, Protocol, Sequence, Tuple, Type,
-                    TypeAlias, TypeVar, cast, final, overload,
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection,
+                    Container, Final, Generic, Iterable, Iterator, Mapping,
+                    Match, MutableMapping, NewType, Protocol, Sequence, Tuple,
+                    Type, TypeAlias, TypeVar, cast, final, overload,
                     runtime_checkable)
 
-from acab import types as AT
 from acab import AcabConfig
-from acab.interfaces.sieve import AcabSieve
 from acab.interfaces.protocols import handler_system as HSubP
+from acab.interfaces.sieve import AcabSieve
+
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    GenFunc               : TypeAlias = AT.fns.GenFunc
+    TypeFunc              : TypeAlias = AT.fns.TypeFunc
+    ModuleFragment        : TypeAlias = AT.ModuleFragment
+    Overrider             : TypeAlias = AT.HandlerOverride
+    Sen_A                 : TypeAlias = AT.Sentence
+    Structure             : TypeAlias = "AT.DataStructure[AT.Node]"
+    Instruction_A         : TypeAlias = AT.Instruction
+    Value                 : TypeAlias = "AT.Value[AT.ValueCore]"
+    Handler_A             : TypeAlias = AT.Handler
+    HandlerSpec_A         : TypeAlias = AT.HandlerSpec
+    HandlerComponent_A    : TypeAlias = AT.HandlerComponent
+    Handler_System_A      : TypeAlias = AT.HandlerSystem
+    HandlerFragment_A     : TypeAlias = AT.HandlerFragment
+    RegistrationTargets_A : TypeAlias = "HandlerFragment_A|HandlerSpec_A|Handler_A|AT.HandlerOverride|dict[str,Any]"
 
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
-GenFunc               : TypeAlias = AT.fns.GenFunc
-TypeFunc              : TypeAlias = AT.fns.TypeFunc
-ModuleFragment        : TypeAlias = AT.ModuleFragment
-Overrider             : TypeAlias = AT.HandlerOverride
-Sen_A                 : TypeAlias = AT.Sentence
-Structure             : TypeAlias = "AT.DataStructure[AT.Node]"
-Instruction_A         : TypeAlias = AT.Instruction
-Value                 : TypeAlias = "AT.Value[AT.ValueCore]"
-Handler_A             : TypeAlias = AT.Handler
-HandlerSpec_A         : TypeAlias = AT.HandlerSpec
-HandlerComponent_A    : TypeAlias = AT.HandlerComponent
-Handler_System_A      : TypeAlias = AT.HandlerSystem
-HandlerFragment_A     : TypeAlias = AT.HandlerFragment
-RegistrationTargets_A : TypeAlias = "HandlerFragment_A|HandlerSpec_A|Handler_A|AT.HandlerOverride|dict[str,Any]"
-
 HandlerFlags          : EnumMeta = Enum("HandlerFlags", "OVERRIDE MERGE APPEND PREPEND COLLECT REDUCE")
-
 HandlerFlags_t        : TypeAlias = Type[HandlerFlags]
 
 @dataclass #type:ignore[misc]

@@ -203,13 +203,18 @@ class CheckStatementFragment(UnifiedFragment_p):
         # then unify
         return self.structural_check([use_sen], op_sens, semSys, ctxs=ctxs, data=data)
 
-    def structural_check(self, to_check:list[VI.Sentence_i], type_sens:list[VI.Sentence_i], semSys:SemanticSystem, *, ctxs:None|CtxSet=None, data:None|dict[str,Any]=None) -> CtxIns:
+    def structural_check(self,
+                         to_check:list[VI.Sentence_i],
+                         type_sens:list[VI.Sentence_i],
+                         semSys:SemanticSystem,
+                         *, ctxs:None|CtxSet=None,
+                         data:None|dict[str,Any]=None) -> CtxIns:
         """
         unify a list of sentences against a list of applicable definition sentences
         """
-        subctx                                = {}
-        flat_types                            = type_sens #[x.flatten() for x in type_sens]
-        clean_type_sens : list[VI.Sentence_i] = [VC.rectx(x, ctx=subctx, name_suff="_type") for x in flat_types]
-        to_check_flat                         = to_check #[x.flatten() for x in to_check]
-        unified                               = tuf.type_unify.repeat(to_check_flat, clean_type_sens, ctxs[0])
+        name_suff = data['suffix'] if data and 'suffix' in data else "_right"
+
+        clean_var_names                       = {}
+        clean_type_sens : list[VI.Sentence_i] = [VC.rectx(x, ctx=clean_var_neames, name_suff=name_suff) for x in type_sens]
+        unified                               = tuf.type_unify.repeat(to_check, clean_type_sens, ctxs[0])
         return unified

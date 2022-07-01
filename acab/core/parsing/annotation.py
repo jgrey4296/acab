@@ -3,16 +3,21 @@ Dataclasses for wrapping annotations which are applied onto AcabValues
 
 """
 from dataclasses import InitVar, dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
+                    Iterable, Iterator, List, Mapping, Match, MutableMapping,
+                    Optional, Sequence, Set, Tuple, TypeVar, Union, cast)
 
-from acab import types as AT
 from acab import AcabConfig
 from acab.interfaces.value import Value_i
 
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    ValueData = AT.ValueData
+else:
+    ValueData = str
+
 config = AcabConfig()
-Value  = AT.Value
 
 @dataclass
 class ValueAnnotation:
@@ -22,10 +27,10 @@ class ValueAnnotation:
     ValueAnnotation(x) + AcabValue -> AcabValue'[x]
     """
 
-    key   : AT.ValueData = field()
+    key   : ValueData = field()
     value : Any = field(default=None)
 
-    def __call__(self, val:Value) -> Value:
+    def __call__(self, val:Value_i) -> Value_i:
         """ Apply the annotation """
         assert(isinstance(val,Value_i))
         val.data[self.key] = self.value
@@ -40,7 +45,7 @@ class ValueRepeatAnnotation(ValueAnnotation):
     ValueRepeatAnnotation(y) + AcabValue'[x] -> AcabValue'[x, y]
     """
 
-    def __call__(self, val:Value) -> Value:
+    def __call__(self, val:Value_i) -> Value_i:
         assert(isinstance(val,Value_i))
         if self.key not in val.data:
             val.data[self.key] = []
@@ -51,7 +56,7 @@ class ValueRepeatAnnotation(ValueAnnotation):
 
 class ModalAnnotation(ValueAnnotation):
 
-    def __call__(self, val:Value) -> Value:
+    def __call__(self, val:Value_i) -> Value_i:
         assert(isinstance(val,Value_i))
         modal_value = config.syntax_extension[self.key]
         val.data[modal_value.__class__.__name__] = modal_value

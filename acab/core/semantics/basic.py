@@ -27,16 +27,9 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
                     TypeVar, cast, final, overload, runtime_checkable)
 
-if TYPE_CHECKING:
-    # tc only imports
-    pass
-
-logging = logmod.getLogger(__name__)
-
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.handler_system as HS
 from acab import AcabConfig
-from acab import types as AT
 from acab.core.defaults.value_keys import QUERY
 from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.error.printing import AcabPrintException
@@ -46,22 +39,26 @@ from acab.interfaces.bind import Bind_i
 from acab.interfaces.fragments import Semantic_Fragment_i
 from acab.interfaces.value import Sentence_i, Value_i
 
-Value              : TypeAlias = AT.Value
-Sen_A              : TypeAlias = AT.Sentence
-Instruction        : TypeAlias = AT.Instruction
-Struct_A           : TypeAlias = AT.DataStructure
-Node               : TypeAlias = AT.Node
-Engine             : TypeAlias = AT.Engine
-CtxSet             : TypeAlias = AT.CtxSet
-CtxIns             : TypeAlias = AT.CtxIns
-Handler_A          : TypeAlias = AT.Handler
-ProductionOperator : TypeAlias = AT.Operator
-ModuleFragment     : TypeAlias = AT.ModuleFragment
-StructureSemantics : TypeAlias = AT.StructureSemantics
-ValueSemantics     : TypeAlias = AT.ValueSemantics
-StatementSemantics : TypeAlias = AT.StatementSemantics
-SemanticSystem     : TypeAlias = AT.SemanticSystem
+logging = logmod.getLogger(__name__)
 
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    CtxIns             : TypeAlias = AT.CtxIns
+    CtxSet             : TypeAlias = AT.CtxSet
+    Engine             : TypeAlias = AT.Engine
+    Handler_A          : TypeAlias = AT.Handler
+    Instruction        : TypeAlias = AT.Instruction
+    ModuleFragment     : TypeAlias = AT.ModuleFragment
+    Node               : TypeAlias = AT.Node
+    ProductionOperator : TypeAlias = AT.Operator
+    SemanticSystem     : TypeAlias = AT.SemanticSystem
+    Sen_A              : TypeAlias = AT.Sentence
+    StatementSemantics : TypeAlias = AT.StatementSemantics
+    Struct_A           : TypeAlias = AT.DataStructure
+    StructureSemantics : TypeAlias = AT.StructureSemantics
+    Value              : TypeAlias = AT.Value
+    ValueSemantics     : TypeAlias = AT.ValueSemantics
 
 config = AcabConfig()
 Bind   = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()

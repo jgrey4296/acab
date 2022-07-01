@@ -20,7 +20,7 @@ from acab.interfaces.bind import Bind_i
 
 logging = logmod.getLogger(__name__)
 
-__all__ = []
+__all__ = ['rectx']
 
 def rectx(val, *, ctx=None, name_suff=None):
     """
@@ -36,29 +36,38 @@ def rectx(val, *, ctx=None, name_suff=None):
     assert(isinstance(ctx, (CI.ContextInstance_i, dict)))
     name_suff = name_suff or uuid1()
 
-    if not val.has_var and not bool(val.params):
-        return val
+    if val.type.has_var:
+        data = {DS.TYPE_INSTANCE: rectx(val.type, ctx=ctx, name_suff=name_suff)}
+    else:
+        data = {}
 
     params = _unique_params(val.params, ctx, name_suff)
     match val:
         case VI.Sentence_i():
             # recurse down
             words = [rectx(x, ctx=ctx, name_suff=name_suff) for x in val.words]
-            return val.copy(value=words, params=params)
+            return val.copy(value=words, params=params, data=data)
         case VI.Instruction_i():
             # TODO work on this
-            return val.copy(params=params)
-        case VI.Value_i() if val.key() not in ctx:
+            return val.copy(params=params, data=data)
+        case VI.Value_i() if val.is_var and val.key() not in ctx:
             # Create a new var
             uniq = f"{val.key()}_{name_suff}"
-            ctx[val.key()] = val.copy(name=uniq, params=params)
+            ctx[val.key()] = val.copy(name=uniq,
+                                      params=params,
+                                      data=data)
             # link it to the original by uuid
             return ctx[val.key()]
-        case VI.Value_i() if val.key() in ctx:
+        case VI.Value_i() if val.is_var and val.key() in ctx:
             return val.copy(name=ctx[val.key()].key(),
-                            params=params)
+                            params=params,
+                            data=data)
+        case _ if bool(data):
+            assert(not val.is_var)
+            assert(not val.has_var)
+            return val.copy(data=data)
         case _:
-            raise AcabSemanticException("Unknown recontextualise target")
+            return val
 
 def _unique_params(params:list[VI.Value_i], ctx, name_suff):
     new_params = []

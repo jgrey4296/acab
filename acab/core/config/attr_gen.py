@@ -9,15 +9,17 @@ config.attr.section.value
 from __future__ import annotations
 
 import abc
+import logging as logmod
 import re
+from configparser import SectionProxy
 from dataclasses import InitVar, dataclass, field
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
-from configparser import SectionProxy
-import logging as logmod
+
 logging = logmod.getLogger(__name__)
+
 
 if TYPE_CHECKING:
     # tc only imports

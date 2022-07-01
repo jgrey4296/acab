@@ -31,7 +31,7 @@ with warnings.catch_warnings():
     from acab.modules.semantics.default import DEFAULT_SEMANTICS
 
 
-class _ENGINE_TEST_TEMPLATE(unittest.TestCase):
+class TestRuleSemantics(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
