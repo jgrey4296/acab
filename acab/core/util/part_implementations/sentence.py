@@ -87,12 +87,19 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
 
 
     def key(self, suffix=None) -> str:
-        words = [f"{x}" for x in self.words]
+        # if self.is_var:
+        if len(self) == 1:
+            return self[0].key()
+
+        words = [f"{x.key()}" for x in self.words]
         key   = "[{}]".format(FALLBACK_MODAL.join(words))
         if suffix is None:
             return key
 
-        key_mod = key[:-1] + (FALLBACK_MODAL if bool(self) else "") + suffix + "]"
+        suffix_key = suffix if isinstance(suffix, str) else suffix.key()
+
+        # Splice the suffix in
+        key_mod = key[:-1] + (FALLBACK_MODAL if bool(self) else "") + suffix_key + "]"
         return key_mod
 
     def copy(self, **kwargs) -> Sen_A:

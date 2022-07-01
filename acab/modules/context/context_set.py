@@ -25,28 +25,24 @@ from acab.modules.context.constraints import ConstraintCollection
 from acab.modules.context.context_instance import ContextInstance
 from acab.modules.context.context_meta import ContextMeta
 
-config = AcabConfig()
-
-CONSTRAINT_S     = DS.CONSTRAINT
-NEGATION_S       = DS.NEGATION
+if TYPE_CHECKING:
+    from acab import types as AT
+    Constraints      = 'ConstraintCollection'
+    Value            = AT.Value
+    Statement        = AT.Instruction
+    Sen              = AT.Sentence
+    Node             = AT.StructView
 
 CtxIns           = CtxInt.ContextInstance_i
 CtxSet           = CtxInt.ContextSet_i
-Constraints      = 'ConstraintCollection'
-ProdComp         = ProductionComponent
-ProdCon          = ProductionContainer
-Operator         = 'ProductionOperator'
-Value            = AT.Value
-Statement        = AT.Instruction
-Sen              = AT.Sentence
-Node             = AT.StructView
-ModuleFragment   = AT.ModuleFragment
-NamedCtxSet      = "NamedCtxSet"
-
-DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
-
 NamedCtxSet      = CtxInt.NamedCtxSet_d
 ContextFailState = CtxInt.ContextFailState_d
+
+config       = AcabConfig()
+CONSTRAINT_S = DS.CONSTRAINT
+NEGATION_S   = DS.NEGATION
+
+DELAYED_E    = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
 
 @dataclass
 class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):

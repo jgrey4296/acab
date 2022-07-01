@@ -114,7 +114,7 @@ class StatementSemanticTests(unittest.TestCase):
         # Construct context set for operators
         op_loc_path                         = self.dsl("Regex.Operation")[0]
         operator_instance                   = RegexOp()
-        op_ctx                              = ContextInstance(data={str(op_loc_path): operator_instance})
+        op_ctx                              = ContextInstance(data={op_loc_path.key(): operator_instance})
         ctx_set                             = ContextSet(op_ctx)
         # Add a ContextInst
         init_ctx                            = ctx_set.pop()
@@ -146,7 +146,7 @@ class StatementSemanticTests(unittest.TestCase):
         # Context Set for operators
         op_loc_path       = VF.sen(["action"])
         operator_instance = TestAction()
-        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
+        op_ctx            = ContextInstance(data={op_loc_path.key(): operator_instance})
         ctx_set           = ContextSet(op_ctx)
         # Build Action
         action = self.dsl['sentence.ends'].parse_string("action(::α):\n λaction\nend")[0]
@@ -172,7 +172,7 @@ class StatementSemanticTests(unittest.TestCase):
         # Context Set for operators
         op_loc_path       = VF.sen(["action"])
         operator_instance = TestAction()
-        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
+        op_ctx            = ContextInstance(data={op_loc_path.key(): operator_instance})
         ctx_set           = ContextSet(op_ctx)
         # Build Action
         action = self.dsl['sentence.ends'].parse_string("action(::α):\n λaction aweg\nend")[0]
@@ -198,7 +198,7 @@ class StatementSemanticTests(unittest.TestCase):
         # Context Set for operators
         op_loc_path       = VF.sen(["action"])
         operator_instance = TestAction()
-        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
+        op_ctx            = ContextInstance(data={op_loc_path.key(): operator_instance})
         ctx_set           = ContextSet(op_ctx)
         # Build Action
         action = self.dsl['sentence.ends'].parse_string("action(::α):\n λaction aweg.blah.bloo\nend")[0]
@@ -246,8 +246,8 @@ class StatementSemanticTests(unittest.TestCase):
                                             )
 
         # Add data to eval context
-        ctx_set     = ContextSet({"[transform]" : TestTransform(),
-                                  "[action]"    : TestAction()})
+        ctx_set     = ContextSet({"transform" : TestTransform(),
+                                  "action"    : TestAction()})
         init_ctx    = ctx_set.pop()
         updated_ctx = init_ctx.progress({"x" : AcabValue("test")}, {})
         ctx_set.push(updated_ctx)
@@ -304,8 +304,8 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Setup operators in context
         trans_instance     = RegexOp()
-        ctx_set            = ContextSet({"[action]": TestAction(),
-                                         "[regex]" : trans_instance})
+        ctx_set            = ContextSet({"action": TestAction(),
+                                         "regex" : trans_instance})
 
         # Construct Rule
         the_rule = self.dsl['sentence.ends'].parse_string("rule(::ρ):\n a.test.$x?\n\n λregex $x /sen/ SEN -> $y\n\n λaction $y\nend")[0]
@@ -358,8 +358,8 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Setup operators in context
         trans_instance     = RegexOp()
-        op_ctx             = ContextInstance(data={"[action]" : TestAction(),
-                                                   "[regex]"  : trans_instance})
+        op_ctx             = ContextInstance(data={"action" : TestAction(),
+                                                   "regex"  : trans_instance})
         ctx_set            = ContextSet(op_ctx)
 
         # Construct Rule
@@ -417,8 +417,8 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Setup operators in context
         trans_instance     = RegexOp()
-        op_ctx             = ContextInstance(data={"[action]" : TestAction(),
-                                                   "[regex]"  : trans_instance})
+        op_ctx             = ContextInstance(data={"action" : TestAction(),
+                                                   "regex"  : trans_instance})
         ctx_set            = ContextSet(op_ctx)
 
         # Construct Rule

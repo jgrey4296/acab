@@ -77,9 +77,9 @@ class ContextMeta(ProtocolMeta):
             case list():
                 operators = [y for x in ops for y in x.operators]
                 # Build the CtxInst data dict:
-                op_dict = {str(x) : x[-1] for x in operators}
+                op_dict = {x.key() : x[-1] for x in operators}
                 # Add any sugar forms:
-                op_dict.update({str(x[-1]._acab_operator_sugar) : x[-1] for x in operators if hasattr(x[-1], "_acab_operator_sugar")})
+                op_dict.update({x[-1]._acab_operator_sugar.key() : x[-1] for x in operators if hasattr(x[-1], "_acab_operator_sugar")})
             case dict():
                 op_dict = ops
             case _:
