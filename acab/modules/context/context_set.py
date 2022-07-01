@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging as logmod
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
@@ -15,7 +15,6 @@ import acab.core.defaults.value_keys as DS
 import acab.interfaces.context as CtxInt
 import acab.interfaces.value as VI
 from acab import AcabConfig
-from acab import types as AT
 from acab.core.util.delayed_commands import DelayedCommands_i
 from acab.core.util.sentences import ProductionComponent
 from acab.core.value.instruction import ProductionContainer
@@ -178,20 +177,20 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
                                       node)
         self._failed.append(fail_state)
 
-    def push(self, ctxs:UUID|CtxIns|list[CtxIns|UUID]):
+    def push(self, ctxs:UUID|CtxIns|list[CtxIns|UUID]) -> self:
         if not isinstance(ctxs, list):
             ctxs = [ctxs]
 
         if all([isinstance(x, UUID) for x in ctxs]):
             assert(all([x in self._total for x in ctxs]))
             self._active += ctxs
-
         else:
             # Add to set
             assert(not any([x.uuid in self._total for x in ctxs]))
             self._total.update({x.uuid: x for x in ctxs})
             self._active += [x.uuid for x in ctxs]
 
+        return self
 
 
     def pop(self, top=False) -> CtxIns:

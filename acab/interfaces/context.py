@@ -70,7 +70,7 @@ class ContextSet_p(Hashable, Iterable[CtxIns], Protocol):
     @abc.abstractmethod
     def fail(self, instance:CtxIns, word:Value, node:View, query:Sen) -> None: pass
     @abc.abstractmethod
-    def push(self, ctxs:CtxIns) -> None: pass
+    def push(self, ctxs:CtxIns) -> self: pass
     @abc.abstractmethod
     def pop(self, top:bool=False) -> CtxIns: pass
     @abc.abstractmethod

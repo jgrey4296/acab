@@ -307,6 +307,9 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     def __len__(self):
         return len(self.data) + len(self.base)
 
+    def __iter__(self):
+        raise NotImplementedError("Iteration on a MutableContextInstance is nonsensical")
+
     def copy(self, mask=None, **kwargs):
         return self.base.progress(self.data, {})[0]
 
@@ -346,9 +349,6 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def to_sentences(self):
         raise NotImplementedError()
-
-    def __iter__(self):
-        raise NotImplementedError("Iteration on a MutableContextInstance is nonsensical")
 
     @property
     def current_node(self):
