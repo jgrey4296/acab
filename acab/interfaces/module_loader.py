@@ -15,15 +15,18 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
                     TypeAlias, TypeVar, cast)
 
-from acab import types as AT
-from acab.error.importer import AcabImportException
-from acab.interfaces.fragments import ModuleFragment
-
 logging = logmod.getLogger(__name__)
 
-Sentence           : TypeAlias = AT.Sentence
-HandlerFragment    : TypeAlias = AT.HandlerFragment
-Operator           : TypeAlias = "AT.Operator[AT.TValCore]"
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    Sentence           : TypeAlias = AT.Sentence
+    HandlerFragment    : TypeAlias = AT.HandlerFragment
+    Operator           : TypeAlias = "AT.Operator[AT.TValCore]"
+
+from acab.error.importer import AcabImportException
+from acab.interfaces.fragments import ModuleFragment
 
 #--------------------
 class _ModuleLoader_p(Iterable[ModuleFragment], Protocol):
@@ -54,6 +57,7 @@ class _ModuleLoader_p(Iterable[ModuleFragment], Protocol):
     @property
     @abc.abstractmethod
     def loaded(self) -> list[ModuleFragment]: pass
+
 @dataclass #type:ignore[misc]
 class ModuleLoader_i(_ModuleLoader_p):
     """ Describes how an engine loads ACAB/py modules """

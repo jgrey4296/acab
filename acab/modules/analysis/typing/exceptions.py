@@ -32,9 +32,20 @@ class AcabLengthUnifyException(AcabTypingException):
 class AcabUnifyGroupException(AcabTypingException):
     msg : str = field(default="Group Unification Failed")
 
+    def __str__(self):
+        if 'failures' not in self.data:
+            return self.msg
+        if len(self.data['failures']) > 1:
+            return f"{self.msg}: {len(self.data['failures'])} issues."
+
+        return f"{self.msg}: {str(self.data['failures'][0])}"
+
 @dataclass(repr=False)
 class AcabUnifyModalityException(AcabTypingException):
     msg : str = field(default="Modality Failure")
+
+    def __str__(self):
+        return f"{self.msg}: {self.data['modality']} : {self.left} : {self.right}"
 
 @dataclass(repr=False)
 class AcabUnifySieveFailure(AcabTypingException):
@@ -65,3 +76,11 @@ class TypeUndefinedException(AcabTypingException):
 @dataclass(repr=False)
 class TypeStructureMismatch(AcabTypingException):
     msg : str = field(default="Type Structure Mismatch")
+
+
+@dataclass(repr=False)
+class AcabUnifyFailure(AcabTypingException):
+    msg : str = field(default="Unification Failure")
+
+    def __str__(self):
+        return f"{self.msg}: {self.left} : {self.right}"

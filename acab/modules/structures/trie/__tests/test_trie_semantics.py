@@ -224,7 +224,7 @@ class TrieSemanticTests(unittest.TestCase):
         # Construct context set for operators
         op_loc_path       = VF.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
         operator_instance = EQ()
-        ctx_set           = ContextSet({str(op_loc_path): EQ()})
+        ctx_set           = ContextSet({op_loc_path.key(): EQ()})
         # Construct query sentence
         query_sen = VF.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -285,7 +285,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_loc_path = VF.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
         # Note the .value's, because the operator doesn't have the unwrap decorator
         operator_instance = lambda a,b,data=None: a.value == b.value
-        ctx_set           = ContextSet({str(op_loc_path): operator_instance})
+        ctx_set           = ContextSet({op_loc_path.key(): operator_instance})
         # Construct query sentence
         query_sen = VF.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -455,7 +455,7 @@ class TrieSemanticTests(unittest.TestCase):
         sen2 = VF.sen(["a", Sentence(["test", "sentence"])])
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
-        ctx_set           = ContextSet({"[τ=]": SimpleTypeMatch()})
+        ctx_set           = ContextSet({"τ=": SimpleTypeMatch()})
         results           = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # check
         self.assertEqual(len(results), 1)

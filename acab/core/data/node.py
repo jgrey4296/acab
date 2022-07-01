@@ -12,7 +12,6 @@ from weakref import ReferenceType, ref
 
 import acab.interfaces.data as DI
 import acab.interfaces.value as VI
-from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.interfaces.value import ValueFactory as VF
@@ -20,27 +19,30 @@ from acab.core.util.debugging import logdel
 
 logging                = logmod.getLogger(__name__)
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    pass
+
+Node_A     : TypeAlias = DI.Node_i
+Sentence_A : TypeAlias = VI.Sentence_i
+Value_A    : TypeAlias = VI.Value_i
+
 config                 = AcabConfig()
-
-Node       : TypeAlias = AT.Node
-Sentence_A : TypeAlias = AT.Sentence
-Value      : TypeAlias = AT.Value
-
 ROOT                   = config.prepare("Data", "ROOT")()
-
 
 @logdel
 @dataclass
 class AcabNode(DI.Node_i):
-    """ The Base Node Class for Tries/Data structures etc
+    """ The Base Node_A Class for Tries/Data structures etc
     Not an AcabValue, Uses the most basic semantics possible
     """
     # TODO make children a dict of dicts
     # value  : AcabValue       = field(default=None)
     data     : dict[str, Any]             = field(default_factory=dict)
     path     : 'None|Sentence_A'          = field(default=None)
-    parent   : None | ReferenceType[Node] = field(default=None)
-    children : dict[str, Node]            = field(default_factory=dict)
+    parent   : None | ReferenceType[Node_A] = field(default=None)
+    children : dict[str, Node_A]            = field(default_factory=dict)
     uuid     : UUID                       = field(default_factory=uuid1)
 
     @staticmethod
@@ -91,7 +93,7 @@ class AcabNode(DI.Node_i):
 
     @cache
     def key(self):
-        """ Default Node->str key for child mapping """
+        """ Default Node_A->str key for child mapping """
         return self.value.key()
 
     def keys(self):
@@ -101,7 +103,7 @@ class AcabNode(DI.Node_i):
     def name(self):
         return str(self.value)
 
-    def add(self, node:Node, *, key:str=None) -> Node:
+    def add(self, node:Node_A, *, key:str=None) -> Node_A:
         """ Add a node as a child of this node
         mutate object
         """
@@ -112,7 +114,7 @@ class AcabNode(DI.Node_i):
         node.set_parent(self)
         return node
 
-    def get(self, key:'str|Value|Node') -> Node:
+    def get(self, key:'str|Value_A|Node_A') -> Node_A:
         """ Get a node using a string, or a node itself """
         if isinstance(key, str) and key in self.children:
             return self.children[key]
@@ -122,7 +124,7 @@ class AcabNode(DI.Node_i):
         else:
             return self.children[key.key()]
 
-    def has(self, key:'str|Value|Node|None'=None) -> bool:
+    def has(self, key:'str|Value_A|Node_A|None'=None) -> bool:
         """ Question if this term has a particular child,
         by the simplest condition of whether there is a simple string
         mapping.
@@ -140,7 +142,7 @@ class AcabNode(DI.Node_i):
 
         return result
 
-    def remove(self, key:'str|Node') -> 'None|Node':
+    def remove(self, key:'str|Node_A') -> 'None|Node_A':
         """ Delete a child from this node, return success state
         mutate object
         """
@@ -155,7 +157,7 @@ class AcabNode(DI.Node_i):
 
         return result
 
-    def clear(self) -> list[Node]:
+    def clear(self) -> list[Node_A]:
         """ Remove all children from this node
         mutate object
         """
@@ -163,7 +165,7 @@ class AcabNode(DI.Node_i):
         self.children = {}
         return children
 
-    def set_parent(self, parent: Node):
+    def set_parent(self, parent: Node_A):
         """ Set the parent node to this node
         mutate object
         """
@@ -184,7 +186,7 @@ class AcabNode(DI.Node_i):
         return VF.sen(path) #type:ignore
 
 
-    def _default_setup(self, path: list[Node], *, data: dict[Any,Any], context: dict[Any,Any]):
+    def _default_setup(self, path: list[Node_A], *, data: dict[Any,Any], context: dict[Any,Any]):
         """ Called by a Semantics upon creation of a new node """
         pass
     def _update_node(self, path, data, context):

@@ -8,42 +8,46 @@ ProductionComponent : Pairs the Operator with bindings
 ProductionContainer : Groups Components together
 
 """
+from __future__ import annotations
+
 import logging as logmod
 from copy import deepcopy
-from dataclasses import InitVar, dataclass, field, replace, FrozenInstanceError
+from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from fractions import Fraction
 from re import Pattern
-from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence,
-                    Tuple, TypeVar, TypeAlias, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
+                    Iterator, Mapping, Match, MutableMapping, Sequence, Tuple,
+                    TypeAlias, TypeVar, cast)
 from uuid import UUID, uuid1
 from weakref import ref
 
-from acab.error.protocol import AcabProtocolError as APE
-from acab import types as AT
 import acab.core.defaults.value_keys as DS
+import acab.interfaces.value as VI
+from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.util.decorators.util import cache
-import acab.interfaces.value as VI
-from acab.core.util.part_implementations.instruction import InstructionProtocolsImpl
+from acab.core.util.part_implementations.instruction import \
+    InstructionProtocolsImpl
 from acab.core.util.part_implementations.value import ValueProtocolsImpl
-from acab.interfaces.value import ValueFactory as VF
 from acab.core.value.value_meta import ValueMeta
+from acab.error.protocol import AcabProtocolError as APE
+from acab.interfaces.value import ValueFactory as VF
 
-logging = logmod.getLogger(__name__)
-config = AcabConfig()
-
-value_meta = config.prepare("Imports.Targeted", "value_meta", actions=[config.actions_e.IMCLASS], default=ValueMeta)()
-
-Value_A       : TypeAlias = AT.Value
-Sen_A         : TypeAlias = AT.Sentence
-Instruction_A : TypeAlias = AT.Instruction
-Operator      : TypeAlias = AT.Operator
-Container     : TypeAlias = AT.Container
-PStructure    : TypeAlias = AT.ProductionStructure
-ValueData     : TypeAlias = AT.ValueData
+if TYPE_CHECKING:
+    Value_A       : TypeAlias = AT.Value
+    Sen_A         : TypeAlias = AT.Sentence
+    Instruction_A : TypeAlias = AT.Instruction
+    Operator      : TypeAlias = AT.Operator
+    Container     : TypeAlias = AT.Container
+    PStructure    : TypeAlias = AT.ProductionStructure
+    ValueData     : TypeAlias = AT.ValueData
 
 T = TypeVar('T')
+
+logging    = logmod.getLogger(__name__)
+config     = AcabConfig()
+value_meta = config.prepare("Imports.Targeted", "value_meta", actions=[config.actions_e.IMCLASS], default=ValueMeta)()
+
 
 @APE.assert_implements(VI.Instruction_i)
 class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_meta):
@@ -94,6 +98,13 @@ class ProductionContainer(Instruction):
     @property
     def clauses(self):
         return self.value
+
+    def __lshift__(self, other):
+        if other is None:
+            return self
+
+        assert(isinstance(other, VI.Sentence_i))
+        return self.copy(value=self.value + [other])
 
 @APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True, repr=False)

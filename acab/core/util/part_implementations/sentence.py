@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
 from functools import reduce
 from re import Pattern
-from typing import (Any, Callable, ClassVar, Collection, Generic, Iterable,
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection, Generic, Iterable,
                     Iterator, Mapping, Match, MutableMapping, Sequence, Tuple,
                     Type, TypeAlias, TypeVar, cast)
 from uuid import UUID, uuid1
@@ -25,19 +27,20 @@ from acab.interfaces.value import ValueFactory
 
 logging        = logmod.getLogger(__name__)
 
+if TYPE_CHECKING:
+    Value_A       : TypeAlias = AT.Value
+    Sen_A         : TypeAlias = AT.Sentence
+    Instruction_A : TypeAlias = AT.Instruction
+    ValueData     : TypeAlias = str
+
+T              = TypeVar('T', bound=AT.ValueCore)
+
 config         = AcabConfig()
 BIND_SYMBOL    = config.attr.Symbols.BIND
 FALLBACK_MODAL = config.attr.Symbols.FALLBACK_MODAL
 
-UUID_CHOP  = bool(int(config.attr.Print.Data.UUID_CHOP))
+UUID_CHOP  = config.prepare("Print.Data", "UUID_CHOP", _type=bool)
 ANON_VALUE = config.attr.Symbols.ANON_VALUE
-
-T              = TypeVar('T', bound=AT.ValueCore)
-
-Value_A       : TypeAlias = AT.Value
-Sen_A         : TypeAlias = AT.Sentence
-Instruction_A : TypeAlias = AT.Instruction
-ValueData     : TypeAlias = str
 
 class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p):
     """
@@ -84,12 +87,19 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
 
 
     def key(self, suffix=None) -> str:
-        words = [f"{x}" for x in self.words]
+        # if self.is_var:
+        if len(self) == 1:
+            return self[0].key()
+
+        words = [f"{x.key()}" for x in self.words]
         key   = "[{}]".format(FALLBACK_MODAL.join(words))
         if suffix is None:
             return key
 
-        key_mod = key[:-1] + (FALLBACK_MODAL if bool(self) else "") + suffix + "]"
+        suffix_key = suffix if isinstance(suffix, str) else suffix.key()
+
+        # Splice the suffix in
+        key_mod = key[:-1] + (FALLBACK_MODAL if bool(self) else "") + suffix_key + "]"
         return key_mod
 
     def copy(self, **kwargs) -> Sen_A:
@@ -169,15 +179,21 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
     def __iter__(self):
         return iter(self.words)
 
-    def __getitem__(self, i):
+    def __getitem__(self, i,):
         match i:
             case slice():
-                return ValueFactory.sen(self.words.__getitem__(i), data=self.data)
+                return self.copy(value=self.words.__getitem__(i))
             case str():
                 matches = [x for x in self.words if x.name == i]
                 return matches[0]
             case int():
                 return self.words.__getitem__(i)
+            case tuple() if len(i) == 1 and isinstance(i[0], slice):
+                return self.copy(value=self.words.__getitem__(i[0]))
+            case tuple() if all([isinstance(x, slice) for x in i]):
+                words = self.words.__getitem__(i[0])
+                words.append(words.pop()[i[1:]])
+                return self.copy(value=words)
             case _:
                 raise ValueError("Unrecognised argument to Sentence.__getitem__", i)
 

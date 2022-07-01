@@ -2,20 +2,25 @@
 
 import logging as logmod
 from os.path import abspath, exists, expanduser, split
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast, TypeAlias)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
+                    Iterable, Iterator, List, Mapping, Match, MutableMapping,
+                    Optional, Sequence, Set, Tuple, TypeAlias, TypeVar, Union,
+                    cast)
 
-from acab import types as AT
 from acab.core.util.decorators.engine import EnsureEngineInitialised
-from acab.error.semantic import AcabSemanticException
 from acab.error.parse import AcabParseException
+from acab.error.semantic import AcabSemanticException
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
 
 logging = logmod.getLogger(__name__)
 
-ModuleFragment : TypeAlias = AT.ModuleFragment
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    ModuleFragment : TypeAlias = AT.ModuleFragment
+else:
+    ModuleFragment = "ModuleFragment"
 
 class AcabEngineImpl(AcabEngine_i):
     @EnsureEngineInitialised

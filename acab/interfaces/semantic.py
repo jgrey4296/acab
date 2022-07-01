@@ -26,34 +26,33 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
                     TypeVar, cast, final, overload, runtime_checkable)
 
-if TYPE_CHECKING:
-    # tc only imports
-    pass
-
 logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
-from acab import types as AT
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.protocols import handler_system as HSubP
 from acab.interfaces.value import Sentence_i, Value_i
 
-Value              : TypeAlias = "AT.Value[AT.ValueCore]"
-Sen_A              : TypeAlias = AT.Sentence
-Instruction        : TypeAlias = AT.Instruction
-Struct_A           : TypeAlias = "AT.DataStructure[AT.Node]"
-Node               : TypeAlias = AT.Node
-Engine             : TypeAlias = AT.Engine
-CtxSet             : TypeAlias = AT.CtxSet
-CtxIns             : TypeAlias = AT.CtxIns
-Handler_A          : TypeAlias = AT.Handler
-ProductionOperator : TypeAlias = "AT.Operator[AT.TValCore]"
-ModuleFragment     : TypeAlias = AT.ModuleFragment
-StructureSemantics : TypeAlias = AT.StructureSemantics
-ValueSemantics     : TypeAlias = AT.ValueSemantics
-StatementSemantics : TypeAlias = AT.StatementSemantics
-SemanticSystem     : TypeAlias = AT.SemanticSystem
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    Value              : TypeAlias = "AT.Value[AT.ValueCore]"
+    Sen_A              : TypeAlias = AT.Sentence
+    Instruction        : TypeAlias = AT.Instruction
+    Struct_A           : TypeAlias = "AT.DataStructure[AT.Node]"
+    Node               : TypeAlias = AT.Node
+    Engine             : TypeAlias = AT.Engine
+    CtxSet             : TypeAlias = AT.CtxSet
+    CtxIns             : TypeAlias = AT.CtxIns
+    Handler_A          : TypeAlias = AT.Handler
+    ProductionOperator : TypeAlias = "AT.Operator[AT.TValCore]"
+    ModuleFragment     : TypeAlias = AT.ModuleFragment
+    StructureSemantics : TypeAlias = AT.StructureSemantics
+    ValueSemantics     : TypeAlias = AT.ValueSemantics
+    StatementSemantics : TypeAlias = AT.StatementSemantics
+    SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 
 # Protocols  ##################################################################

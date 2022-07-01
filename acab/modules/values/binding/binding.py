@@ -43,7 +43,7 @@ class Bind(Bind_i):
         Bind.total_call     = 0
 
         logging.debug("Binding: {} with {}", val, bindings)
-        assert(isinstance(val, VI.Value_i))
+        assert(isinstance(val, VI.Value_i)), val
         assert(isinstance(bindings, CI.ContextInstance_i))
 
         result = _bind_top(val, bindings,)

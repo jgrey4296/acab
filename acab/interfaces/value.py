@@ -11,8 +11,8 @@ import logging as logmod
 from dataclasses import dataclass, field
 from functools import reduce
 from re import Pattern
-from typing import (Any, ClassVar, Collection, Container, Final, Generic,
-                    Literal, Mapping, Match, MutableMapping, Protocol,
+from typing import (TYPE_CHECKING, Any, ClassVar, Collection, Container, Final,
+                    Generic, Literal, Mapping, Match, MutableMapping, Protocol,
                     Sequence, Sized, Tuple, Type, TypeAlias, TypeVar, cast,
                     runtime_checkable)
 from uuid import UUID, uuid1
@@ -24,24 +24,26 @@ from acab.core.config.config import AcabConfig
 from acab.core.util.singletons import SingletonMeta
 from acab.error.config import AcabConfigException
 
+if TYPE_CHECKING:
+    # tc only imports
+    GenFunc     : TypeAlias = AT.fns.GenFunc
+    Sen_A       : TypeAlias = AT.Sentence
+    Sen_t       : TypeAlias = Type[Sen_A]
+    CtxInst_A   : TypeAlias = AT.CtxIns
+    Value_A     : TypeAlias = "AT.Value[AT.ValueCore_t]"
+    Value_t     : TypeAlias = Type[Value_A]
+    Variable    : TypeAlias = Value_A
+    Tag         : TypeAlias = "AT.Value[str]"
+    Instruction : TypeAlias = AT.Instruction
+    ValueData   : TypeAlias = str
+    SemSys      : TypeAlias = AT.SemanticSystem
+
+
 __all__ = ['Value_i', 'Instruction_i', 'Sentence_i', 'Operator_i', 'Action_i']
 
 logging       = logmod.getLogger(__name__)
 
 config        = AcabConfig()
-
-GenFunc     : TypeAlias = AT.fns.GenFunc
-Sen_A       : TypeAlias = AT.Sentence
-Sen_t       : TypeAlias = Type[Sen_A]
-Value_A     : TypeAlias = "AT.Value[AT.ValueCore_t]"
-Value_t     : TypeAlias = Type[Value_A]
-Variable    : TypeAlias = Value_A
-Tag         : TypeAlias = "AT.Value[str]"
-Instruction : TypeAlias = AT.Instruction
-ValueData   : TypeAlias = str
-# extended in AcabValue to also have Value_p:
-
-SemSys      : TypeAlias = AT.SemanticSystem
 
 T     = TypeVar('T', bound=AT.ValueCore_t, covariant=True)
 T_Cov = TypeVar('T_Cov', covariant=True)
@@ -49,6 +51,12 @@ T_Cov = TypeVar('T_Cov', covariant=True)
 # Data ########################################################################
 @dataclass(frozen=True, repr=False, eq=False) #type:ignore[misc]
 class Value_i(VSubP.Value_p, Generic[T]):
+    """
+    The Value Interface used throughout ACAB.
+    Values pair a reference name with a value,
+    and assorted meta data.
+    """
+
     value  : T                    = field()
     name   : str                  = field()
     params : list[Variable]       = field(default_factory=list)
@@ -81,6 +89,9 @@ class Value_i(VSubP.Value_p, Generic[T]):
 
 @dataclass(frozen=True, repr=False, eq=False) #type:ignore[misc]
 class Instruction_i(Value_i[list[Any]], VSubP.Instruction_p):
+    """
+    Instructions are Value's which are associated with a semantics
+    """
     breakpoint : bool        = field(init=False, default=False)
     # TODO add listener field for similar to breakpoint
 
@@ -88,6 +99,11 @@ class Instruction_i(Value_i[list[Any]], VSubP.Instruction_p):
 
 @dataclass(frozen=True, repr=False, eq=False) #type:ignore[misc]
 class Sentence_i(Instruction_i, VSubP.Sentence_p):
+    """
+    Sentences are a special case of Instruction,
+    holding a sequence of Values,
+    and passing data between semantics
+    """
 
     def __post_init__(self): pass
 

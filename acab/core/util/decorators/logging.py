@@ -1,18 +1,20 @@
 """
 Utility decorators
 """
-from functools import wraps
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
+from __future__ import annotations
+
 import logging as logmod
+from functools import wraps
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+
 logging = logmod.getLogger(__name__)
 
-from acab import types as AT
-
-Structure = AT.Structure
-Sentence  = AT.Sentence
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    pass
 
 def LogHelper(prefix, level=logmod.DEBUG):
     """

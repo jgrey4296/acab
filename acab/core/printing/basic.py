@@ -11,13 +11,8 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 from unittest.mock import DEFAULT
 from uuid import UUID, uuid1
 
-if TYPE_CHECKING:
-    # tc only imports
-    pass
-
 import acab.core.util.part_implementations.handler_system as HS
 from acab import AcabConfig
-from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.defaults.print_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
@@ -27,12 +22,18 @@ from acab.interfaces import handler_system as HSi
 from acab.interfaces import printing as PI
 from acab.interfaces.value import Sentence_i, Value_i
 
+if TYPE_CHECKING:
+    # tc only imports
+    from acab import types as AT
+    ModuleFragment   : TypeAlias = AT.ModuleFragment
+    GenFunc          : TypeAlias = AT.fns.GenFunc
+else:
+    ModuleFragment = "ModuleFragment"
+    GenFunc        = "Callable"
+
 logging                      = logmod.getLogger(__name__)
 config                       = AcabConfig()
-DEFAULT_HANDLER_SIGNAL       = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-Sentence         : TypeAlias = AT.Sentence
-ModuleFragment   : TypeAlias = AT.ModuleFragment
-GenFunc          : TypeAlias = AT.fns.GenFunc
+DEFAULT_HANDLER_SIGNAL       = config.attr.Handler.System.DEFAULT_SIGNAL
 
 REGISTER = "REGISTER"
 
@@ -49,7 +50,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
             default = HS.Handler(DEFAULT_HANDLER_SIGNAL, func=lambda x, data=None: str(x))
             self.register(default) #type:ignore[no-untyped-call]
 
-    def __call__(self, *args:Sentence) -> str:
+    def __call__(self, *args:Sentence_i) -> str:
         return self.pprint(*args)
 
     def __repr__(self):
@@ -62,7 +63,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
 
         return None
 
-    def pprint(self, *args:Sentence) -> str:
+    def pprint(self, *args:Sentence_i) -> str:
         """
         The Core Pretty Printer.
         Process a Stack, looking up specific handlers for the top,
@@ -161,7 +162,7 @@ class PrintSemanticsImpl(HS.HandlerComponent, PI.PrintSemantics_i):
 
         return curr
 
-    def verify(self, instruction:AT.Value) -> bool:
+    def verify(self, instruction:Value_i) -> bool:
         return True
 
 

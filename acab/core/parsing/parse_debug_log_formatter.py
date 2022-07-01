@@ -7,7 +7,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
-from acab.core.util.log_formatter import AcabLogRecord, AcabLogFormatter, LEVEL_MAP, COLOUR_RESET, SimpleLogColour
+
+from acab.core.util.log_formatter import (COLOUR_RESET, LEVEL_MAP,
+                                          AcabLogFormatter, AcabLogRecord,
+                                          SimpleLogColour)
 
 
 class AcabParseDebugFormat(AcabLogFormatter):

@@ -10,42 +10,39 @@ from os import listdir
 from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
                      splitext)
 from re import Pattern
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Protocol,
-                    Sequence, Set, Tuple, TypeAlias, TypeVar, Union, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
+                    Iterable, Iterator, List, Mapping, Match, MutableMapping,
+                    Optional, Protocol, Sequence, Set, Tuple, TypeAlias,
+                    TypeVar, Union, cast)
 from uuid import UUID, uuid1
 from weakref import ref
 
-logging = logmod.getLogger(__name__)
-
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
-from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.value.util import name_sieve_fns
 from acab.core.util.decorators.util import cache
 from acab.core.util.singletons import SingletonMeta
+from acab.core.value.util import name_sieve_fns
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
+from acab import types as AT
 
-logging        = logmod.getLogger(__name__)
+if TYPE_CHECKING:
+    ValueData     : TypeAlias = str
 
-config         = AcabConfig()
-BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
-
-UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
-
+Value_A       : TypeAlias = VI.Value_i
+Sen_A         : TypeAlias = VI.Sentence_i
+Instruction_A : TypeAlias = VI.Instruction_i
 T              = TypeVar('T', bound=AT.ValueCore)
 C              = TypeVar('C', bound=type)
 
-Value_A       : TypeAlias = "AT.Value[AT.ValueCore_t]"
-Sen_A         : TypeAlias = AT.Sentence
-Instruction_A : TypeAlias = AT.Instruction
-ValueData     : TypeAlias = str
-
 ProtocolMeta = type(Protocol)
 
+logging        = logmod.getLogger(__name__)
+config         = AcabConfig()
+BIND_SYMBOL    = config.attr.Symbols.BIND
+FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+UUID_CHOP      = config.prepare("Print.Data", "UUID_CHOP", _type=bool)()
 
 class ValueMeta(ProtocolMeta):
     """ Utility Meta Class for building values """

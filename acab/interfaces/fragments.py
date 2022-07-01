@@ -16,12 +16,16 @@ from weakref import ref
 
 logging = root_logger.getLogger(__name__)
 
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     # tc only imports
-    pass
+    from acab import types as AT
+    Handler_A       : TypeAlias = AT.Handler
+    ModuleFragment  : TypeAlias = AT.ModuleFragment
+    HandlerSpec_A   : TypeAlias = AT.HandlerSpec
+    HandlerSystem_A : TypeAlias = AT.HandlerSystem
 
 import acab.interfaces.handler_system as HS
-from acab import types as AT
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.printing import PrintSystem_i
@@ -29,10 +33,6 @@ from acab.interfaces.protocols import handler_system as HSubP
 from acab.interfaces.semantic import SemanticSystem_i
 from acab.interfaces.value import Sentence_i, Value_i, Action_i, Operator_i
 
-Handler_A          : TypeAlias = AT.Handler
-ModuleFragment     : TypeAlias = AT.ModuleFragment
-HandlerSpec_A      : TypeAlias = AT.HandlerSpec
-HandlerSystem_A   : TypeAlias = AT.HandlerSystem
 
 @runtime_checkable
 class HandlerFragment_p(Collection["HandlerSpec_A|Handler_A"], Protocol):

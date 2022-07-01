@@ -10,9 +10,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import acab
-from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
-from acab.error.config import AcabConfigException
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import acab
+    from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
+    from acab.error.config import AcabConfigException
 
 
 class ConfigTests(unittest.TestCase):

@@ -7,27 +7,31 @@ also also includes the modality enum, core type primitives,
 and production structure keys
 
 """
-from acab import AcabConfig
+from __future__ import annotations
+
 from enum import Enum
+from typing import Any
+
+from acab import AcabConfig
 
 config = AcabConfig()
 
 DATA_STRUCT_E : Enum = config.prepare("Value.Structure"      , _type=Enum)()
 MODALITIES_E  : Enum = config.prepare("MODAL"                , _type=Enum)()
 
-ARG            = DATA_STRUCT_E.ARG
-AT_BIND        = DATA_STRUCT_E.AT_BIND
-BIND           = DATA_STRUCT_E.BIND
-CONSTRAINT     = DATA_STRUCT_E.CONSTRAINT
-NEGATION       = DATA_STRUCT_E.NEGATION
-PARAMS         = DATA_STRUCT_E.PARAMS
-QUERY          = DATA_STRUCT_E.QUERY
-QUERY_FALLBACK = DATA_STRUCT_E.QUERY_FALLBACK
-SEMANTIC_HINT  = DATA_STRUCT_E.SEMANTIC_HINT
-SEN            = DATA_STRUCT_E.SEN
-TAG            = DATA_STRUCT_E.TAG
-TYPE_INSTANCE  = DATA_STRUCT_E.TYPE_INSTANCE
-FLATTEN        = DATA_STRUCT_E.FLATTEN
+ARG             = DATA_STRUCT_E.ARG
+AT_BIND         = DATA_STRUCT_E.AT_BIND
+BIND            = DATA_STRUCT_E.BIND
+CONSTRAINT      = DATA_STRUCT_E.CONSTRAINT
+NEGATION        = DATA_STRUCT_E.NEGATION
+PARAMS          = DATA_STRUCT_E.PARAMS
+QUERY           = DATA_STRUCT_E.QUERY
+QUERY_FALLBACK  = DATA_STRUCT_E.QUERY_FALLBACK
+SEMANTIC_HINT   = DATA_STRUCT_E.SEMANTIC_HINT
+SEN             = DATA_STRUCT_E.SEN
+TAG             = DATA_STRUCT_E.TAG
+TYPE_INSTANCE   = DATA_STRUCT_E.TYPE_INSTANCE
+FLATTEN         = DATA_STRUCT_E.FLATTEN
 
 # Core elements of value data
 # TODO move this out of Value.Structure

@@ -2,29 +2,27 @@
 """
 Class based constructor for the core acab parser
 """
-
 from __future__ import annotations
-from typing import Tuple, Any
-from typing import Callable, Iterator, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic, TypeAlias
-from typing import TYPE_CHECKING, Protocol, TypeGuard
-from typing import Final, final, overload, runtime_checkable
+
 import abc
-from dataclasses import dataclass, field, InitVar
+from dataclasses import InitVar, dataclass, field
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
+                    cast, final, overload, runtime_checkable)
+
 import pyparsing as pp
+from acab.core.config.config import AcabConfig
+from acab.core.parsing import funcs as Pfunc
+from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
+                                      component_gap, emptyLine, gap, ln, op,
+                                      opLn, orm, s, s_key, s_lit, zrm)
+from acab.core.parsing.parsers import MODAL, SIMPLE_VALUE, VALBIND
 
 if TYPE_CHECKING:
     # tc only imports
     pass
 
-
-from acab.core.parsing import funcs as Pfunc
-from acab.core.config.config import AcabConfig
-from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
-                                      component_gap, emptyLine, gap, ln, op,
-                                      opLn, orm, s, s_key, s_lit, zrm)
-from acab.core.parsing.parsers import MODAL, VALBIND, SIMPLE_VALUE
 config = AcabConfig()
 
 

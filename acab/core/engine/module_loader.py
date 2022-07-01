@@ -14,6 +14,11 @@ import importlib
 
 logging = logmod.getLogger(__name__)
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # tc only imports
+    pass
+
 from acab import AcabConfig
 from acab.core.engine.util import (applicable, ensure_handler, needs_init,
                                    prep_op_path)

@@ -110,7 +110,7 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(ctx_r.x, "b")
 
 
-    def test_unify_types(self):
+    def test_unify_non_var_types(self):
         sen1 = self.dsl("a.test.sentence")[0]
         sen2 = self.dsl("a.test.sentence(::blah)")[0]
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
@@ -170,7 +170,7 @@ class UnifierTests(unittest.TestCase):
         with self.assertRaises(TE.AcabTypingException):
             ctx_r = tuf.type_unify(sen2, sen1, CtxIns())
 
-    def test_types_repeated_conflict(self):
+    def test_types_repeated_conflict_2(self):
         sen1 = self.dsl("a.test.val(::$x).val(::$x)")[0]
         sen2 = self.dsl("a.test.val(::blah).val(::bloo)")[0]
 
@@ -397,6 +397,7 @@ class UnifierTests(unittest.TestCase):
         sen1 = self.dsl("$x(♭)")[0]
         sen2 = self.dsl("a.b.c")[0]
         result = tuf.type_unify(sen1, sen2, CtxIns())
+
         sen1c = tuf.type_unify.apply(sen1, result)
         self.assertEqual(sen1c, sen2)
 
@@ -453,8 +454,8 @@ class UnifierTests(unittest.TestCase):
         result = tuf.type_unify(sen1, sen2, CtxIns())
         sen1c = tuf.type_unify.apply(sen1, result)
         self.assertEqual(sen1c[-1].type, "_:test")
-
         result2 = tuf.type_unify(sen3, sen4, result)
+
         self.assertEqual(result2['z^type'], "_:bloo")
         self.assertEqual(result2['x^type'], "_:test")
         self.assertEqual(result2['y^type'], "_:other")
@@ -511,15 +512,14 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(sen1c[-1].type, "_:test.blah")
         result2 = tuf.type_unify(sen3, sen4, result)
 
+
         self.assertEqual(result2.y, "b")
         self.assertEqual(result2['y^type'], "_:blah")
         self.assertEqual(result2.x, "c")
         self.assertEqual(result2['x^type'], "_:test.blah")
         self.assertEqual(result2.a, "_:blah")
-        self.assertEqual(result2.w, "y")
-        self.assertEqual(result2[result2.w], "b")
-        self.assertEqual(result2['w^type'], "_:a")
-        self.assertEqual(result2[result2['w^type']], "_:blah")
+        self.assertEqual(result2.w, "b")
+        self.assertEqual(result2['w^type'], "_:blah")
         self.assertEqual(result2.r, "z")
         self.assertEqual(result2['z^type'], "_:bloo")
         self.assertEqual(result2['r^type'], "_:bloo")
@@ -585,7 +585,9 @@ class UnifierTests(unittest.TestCase):
         sen1 = self.dsl("[[$x]]")[0]
         sen2 = self.dsl("[[$y(::blah)]]")[0]
         result = tuf.type_unify(sen1, sen2, CtxIns())
+
         sen1c = tuf.apply_types_onto_sen(sen1, result)
+
         self.assertEqual(sen1c, sen1)
         self.assertEqual(sen1c[0][0].type, "_:blah")
     def test_minimal_var_chain(self):
@@ -603,9 +605,6 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(res3.z, "x")
         self.assertEqual(res3.b, "x")
 
-
-    def test_minimal_type_var_chain(self):
-        pass
 
     def test_var_boundary_crossing(self):
         pass

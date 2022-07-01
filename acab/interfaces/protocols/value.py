@@ -11,30 +11,28 @@ import collections.abc as cABC
 from dataclasses import dataclass, field
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection,
                     Generic, Iterable, Iterator, Literal, Mapping, Match,
-                    MutableMapping, Protocol, Sequence, Tuple, Type, TypeAlias,
-                    TypeGuard, TypeVar, cast, runtime_checkable, NewType)
+                    MutableMapping, NewType, Protocol, Sequence, Tuple, Type,
+                    TypeAlias, TypeGuard, TypeVar, cast, runtime_checkable)
 from uuid import UUID, uuid1
-
-if TYPE_CHECKING:
-    # tc only imports
-    pass
 
 from acab import types as AT
 from acab.error.config import AcabConfigException
 
+if TYPE_CHECKING:
+    # tc only imports
+    GenFunc       : TypeAlias = AT.fns.GenFunc
+    Instruction_A : TypeAlias = AT.Instruction
+    SemSys_A      : TypeAlias = AT.SemanticSystem
+    Sen_A         : TypeAlias = AT.Sentence
+    Sen_t         : TypeAlias = Type[Sen_A]
+    ValueData     : TypeAlias = str
+    Value_A       : TypeAlias = "AT.Value[AT.ValueCore_t]"
+    Value_t       : TypeAlias = Type[Value_A]
+    Variable      = NewType('Variable', Value_A)
+else:
+    Value_A = "Value_i"
+
 T     = TypeVar('T')
-
-Value_A       : TypeAlias = "AT.Value[AT.ValueCore_t]"
-Value_t       : TypeAlias = Type[Value_A]
-Sen_A         : TypeAlias = AT.Sentence
-Sen_t         : TypeAlias = Type[Sen_A]
-Instruction_A : TypeAlias = AT.Instruction
-Variable      = NewType('Variable', Value_A)
-ValueData     : TypeAlias = str
-GenFunc       : TypeAlias = AT.fns.GenFunc
-SemSys_A      : TypeAlias = AT.SemanticSystem
-
-
 T_Cov = TypeVar('T_Cov', covariant=True)
 
 @dataclass(frozen=True)
@@ -131,7 +129,7 @@ class Value_p(ValueBasics_p, ValueMetaData_p, VariableTests_p, Protocol):
 
 
 @runtime_checkable
-class Sentence_p(Value_p, Collection[Value_p], AcabSentenceable_p, Protocol):
+class Sentence_p(Value_p, Collection[Value_A], AcabSentenceable_p, Protocol):
     @abc.abstractmethod
     def __getitem__(self, i:int) -> Value_A|Sen_A: pass
     @abc.abstractmethod

@@ -51,7 +51,7 @@ def setup(location:str=None,
     from acab.core.config.config import AcabConfig
     from acab.core.config.structure_hook import structure_hook
     from acab.core.config.modal_hook import modal_hook
-    from acab.core.config.misc_hooks import attr_hook, packrat_hook
+    from acab.core.config.misc_hooks import attr_hook, pyparsing_hook
     AcabMinimalLogRecord.install()
     if format_logs:
         from acab.core.config.log_hook import log_hook
@@ -64,7 +64,7 @@ def setup(location:str=None,
     elif not isinstance(location, list):
         location = [location]
 
-    config = AcabConfig(*location, hooks=[log_hook, modal_hook, attr_hook, packrat_hook])
+    config = AcabConfig(*location, hooks=[log_hook, modal_hook, attr_hook, pyparsing_hook])
 
 
     if not rich_exc:

@@ -144,50 +144,45 @@ class TestTypingStatement(unittest.TestCase):
         self.assertEqual(result, "⊢ @x ∈ $y")
 
     def test_op_simple_check(self):
-        trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y -> $z")[0]
-
-        trans_use = self.dsl['transform.core'].parse_string("λan.op.def test.sen val.$var -> $y")[0]
-        trans_sen = trans_use[1:]
-
-        ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
-        self.assertEqual(ctx['x__type'], "_:test.sen")
-        self.assertEqual(ctx['y__type'], "_:val.var")
-        self.assertEqual(ctx.y, 'z__type')
+        trans_sen = self.dsl['transform.core'].parse_string("λan.op.def test.sen val.$var -> $y")[0][1:]
+        trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y -> $z")[0][0]
+        ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def], None, ctxs=CtxSet())
+        self.assertEqual(ctx['x__right'], "_:test.sen")
+        self.assertEqual(ctx['y__right'], "_:val.var")
+        self.assertEqual(ctx['z__right'], 'y')
 
     def test_op_call(self):
+        trans_use= self.dsl['transform.core'].parse_string("λan.op.def test.sen val.$var -> $y")[0]
         trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x(::SENTENCE.blah) $y(::SENTENCE.bloo) -> $z(::aweg)")[0]
-
-        trans_use = self.dsl['transform.core'].parse_string("λan.op.def test.sen val.$var -> $y")[0]
-        trans_sen = trans_use[1:]
+        # Mock the query of the operator
         mock_ctx = CtxSet()
         mock_ctx[0].set_current_node(AcabNode(trans_def))
         semsys_mock = mock.MagicMock()
         semsys_mock.return_value = mock_ctx
         ctx = CheckStatementFragment().op_check(trans_use, semsys_mock, ctxs=CtxSet())
-        self.assertEqual(ctx['x__type'], "_:test.sen")
-        self.assertEqual(ctx['y__type'], "_:val.var")
-        self.assertEqual(ctx.y, 'z__type')
+        applied = tuf.apply_types_onto_sen(trans_use[1:], ctx)
+
+        self.assertEqual(ctx['x__right'], "_:test.sen")
+        self.assertEqual(ctx['y__right'], "_:val.var")
+        self.assertEqual(ctx['z__right'], 'y')
+        self.assertEqual(applied[1][1].type, "_:aweg")
+
 
     def test_op_param_apply_check(self):
-        trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x(::blah) $y(::bloo) -> $z")[0]
+        trans_sen= self.dsl['transform.core'].parse_string("λan.op.def $a $b -> $y")[0][1:]
+        trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x(::blah) $y(::bloo) -> $z")[0][0]
+        ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def], None, ctxs=CtxSet())
 
-        trans_use = self.dsl['transform.core'].parse_string("λan.op.def $a $b -> $y")[0]
-        trans_sen = trans_use[1:]
-        ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
-
-        self.assertEqual(ctx.a.type, "_:blah")
-        self.assertEqual(ctx.b.type, "_:bloo")
-        self.assertEqual(ctx.y.type, "_:ATOM")
+        self.assertEqual(ctx['a^type'], "_:blah")
+        self.assertEqual(ctx['b^type'], "_:bloo")
+        self.assertEqual(ctx['y^type'], "_:ATOM")
 
 
     def test_op_type_return_check(self):
-        trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y -> $z(::blah)")[0]
-
-        trans_use = self.dsl['transform.core'].parse_string("λan.op.def test.sen val.$var -> $y")[0]
-        trans_sen = trans_use[1:]
-        ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
-        self.assertEqual(ctx[str(trans_sen.flatten())].value, trans_def[0][1][1].type)
-        self.assertEqual(ctx.y.type, "_:blah")
+        trans_sen = self.dsl['transform.core'].parse_string("λan.op.def test.sen val.$var -> $y")[0][1:]
+        trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y -> $z(::blah)")[0][0]
+        ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def], None, ctxs=CtxSet())
+        self.assertEqual(ctx['y^type'], "_:blah")
 
     def test_op_type_no_return(self):
         trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y")[0]
@@ -195,16 +190,14 @@ class TestTypingStatement(unittest.TestCase):
         trans_use = self.dsl['action.core'].parse_string("λan.op.def test.sen val.$var")[0]
         trans_sen = trans_use[1:]
         ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
-        self.assertEqual(ctx.x__type, "_:test.sen")
-        self.assertEqual(ctx.y__type, "_:val.var")
+        self.assertEqual(ctx.x__right, "_:test.sen")
+        self.assertEqual(ctx.y__right, "_:val.var")
 
     def test_op_type_return_use_specified(self):
-        trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y -> $z")[0]
-
-        trans_use = self.dsl['transform.core'].parse_string("λan.op.def test.sen val.$var -> $y(::blah)")[0]
-        trans_sen = trans_use[1:]
-        ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
-        self.assertEqual(ctx[trans_sen.key()].value, "_:blah")
+        trans_sen= self.dsl['transform.core'].parse_string("λan.op.def test.sen val.$var -> $y(::blah)")[0][1:]
+        trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x $y -> $z")[0][0]
+        ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def], None, ctxs=CtxSet())
+        self.assertEqual(ctx['y^type'], "_:blah")
 
 
     def test_op_type_return_check_fail(self):
@@ -220,7 +213,7 @@ class TestTypingStatement(unittest.TestCase):
         sen2 = self.dsl("a.b.$x")[0]
 
         ctx = CheckStatementFragment().structural_check([sen1], [sen2], None, ctxs=CtxSet())
-        self.assertEqual(ctx.x__type, "c")
+        self.assertEqual(ctx.x__right, "c")
 
     def test_structural_check_other_direction(self):
         sen1 = self.dsl("a.b.$x")[0]
@@ -236,13 +229,13 @@ class TestTypingStatement(unittest.TestCase):
 
         ctx = CheckStatementFragment().structural_check([sen1], [sen2], None, ctxs=CtxSet())
         self.assertIn("[a.b.c]", ctx)
-        self.assertEqual(ctx.x__type,  "c")
+        self.assertEqual(ctx.x__right,  "c")
         self.assertEqual(ctx['[a.b.c]'].value, "_:test")
 
     def test_structural_bind_entire(self):
         sen1 = self.dsl("$a")[0]
         sen2 = self.dsl("a.b.$x(::test)")[0]
-        sen2_re = rectx(sen2, ctx={}, name_suff="_type")
+        sen2_re = rectx(sen2, ctx={}, name_suff="_right")
         ctx = CheckStatementFragment().structural_check([sen1], [sen2], None, ctxs=CtxSet())
         self.assertEqual(ctx.a, sen2_re)
 
@@ -261,24 +254,77 @@ class TestTypingStatement(unittest.TestCase):
         self.assertIn("[a.b.c]", ctx)
         self.assertEqual(ctx['[a.b.c]'].value, "_:test")
 
-    @unittest.expectedFailure
+
+    def test_sequence(self):
+        sen1 = self.dsl("a.b.$x")[0]
+        sen2 = self.dsl("a.b.$x(::test)")[0]
+
+        ctx = CheckStatementFragment().structural_check([sen1], [sen2], None, ctxs=CtxSet())
+        self.assertEqual(ctx['x^type'], "_:test")
+        next_ctxs = CtxSet().push(ctx)
+        next_ctxs.pop()
+
+        sen3 = self.dsl("a.different.sentence.$x")[0]
+        sen4 = self.dsl("a.different.sentence.$x(::test)")[0]
+        ctx_updated = CheckStatementFragment().structural_check([sen3], [sen4], None, ctxs=next_ctxs)
+        self.assertEqual(ctx_updated['x^type'], "_:test")
+
+
+    def test_sequence_fail(self):
+        sen1 = self.dsl("a.b.$x")[0]
+        sen2 = self.dsl("a.b.$x(::test)")[0]
+
+        ctx = CheckStatementFragment().structural_check([sen1], [sen2], None, ctxs=CtxSet())
+        self.assertEqual(ctx['x^type'], "_:test")
+        next_ctxs = CtxSet().push(ctx)
+        next_ctxs.pop()
+
+        sen3 = self.dsl("a.different.sentence.$x")[0]
+        sen4 = self.dsl("a.different.sentence.$x(::blah)")[0]
+        with self.assertRaises(TE.AcabTypingException):
+            CheckStatementFragment().structural_check([sen3], [sen4], None, ctxs=next_ctxs)
+
+    def test_sequence2(self):
+        sen1 = self.dsl['transform.core'].parse_string("λan.op.def test.sen $var -> $y")[0]
+        sen2 = self.dsl['transform.core'].parse_string("λan.op.def $x(::SENTENCE) $y(::blah) -> $z(::bloo)")[0]
+        sen3 = self.dsl['transform.core'].parse_string("λa.diff.def $y a.b.c -> $z(::final)")[0]
+        sen4 = self.dsl['transform.core'].parse_string("λa.diff.def $x(::bloo) $y(::blah) -> $z(::final)")[0]
+
+        ctx = CheckStatementFragment().structural_check([sen1], [sen2], None, ctxs=CtxSet())
+        # self.assertEqual(ctx.x__right.type, "_:SENTENCE")
+        next_ctxs = CtxSet().push(ctx)
+        next_ctxs.pop()
+        ctx_updated = CheckStatementFragment().structural_check([sen3], [sen4], None, ctxs=next_ctxs, data={'suffix' : "_right2"})
+
+        self.assertEqual(ctx_updated['var^type'], "_:blah")
+        self.assertEqual(ctx_updated['y^type'], "_:bloo")
+        self.assertEqual(ctx_updated['x__right2'], "y")
+        self.assertEqual(ctx_updated['x__right2^type'], "_:bloo")
+        self.assertEqual(ctx_updated['z^type'], "_:final")
+        self.assertEqual(ctx_updated['z__right2^type'], "_:final")
+
+
+
+
+
     def test_generalisation_with_vars(self):
         sen1 = self.dsl("a.b.c(::test.blah)")[0]
         sen2 = self.dsl("a.b.$x(::test.$a)")[0]
 
         ctx = CheckStatementFragment().structural_check([sen1], [sen2], None, ctxs=CtxSet())
         self.assertIn("[a.b.c]", ctx)
-        self.assertEqual(ctx['[a.b.c]'].value, "_:test")
+        self.assertEqual(ctx['[a.b.c]'].value, "_:test.blah")
+        self.assertEqual(ctx['x__right^type'], "_:test.blah")
+        self.assertEqual(ctx.x__right, "c")
 
 
-    @unittest.expectedFailure
-    def test_specialisation(self):
+    def test_specialisation_resistance(self):
         sen1 = self.dsl("a.b.c(::test)")[0]
         sen2 = self.dsl("a.b.$x(::test.bloo)")[0]
 
         ctx = CheckStatementFragment().structural_check([sen1], [sen2], None, ctxs=CtxSet())
         self.assertIn("[a.b.c]", ctx)
-        self.assertEqual(ctx['[a.b.c]'].value, "_:test.bloo")
+        self.assertEqual(ctx['[a.b.c]'].value, "_:test")
 
 
     @unittest.expectedFailure
@@ -490,9 +536,9 @@ class TestTypingStatement(unittest.TestCase):
         trans_sen = trans_use[1:]
 
         ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
-        self.assertEqual(ctx['[x__type]'], "_:test.sen")
-        self.assertEqual(ctx['[y__type]'], "_:val.var")
-        self.assertEqual(ctx.y, 'z__type')
+        self.assertEqual(ctx['[x__right]'], "_:test.sen")
+        self.assertEqual(ctx['[y__right]'], "_:val.var")
+        self.assertEqual(ctx.y, 'z__right')
 
     @unittest.skip("todo")
     def test_op_constraint_check(self):
@@ -503,9 +549,9 @@ class TestTypingStatement(unittest.TestCase):
         trans_sen = trans_use[1:]
 
         ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def[0]], None, ctxs=CtxSet())
-        self.assertEqual(ctx['[x__type]'], "_:test.sen")
-        self.assertEqual(ctx['[y__type]'], "_:val.var")
-        self.assertEqual(ctx.y, 'z__type')
+        self.assertEqual(ctx['[x__right]'], "_:test.sen")
+        self.assertEqual(ctx['[y__right]'], "_:val.var")
+        self.assertEqual(ctx.y, 'z__right')
 
 
 if __name__ == '__main__':

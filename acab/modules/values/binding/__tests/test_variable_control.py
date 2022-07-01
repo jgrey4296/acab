@@ -148,5 +148,14 @@ class TestVarControl(unittest.TestCase):
         self.assertNotEqual(sen[-1], val_p[1])
         self.assertNotEqual(sen[-2], val_p[2])
 
+    def test_sen_rectx_effects_types(self):
+        type_sen = VF.sen() << VF.value("a", data={DS.BIND: True})
+        sen = VF.sen() << "a" << "test" << VF.value("sentence", data={DS.TYPE_INSTANCE: type_sen})
+
+        mapping = {}
+        sen_p = rectx(sen, ctx=mapping)
+        self.assertIn("a", mapping)
+
+
 if __name__ == '__main__':
     unittest.main()
