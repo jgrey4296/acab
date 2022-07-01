@@ -133,7 +133,8 @@ class TypeCheckTests(unittest.TestCase):
         def_sen = op_def[0]
         # unify
         unified = tuf.type_unify(t_sen, def_sen, CtxIns())
-        applied = tuf.type_unify.apply(t_sen, unified)
+        applied = tuf.apply_types_onto_sen(t_sen, unified)
+
         self.assertEqual(applied[0][0][0].type, "_:first")
         self.assertEqual(applied[0][1][0].type, "_:second")
         self.assertEqual(applied[1][1].type, "_:first")
@@ -147,7 +148,7 @@ class TypeCheckTests(unittest.TestCase):
         def_sen = op_def[0].flatten()
         # unify
         unified = tuf.type_unify(t_sen, def_sen, CtxIns())
-        applied = tuf.type_unify.apply(t_sen, unified)
+        applied = tuf.apply_types_onto_sen(t_sen, unified)
         self.assertEqual(applied[0][0][0].type, "_:first")
         self.assertEqual(applied[0][1][0].type, "_:second")
         self.assertEqual(applied[1][1].type, "_:first")
@@ -161,12 +162,11 @@ class TypeCheckTests(unittest.TestCase):
         # def -> sen
         def_sen = op_def[0]
         # unify
-        with self.assertRaises(TE.AcabUnifyVariableInconsistencyException) as cm:
+        with self.assertRaises(TE.TypeConflictException) as cm:
             ctx = tuf.type_unify(t_sen, def_sen, CtxIns())
 
-        self.assertEqual(cm.exception.left, "other")
-        self.assertEqual(cm.exception.right, "second")
-        self.assertEqual(cm.exception.ctx, "y")
+        self.assertEqual(cm.exception.left, "y")
+        self.assertEqual(cm.exception.right, "h")
 
 
     @unittest.skip("TODO")

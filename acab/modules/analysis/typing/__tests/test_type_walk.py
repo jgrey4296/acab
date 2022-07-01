@@ -34,7 +34,9 @@ with warnings.catch_warnings():
     from acab.modules.operators.dfs.module import DFSExtension
     from acab.modules.operators.dfs.semantics import DFSSemantics
     from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.core.parsing.component_dsl import Component_DSL
     from acab.modules.semantics.default import DEFAULT_SEMANTICS
+    from acab.modules.values.sen_val.module import Sen_Val_Parser, Sen_Val_Frag
     from acab.modules.structures.trie.default import DEFAULT_TRIE
 
 ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
@@ -55,11 +57,16 @@ class TypeWalkTests(unittest.TestCase):
         cls.logging = logging
         # Set up the parser to ease test setup
         cls.dsl   = ppDSL.PyParseDSL()
-        cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl()).register(DFSExtension().build_dsl())
+        (cls.dsl.register(EXLO_Parser)
+         .register(TypeSpecFragment().build_dsl())
+         .register(DFSExtension().build_dsl())
+         .register(Component_DSL)
+         .register(Sen_Val_Parser))
         cls.dsl.build()
 
         cls.eng = exlo()
         cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs.module", "acab.modules.analysis.typing")
+        # cls.eng.load_modules("acab.modules.values.sen_val")
 
     @classmethod
     def tearDownClass(cls):
@@ -75,7 +82,7 @@ class TypeWalkTests(unittest.TestCase):
 
     #----------
     def test_type_unify_walk(self):
-        self.eng("""test.rule(::ρ):\n | $x |\n\n @x(::$y)?\n $y?\n\n !! found.$y\nend""")
+        self.eng("""test.rule(::ρ):\n | $x |\n\n @x(::$y, ::$z)?\n $y?\n\n !! found.♭$z\nend""")
         self.eng("test.value(::types.blah)")
         self.eng("types.blah")
         walk_rule = self.dsl("walker(::ρ):\n test.$rules(::INSTRUCT.STRUCTURE.RULE)?\n\n !! found.rule\n ᛦ λ$rules\nend")[0][0]
@@ -135,7 +142,6 @@ class TypeWalkTests(unittest.TestCase):
         walk_rule = self.dsl("walker(::ρ):\n test.$rules(::INSTRUCT.STRUCTURE.RULE)?\n\n !! found.rule\n ᛦ λ$rules\nend")[0][0]
         self.logging.info("----------")
         # trigger the walk
-        breakpoint()
         self.eng(walk_rule)
         # test
         self.logging.info("----------")
