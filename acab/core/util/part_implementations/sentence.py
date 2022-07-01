@@ -179,15 +179,21 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
     def __iter__(self):
         return iter(self.words)
 
-    def __getitem__(self, i):
+    def __getitem__(self, i,):
         match i:
             case slice():
-                return ValueFactory.sen(self.words.__getitem__(i), data=self.data)
+                return self.copy(value=self.words.__getitem__(i))
             case str():
                 matches = [x for x in self.words if x.name == i]
                 return matches[0]
             case int():
                 return self.words.__getitem__(i)
+            case tuple() if len(i) == 1 and isinstance(i[0], slice):
+                return self.copy(value=self.words.__getitem__(i[0]))
+            case tuple() if all([isinstance(x, slice) for x in i]):
+                words = self.words.__getitem__(i[0])
+                words.append(words.pop()[i[1:]])
+                return self.copy(value=words)
             case _:
                 raise ValueError("Unrecognised argument to Sentence.__getitem__", i)
 
