@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+Metaclass for constructing AcabValues.
+"""
 from __future__ import annotations
 
 import abc

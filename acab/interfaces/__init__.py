@@ -1,7 +1,5 @@
 """
-acab.interfaces
-
-This Submodule defines the interfaces acab requires.
+This Submodule defines the abstract interfaces acab uses.
 From Values, to Data Structures,
 to Semantics and DSLs
 

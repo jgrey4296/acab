@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+
+"""
 # pylint: disable=multiple-statements,abstract-method
 from __future__ import annotations
 

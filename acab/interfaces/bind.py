@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+
+"""
 # pylint: disable=multiple-statements,abstract-method,too-many-ancestors,invalid-sequence-index
 from __future__ import annotations
 import abc

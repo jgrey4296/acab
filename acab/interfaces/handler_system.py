@@ -1,4 +1,6 @@
-#!/opts/anaconda3/envs/ENV/python
+"""
+
+"""
 # pylint: disable=multiple-statements,abstract-method,invalid-sequence-index
 from __future__ import annotations
 
