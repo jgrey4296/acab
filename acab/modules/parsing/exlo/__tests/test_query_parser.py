@@ -25,7 +25,7 @@ with warnings.catch_warnings():
     from acab.core.defaults.value_keys import (BIND, NEGATION, OPERATOR, QUERY,
                                                QUERY_FALLBACK)
     from acab.core.parsing import parsers as PU
-    from acab.core.parsing.annotation import ValueRepeatAnnotation
+    from acab.core.util.annotation import ValueRepeatAnnotation
     from acab.core.util.sentences import ProductionComponent
 
     from acab.core.value.instruction import (Instruction, ProductionContainer,

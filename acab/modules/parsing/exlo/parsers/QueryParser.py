@@ -8,7 +8,7 @@ from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults.parse_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.util.annotation import ValueAnnotation
 from acab.core.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM,
                                       DOUBLEBAR, END, NG, QUERY, N,
                                       component_gap, ln, op, orm, s, zrm)

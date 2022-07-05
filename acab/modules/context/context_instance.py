@@ -2,15 +2,15 @@
 from __future__ import annotations
 
 import logging as logmod
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-logging = logmod.getLogger(__name__)
 
 from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
+from weakref import ReferenceType, ref
 
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.context as CtxInt
@@ -24,28 +24,30 @@ from acab.core.value.instruction import ProductionContainer
 from acab.error.context import AcabContextException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
+
+if TYPE_CHECKING:
+    CtxIns           = CtxInt.ContextInstance_i
+    CtxSet           = CtxInt.ContextSet_i
+    Constraints      = 'ConstraintCollection'
+    ProdComp         = ProductionComponent
+    ProdCon          = ProductionContainer
+    Operator         = 'ProductionOperator'
+    Value            = AT.Value
+    Statement        = AT.Instruction
+    Sen              = Sentence_i
+    Node             = AT.StructView
+    ModuleFragment   = AT.ModuleFragment
+    NamedCtxSet      = CtxInt.NamedCtxSet_d
+    ContextFailState = CtxInt.ContextFailState_d
+
+logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
 CONSTRAINT_S     = DS.CONSTRAINT
 NEGATION_S       = DS.NEGATION
 
-CtxIns           = CtxInt.ContextInstance_i
-CtxSet           = CtxInt.ContextSet_i
-Constraints      = 'ConstraintCollection'
-ProdComp         = ProductionComponent
-ProdCon          = ProductionContainer
-Operator         = 'ProductionOperator'
-Value            = AT.Value
-Statement        = AT.Instruction
-Sen              = Sentence_i
-Node             = AT.StructView
-ModuleFragment   = AT.ModuleFragment
-NamedCtxSet      = "NamedCtxSet"
-
 DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
 
-NamedCtxSet      = CtxInt.NamedCtxSet_d
-ContextFailState = CtxInt.ContextFailState_d
 
 
 @dataclass(frozen=True)

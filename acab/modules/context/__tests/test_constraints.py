@@ -2,19 +2,36 @@
 # https://docs.python.org/3/library/unittest.mock.html
 
 from __future__ import annotations
+
 import logging as logmod
+import unittest
+import warnings
 from os.path import split, splitext
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Sequence, Tuple, TypeAlias,
                     TypeVar, cast)
-import unittest
 from unittest import mock
-import warnings
+
 import acab
+import pyparsing as pp
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    acab.setup()
-    pass
+    config = acab.setup()
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
+    from acab.modules.context.constraints import ConstraintCollection
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.core.parsing.component_dsl import Component_DSL
+    from acab.core.data.node import AcabNode
+    from acab.interfaces.value import ValueFactory as VF
+    from acab.modules.operators.query.query_operators import ELEM
+    from acab.modules.context.context_set import ContextSet
+    import acab.error.semantic as ASErr
+
 
 class TestConstraintCollection(unittest.TestCase):
 

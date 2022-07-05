@@ -133,7 +133,7 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
     def __bool__(self):
         return bool(self._test_mappings)
 
-    def __getitem__(self, key) -> []:
+    def __getitem__(self, key) -> list:
         if key not in self._test_mappings:
             return []
 

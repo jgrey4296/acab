@@ -7,6 +7,7 @@ import logging as logmod
 import unittest
 import unittest.mock as mock
 import warnings
+from weakref import ReferenceType
 from os.path import split, splitext
 
 import acab
@@ -15,10 +16,14 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
+    import acab.core.defaults.value_keys as DS
     from acab.core.value.value import AcabValue
     from acab.error.context import AcabContextException
     from acab.modules.context.context_instance import ContextInstance
     from acab.modules.context.context_set import ContextSet
+    from acab.core.data.node import AcabNode
+    from acab.interfaces.value import ValueFactory as VF
+    from acab.error.context import AcabContextException
 
 
 class TestContextInstance(unittest.TestCase):
@@ -32,9 +37,8 @@ class TestContextInstance(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        if bool(logmod.root.handlers):
-            logmod.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logmod.root.handlers[0].setLevel(logmod.WARNING)
 
     @classmethod
     def tearDownClass(cls):

@@ -27,10 +27,8 @@ from acab.core.util.sentences import ProductionComponent
 from acab.core.value.instruction import ProductionOperator
 from acab.interfaces.value import ValueFactory as VF
 
-config        = AcabConfig()
-ATOM          = "_:" + config.prepare("Data", "TYPE_BASE")()
-
-
+config      = AcabConfig()
+ATOM        = "_:" + config.attr.Data.TYPE_BASE
 TYPE_OP_SEN = VF.sen(["τ="], data={TYPE_INSTANCE: OPERATOR})
 
 default_sieve = [

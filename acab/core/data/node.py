@@ -29,7 +29,7 @@ Sentence_A : TypeAlias = VI.Sentence_i
 Value_A    : TypeAlias = VI.Value_i
 
 config                 = AcabConfig()
-ROOT                   = config.prepare("Data", "ROOT")()
+ROOT                   = config.attr.Data.ROOT
 
 @logdel
 @dataclass

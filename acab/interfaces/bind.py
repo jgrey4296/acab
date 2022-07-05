@@ -35,4 +35,4 @@ class Bind_i(Protocol):
 
     @staticmethod
     @abc.abstractmethod
-    def bind(val:VI.Value_i, bindings:CI.ContextInstance_i, semSys=None): pass
+    def bind(val:VI.Value_i, bindings:CI.ContextInstance_i): pass

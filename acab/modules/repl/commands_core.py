@@ -79,8 +79,13 @@ def do_init(self, line):
 @register
 def do_module(self, line):
     """
-    Load an acab compliant python module into the self
+    Load an acab compliant python module into the engine
     Rebuilds the DSL after import.
+    Works like the python import statement.
+
+    Usage:
+    module {a.python.package.path}
+
     """
     params = line.split(" ")
     logging.info(f"Loading Modules: {params}")

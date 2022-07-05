@@ -100,8 +100,6 @@ class AcabREPLCommander(cmd.Cmd):
             traceback.print_tb(err.__traceback__)
             print(f"\n{err.args[-1]}\n")
 
-            
-
     def postcmd(self, stop, line):
         """
         Update the repl prompt to display number of viable contexts

@@ -13,7 +13,7 @@ from .base import AcabBasicException
 class AcabSemanticException(AcabBasicException):
     """ The Core exception report of semantic operations  """
 
-    msg : str = field(init=False, default="Semantic Failure:\n\t\t{}\n\t\tat: {}")
+    msg    : str = field(init=False, default="Semantic Failure:\n\t\t{}\n\t\tat: {}")
 
     def __str__(self):
         return self.msg.format(self.detail, self.context)

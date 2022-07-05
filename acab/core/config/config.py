@@ -23,8 +23,8 @@ from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import InitVar, dataclass, field
 from enum import Enum, EnumMeta
 from os import listdir
-from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
-                     splitext, commonpath)
+from os.path import (abspath, commonpath, exists, expanduser, isdir, isfile,
+                     join, split, splitext)
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
                     Iterable, Iterator, List, Mapping, Match, MutableMapping,
                     Optional, Protocol, Sequence, Set, Tuple, Type, TypeAlias,

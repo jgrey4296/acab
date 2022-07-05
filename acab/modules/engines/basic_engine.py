@@ -85,15 +85,3 @@ class AcabBasicEngine(AcabEngineImpl, AcabEngine_i):
         if len(self._cached_bindings) > self._cache_size:
             self._cached_bindings.pop(0)
 
-
-    @staticmethod
-    def from_sentences(self, sens):
-        # TODO make the engine, then load sens
-        # for sen in sens:
-        #     self(sen)
-
-        # return self
-        raise NotImplementedError()
-
-    def to_word(self):
-        raise NotImplementedError()
