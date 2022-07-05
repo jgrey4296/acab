@@ -16,10 +16,10 @@ from uuid import UUID, uuid1
 from weakref import ref
 
 import acab.core.defaults.value_keys as DS
-import acab.core.util.part_implementations.sentence as SSI  # type:ignore
+import acab.core.value.part_implementations.sentence as SSI  # type:ignore
 import acab.interfaces.value as VI
 from acab.core.config.config import AcabConfig
-from acab.core.value.value_meta import ValueMeta
+from acab.core.meta_classes.value import ValueMeta
 from acab.error.base import AcabBasicException
 from acab.error.protocol import AcabProtocolError as APE
 from acab.error.semantic import AcabOperatorMissingException

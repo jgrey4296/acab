@@ -26,10 +26,10 @@ import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.util.decorators.util import cache
-from acab.core.util.part_implementations.instruction import \
+from acab.core.value.part_implementations.instruction import \
     InstructionProtocolsImpl
-from acab.core.util.part_implementations.value import ValueProtocolsImpl
-from acab.core.value.value_meta import ValueMeta
+from acab.core.value.part_implementations.value import ValueProtocolsImpl
+from acab.core.value.value import ValueMeta
 from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.value import ValueFactory as VF
 

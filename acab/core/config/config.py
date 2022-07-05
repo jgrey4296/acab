@@ -32,7 +32,8 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
 
 from acab.core.config import actions as CA
 from acab.core.config.attr_gen import AttrGenerator
-from acab.core.util.singletons import SingletonMeta
+from acab.core.meta_classes.config import ConfigSingletonMeta
+from acab.core.meta_classes.singletons import SingletonMeta
 from acab.core.util.sorting import sort_by_priority
 from acab.error.config import AcabConfigException
 from acab.error.protocol import AcabProtocolError as APE
@@ -64,38 +65,6 @@ class ConfigSpec(ConfigSpec_d):
                 return self.default
 
             raise err
-
-
-class ConfigSingletonMeta(type(Protocol)):
-    """
-    A Subclass of Protocol's meta class,
-    so singletons can be explicit protocol implementers
-    """
-    _instance : ClassVar[Config_i]
-
-    def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
-        super(ConfigSingletonMeta, cls).__init__(name, bases, data) #type:ignore
-
-
-    def __call__(cls, *paths:str, hooks:None|bool|list[Callable[..., Any]]=None) -> Config_i:
-        """
-        If config Exists, then update it's paths and hooks, otherwise build
-        """
-        paths  = paths or tuple()
-        _hooks = set(hooks or [])
-
-        if not hasattr(ConfigSingletonMeta, "_instance") or ConfigSingletonMeta._instance is None:
-            logging.info("Building {}.{} Singleton", cls.__module__, cls.__qualname__)
-            ConfigSingletonMeta._instance : Config_i = super().__call__(paths, _hooks)
-        elif bool(hooks) or bool(paths):
-            logging.info("Updating Hooks and Read List of {}.{}", cls.__module__, cls.__qualname__) #type:ignore
-            ConfigSingletonMeta._instance.hooks.update(_hooks) #type:ignore
-            ConfigSingletonMeta._instance.read(list(paths)) #type:ignore
-
-        if isinstance(hooks, bool) and not hooks:
-            ConfigSingletonMeta._instance.hooks.clear()
-
-        return ConfigSingletonMeta._instance
 
 
 @APE.assert_implements(Config_i)
