@@ -71,7 +71,7 @@ def gen_type_vars(first, second, ctx, gen_var=None) -> AT.CtxIns:
     if len(first) != len(second):
         raise TE.AcabLengthUnifyException(first, second, ctx=ctx)
 
-    ctx_p = MutableContextInstance(None, ctx)
+    ctx_p = MutableContextInstance(ctx)
     with ctx_p:
         for a,b in zip(first, second):
             if not (a.has_var or b.has_var or type_len(b.type) < INFINITY or type_len(a.type) < INFINITY):

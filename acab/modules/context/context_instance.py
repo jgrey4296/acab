@@ -178,8 +178,6 @@ class ContextInstance(CtxInt.ContextInstance_i):
             if word.is_var:
                 ctxInst.data[word_str]  = node.value
                 ctxInst.nodes[word_str] = node
-            elif not bool(sub_binds):
-                raise AcabContextException("Tried to progress without a variable, or sub binds", context=(word, self))
 
             for key, bind in sub_binds:
                 assert(bind.is_var)
