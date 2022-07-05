@@ -44,20 +44,99 @@ class TestConstraintCollection(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        if bool(logging.root.handlers):
-            logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser)
+        cls.dsl.register(Component_DSL)
+        cls.dsl.build()
 
     @classmethod
     def tearDownClass(cls):
         logmod.root.removeHandler(cls.file_h)
 
 
-    def test_creation(self):
+    def test_creation_empty(self):
+        """
+        CC with a word that has no constraints
+        """
+        ConstraintCollection.operators = None
+        constraints = ConstraintCollection(self.dsl("test")[0][0])
+        self.assertFalse(constraints.operators)
+        self.assertFalse(constraints._test_mappings)
+
+    def test_creation_non_empty(self):
+        ConstraintCollection.operators = None
+        constraints = ConstraintCollection(self.dsl("$x(∈ a.b.c)")[0][0])
+        self.assertFalse(constraints.operators)
+        self.assertIn("alpha", constraints._test_mappings)
+
+    def test_bool_empty(self):
+        constraints = ConstraintCollection(self.dsl("test")[0][0])
+        self.assertFalse(constraints)
+
+
+    def test_bool_non_empty(self):
+        constraints = ConstraintCollection(self.dsl("$x(∈ a.b.c)")[0][0])
+        self.assertTrue(constraints)
+
+    def test_constraint_test_alpha(self):
+        constraints = ConstraintCollection(self.dsl("$x(∈ a.b.c)")[0][0],
+                                           operators={"∈": ELEM()})
+        node = AcabNode(VF.value("b"))
+        constraints.test(node, ContextSet()[0])
+
+    def test_constraint_test_fail(self):
+        constraints = ConstraintCollection(self.dsl("$x(∈ a.b.c)")[0][0],
+                                           operators={"∈": ELEM()})
+        node = AcabNode(VF.value("d"))
+
+        with self.assertRaises(ASErr.AcabSemanticTestFailure) as cm:
+            constraints.test(node, ContextSet()[0])
+
+        self.assertEqual(cm.exception.detail, "Alphas Failed")
+        self.assertEqual(cm.exception.context[0], node)
+
+
+    def test_constraint_beta(self):
+        constraints = ConstraintCollection(self.dsl("$x(∈ $y)")[0][0],
+                                           operators={"∈": ELEM()})
+        self.assertIn("beta", constraints._test_mappings)
+
+    def test_constraint_test_beta(self):
+        constraints = ConstraintCollection(self.dsl("$x(∈ $y)")[0][0],
+                                           operators={"∈": ELEM()})
+        node = AcabNode(VF.value("c"))
+        ctx = ContextSet()[0].progress({"y": self.dsl("a.b.c")[0]}, {})[0]
+
+        constraints.test(node, ctx)
+
+    def test_constraint_test_beta_fail(self):
+        constraints = ConstraintCollection(self.dsl("$x(∈ $y)")[0][0],
+                                           operators={"∈": ELEM()})
+        node = AcabNode(VF.value("c"))
+        ctx = ContextSet()[0].progress({"y": self.dsl("d.e.f")[0]}, {})[0]
+
+        with self.assertRaises(ASErr.AcabSemanticException) as cm:
+            constraints.test(node, ctx)
+
+        self.assertEqual(cm.exception.detail, "Betas Failed")
+        self.assertEqual(cm.exception.context[0], node)
+
+
+    @unittest.skip("todo")
+    def test_constraint_substruct_test(self):
         pass
 
-    def test_top_level_test(self):
+    @unittest.skip("todo")
+    def test_constraint_substract_test_fail(self):
         pass
 
-    def test_constraint_sieve(self):
+    @unittest.skip("todo")
+    def test_constraint_run_name(self):
+        pass
+
+    @unittest.skip("todo")
+    def test_constraint_run_name_fail(self):
         pass

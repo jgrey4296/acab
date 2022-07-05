@@ -55,19 +55,20 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     data              : dict[str, Any]  = field(default_factory=dict)
     nodes             : dict[str, Node] = field(default_factory=dict)
+    # Instance Metadata
     uuid              : UUID            = field(default_factory=uuid1)
-    _parent_ctx       : CtxIns          = field(default=None)
     exact             : bool            = field(default=False)
+    _parent_ctx       : CtxIns          = field(default=None, kw_only=True)
 
     _current          : Node            = field(init=False, default=None)
-    _depth            : int             = field(init=False, default=0)
+    _depth            : int             = field(init=False, default=1)
     _lineage          : set[UUID]       = field(init=False, default_factory=set)
 
     def __post_init__(self):
         self._lineage.add(self.uuid)
-        if self._parent_ctx is not None:
-            object.__setattr__(self, "_depth", self._parent_ctx._depth + 1)
-            self._lineage.update(self._parent_ctx._lineage)
+        if self._parent_ctx is not None and self._parent_ctx() is not None:
+            object.__setattr__(self, "_depth", self._parent_ctx()._depth + 1)
+            self._lineage.update(self._parent_ctx()._lineage)
 
     def __hash__(self):
         return hash(self.uuid)
@@ -123,6 +124,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
     @property
     def current_node(self):
         return self._current
+
     def copy(self, mask=None, **kwargs):
         logging.debug("Copied Ctx Instance")
         if 'data' not in kwargs:
@@ -137,7 +139,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
                          uuid=uuid1(),
                          data=kwargs['data'],
                          nodes=kwargs['nodes'],
-                         _parent_ctx=self)
+                         _parent_ctx=ref(self))
 
         assert(self.uuid != copied.uuid)
         assert(id(self.data) != id(copied.data))
@@ -176,6 +178,8 @@ class ContextInstance(CtxInt.ContextInstance_i):
             if word.is_var:
                 ctxInst.data[word_str]  = node.value
                 ctxInst.nodes[word_str] = node
+            elif not bool(sub_binds):
+                raise AcabContextException("Tried to progress without a variable, or sub binds", context=(word, self))
 
             for key, bind in sub_binds:
                 assert(bind.is_var)
@@ -231,13 +235,19 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     Changes are inserted into the dictionary, until context is exited
     exit creates a new CtxIns, integrating changes """
 
-    parent       : None|CtxSet    = field()
-    base         : CtxIns         = field()
-    data         : dict[Any, Any] = field(default_factory=dict)
-    uuid         : UUID           = field(default_factory=uuid1)
-    exact        : bool           = field(default=False)
+    base       : CtxIns           = field()
+    data       : dict[str, Value] = field(default_factory=dict)
+    parent_set : None|CtxSet      = field(default=None, kw_only=True)
+    exact      : bool             = field(default=False)
 
-    _finished    : None | CtxIns    = field(init=False, default=None)
+    uuid       : UUID             = field(init=False, default_factory=uuid1)
+    _finished  : None | CtxIns    = field(init=False, default=None)
+
+    def __post_init__(self):
+        if self.parent_set is not None and not isinstance(self.parent_set, (CtxInt.ContextSet_i)):
+            raise AcabContextException("Mutable Context must have a context set as parent", context=self)
+        if not isinstance(self.base, CtxInt.ContextInstance_i):
+            raise AcabContextException("Mutable Context must have a context as base", context=self)
 
     class EarlyExitException(BaseException):
         pass
@@ -317,8 +327,8 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def finish(self):
         self._finished = self.base.progress(self.data, {})[0]
-        if self.parent is not None:
-            self.parent.push(self._finished)
+        if self.parent_set is not None:
+            self.parent_set.push(self._finished)
 
     @property
     def final_ctx(self):
@@ -336,21 +346,12 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
             case dict(), _:
                 self.data |= (words or {})
             case _, _:
-                raise TypeError(f"Unexpected type for ContextInstance.Progress: {type(words)}, {type(nodes)}")
+                raise AcabContextException("Progressing a MuCtxInst only handles dict binding", context=(words, nodes))
 
         # assert(not any([x in self.data for x in the_dict])), breakpoint()
         # assert(not any([x in self.base for x in the_dict])), breakpoint()
 
         return [self]
-
-    def bind(self, word, nodes):
-        raise NotImplementedError()
-
-    def bind_dict(self, the_dict):
-        raise DeprecationWarning()
-
-    def to_sentences(self):
-        raise NotImplementedError()
 
     @property
     def current_node(self):

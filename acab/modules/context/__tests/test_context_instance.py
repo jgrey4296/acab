@@ -70,6 +70,16 @@ class TestContextInstance(unittest.TestCase):
         self.assertNotEqual(id(inst), id(inst2))
         self.assertNotEqual(inst.uuid, inst2.uuid)
 
+    def test_instance_copy_tracks_parent_ctx(self):
+        """ Check a context instance can be copied """
+        inst = ContextInstance(data={"a": 2, "b": 3})
+        inst2 = inst.copy()
+        self.assertIsNone(inst._parent_ctx)
+        self.assertIsInstance(inst2._parent_ctx, ReferenceType)
+        self.assertIsInstance(inst2._parent_ctx(), ContextInstance)
+        self.assertEqual(inst2._parent_ctx().uuid, inst.uuid)
+
+
     def test_instance_copy_independence(self):
         """ Check a context instance can be copied """
         inst = ContextInstance(data={"a": 2, "b": 3})
@@ -80,24 +90,139 @@ class TestContextInstance(unittest.TestCase):
         self.assertEqual(inst.data["a"], 2)
         self.assertEqual(inst2.data["a"], 5)
 
-    def test_instance_bind(self):
-        pass
+
+    def test_current_node(self):
+        inst = ContextInstance()
+        self.assertIsNone(inst.current_node)
+        node = AcabNode(VF.value("test"))
+        inst.set_current_node(node)
+        self.assertIsNotNone(inst.current_node)
+
+    def test_set_current_binding(self):
+        inst = ContextInstance({"a": VF.value("blah")},
+                               nodes={"a": AcabNode(VF.value("blah"))})
+        self.assertIsNone(inst.current_node)
+        inst.set_current_binding(VF.value("a"))
+        self.assertIsNotNone(inst.current_node)
+
+    def test_set_current_binding_fail(self):
+        inst = ContextInstance({"a": VF.value("blah")})
+        self.assertIsNone(inst.current_node)
+
+        with self.assertRaises(AcabContextException) as cm:
+            inst.set_current_binding(VF.value("a"))
+
+        self.assertEqual(cm.exception.detail, "No Recognised binding")
+        self.assertEqual(cm.exception.context[0], "a")
+
+    def test_is_immutable(self):
+        inst = ContextInstance()
+
+        with self.assertRaises(TypeError) as cm:
+            inst['a'] = "blah"
+
+
+    def test_empty(self):
+        inst = ContextInstance()
+        self.assertFalse(inst)
+
+    def test_not_empty(self):
+        inst = ContextInstance({"a": VF.value("blah")})
+        self.assertTrue(inst)
+
 
     def test_instance_contains(self):
-        pass
+        inst = ContextInstance({"a": VF.value("blah")})
+        self.assertIn("a", inst)
 
-    def test_instance_getitem(self):
-        pass
+    def test_instance_contains_fail(self):
+        inst = ContextInstance({"a": VF.value("blah")})
+        self.assertNotIn("b", inst)
+
+    def test_instance_dict_progress(self):
+        inst   = ContextInstance({"a": VF.value("blah")})
+        result = inst.progress({"b": VF.value("bloo")}, {})
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+        self.assertIsInstance(result[0], ContextInstance)
+
+        self.assertNotEqual(inst, result[0])
+        self.assertNotIn("b", inst)
+        self.assertIn("b", result[0])
+
+    def test_instance_dict_progress_multi(self):
+        inst   = ContextInstance({"a": VF.value("blah")})
+        result = inst.progress({"b": VF.value("bloo"),
+                                "c" : VF.value("aweg")}, {})
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+        self.assertIn("b", result[0])
+        self.assertIn("c", result[0])
+
+    def test_instance_val_progress_not_a_variable(self):
+        inst   = ContextInstance({"a": VF.value("blah")})
+
+        with self.assertRaises(AcabContextException) as cm:
+            inst.progress(VF.value("b"), [AcabNode(VF.value("c"))])
+
+        self.assertEqual("Tried to progress without a variable, or sub binds", cm.exception.detail)
 
 
-    def test_mutability_fail(self):
-        pass
+    def test_instance_val_progress(self):
+        inst   = ContextInstance({"a": VF.value("blah")})
+        result = inst.progress(VF.value("b", data={DS.BIND: True}),
+                               [AcabNode(VF.value("c"))])
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+        self.assertIsInstance(result[0], ContextInstance)
 
-    def test_mutable_instance(self):
-        pass
+        self.assertNotEqual(inst, result[0])
+        self.assertNotIn("b", inst)
+        self.assertIn("b", result[0])
+        self.assertEqual(result[0]['b'], "c")
 
-    def test_progress(self):
-        pass
+    def test_instance_val_progress_multi(self):
+        inst   = ContextInstance({"a": VF.value("blah")})
+        result = inst.progress(VF.value("b", data={DS.BIND: True}),
+                               [AcabNode(VF.value("c")),
+                                AcabNode(VF.value("d"))])
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 2)
+        self.assertIsInstance(result[0], ContextInstance)
+        self.assertIsInstance(result[1], ContextInstance)
 
-    def instance_context_handler(self):
-        pass
+        self.assertNotEqual(inst, result[0])
+        self.assertNotEqual(inst, result[1])
+        self.assertNotIn("b", inst)
+        self.assertIn("b", result[0])
+        self.assertIn("b", result[1])
+        self.assertEqual(result[0]['b'], "c")
+        self.assertEqual(result[1]['b'], "d")
+
+    def test_instance_progress_lineage(self):
+        inst   = ContextInstance({"a": VF.value("blah")})
+        result = inst.progress(VF.value("b", data={DS.BIND: True}),
+                               [AcabNode(VF.value("c")),
+                                AcabNode(VF.value("d"))])
+        last = result[0].progress({"c": VF.value("bloo")}, {})[0]
+
+        self.assertEqual(len(result), 2)
+        self.assertEqual(len(inst._lineage), 1)
+        self.assertTrue(all(len(x._lineage) == 2 for x in result))
+        self.assertTrue(all(inst.uuid in x._lineage for x in result))
+        self.assertTrue(all(x.uuid not in inst._lineage for x in result))
+
+        self.assertIn(inst.uuid, last._lineage)
+        self.assertIn(result[0].uuid, last._lineage)
+        self.assertTrue(all(last.uuid not in x._lineage for x in [inst] + result))
+
+    def test_instance_depth(self):
+        inst   = ContextInstance({"a": VF.value("blah")})
+        result = inst.progress(VF.value("b", data={DS.BIND: True}),
+                               [AcabNode(VF.value("c")),
+                                AcabNode(VF.value("d"))])
+        last = result[0].progress({"c": VF.value("bloo")}, {})[0]
+
+        self.assertEqual(inst._depth, 1)
+        self.assertTrue(all(x._depth == 2 for x in result))
+        self.assertEqual(last._depth, 3)
