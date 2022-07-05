@@ -1,3 +1,6 @@
+"""
+
+"""
 # pylint: disable=multiple-statements,protected-access,too-many-ancestors,abstract-method
 # pyright: reportGeneralTypeIssues=warning
 from __future__ import annotations

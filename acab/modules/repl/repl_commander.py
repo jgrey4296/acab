@@ -1,4 +1,9 @@
+"""
+
+"""
 # https://docs.python.org/3/library/cmd.html
+from __future__ import annotations
+
 import cmd
 import logging as logmod
 import sys
@@ -11,40 +16,24 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab
 import pyparsing as pp
 from acab import AcabConfig
-from acab.error.config import AcabConfigException
 from acab.error.base import AcabBasicException
+from acab.error.config import AcabConfigException
 from acab.error.parse import AcabParseException
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.engine import AcabEngine_i
 from acab.modules.repl import ReplParser as RP
+
+from .repl_state import ReplState
 
 logging      = logmod.getLogger(__name__)
 trace_logger = logmod.getLogger('acab.repl.trace')
 config       = AcabConfig()
 #--------------------
 initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
-initial_engine = config.prepare("Module.REPL", "ENGINE")()
 try:
     repl_intro     = config.prepare("Module.Repl.Intro", _type=list)()
 except AcabConfigException:
     repl_intro = ["Welcome to ACAB.", "Type 'help' or '?' to list commands.", "Type 'tutorial' for a tutorial.", "Type ':q' to quit."]
-
-@dataclass
-class ReplState:
-    """ Data used for control of the repl """
-    prompt           : str                            =  field(default=initial_prompt)
-    prompt_ml        : str                            =  field(default=config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])())
-    prompt_bkup      : str                            =  field(default="")
-    ctxs             : ContextSet_i                   =  field(default=None)
-    collect_str      : list[str]                      =  field(default_factory=list)
-    echo             : bool                           =  field(default=False)
-    in_multi_line    : bool                           =  field(default=False)
-    engine           : None|AcabEngine_i              =  field(default=None)
-    engine_str       : str                            =  field(default=initial_engine)
-    debug_data       : Any                            =  field(default=None)
-    debugger         : Any                            =  field(default=None)
-    last_err         : Any                            =  field(default=None)
-    post_cmds        : dict[str, Callable[..., None]] =  field(default_factory=dict)
 
 
 class AcabREPLCommander(cmd.Cmd):
@@ -96,17 +85,26 @@ class AcabREPLCommander(cmd.Cmd):
             if bool(self.state.echo):
                 print(f"{line}")
 
+
+
             return " ".join(line)
 
         except pp.ParseException as err:
             traceback.print_tb(err.__traceback__)
             logging.warning(f"Parse Failure: {err.markInputline()}")
 
+    def onecmd(self, line):
+        try:
+            return super(AcabREPLCommander, self).onecmd(line)
+        except Exception as err:
+            traceback.print_tb(err.__traceback__)
+            print(f"\n{err.args[-1]}\n")
+
     def postcmd(self, stop, line):
         """
         Update the repl prompt to display number of viable contexts
         """
-        for hook in self.state.post_cmds.values():
+        for name, hook in sorted(self.state.post_cmds.items()):
             hook(self)
 
         return stop
@@ -163,10 +161,14 @@ class AcabREPLCommander(cmd.Cmd):
         def __register(target_cls):
             assert(hasattr(target_cls, "__call__"))
             assert(hasattr(cls, "_latebind"))
+            if (not bool(target_cls.__call__.__doc__)) and bool(target_cls.__doc__):
+                target_cls.__call__.__doc__ = target_cls.__doc__
+
             instance = target_cls()
             assert(not hasattr(target_cls, "_cmd"))
             setattr(cls, f"do_{name}", instance.__call__)
             setattr(instance, "_cmd", None)
+
             cls._latebind.append(instance)
             return target_cls
 

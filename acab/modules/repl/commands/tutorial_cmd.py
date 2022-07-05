@@ -21,6 +21,9 @@ from acab.modules.repl.repl_commander import register_class
 
 @register_class("tutorial")
 class TutorialCmd:
+    """
+    Print out a basic tutorial of Acab and this Repl
+    """
 
     def __init__(self):
         self._parser = self._gen_parser()
@@ -30,10 +33,8 @@ class TutorialCmd:
 
 
     def __call__(self, line):
-        """
-        Print out a basic tutorial of Acab and this Repl
-        """
         # Print a section, return to main loop,
         # if tutorial is called again, continue
         # if restart is passed in, restart the tutorial
+        # also include option to print tutorial for a module
         return

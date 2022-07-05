@@ -21,8 +21,8 @@ from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
                                       opLn, orm, s, s_key, s_lit, zrm)
-from acab.core.parsing.param_core import ParamCore
 from acab.core.parsing.parsers import Fwd_ArgList, Fwd_TagList
+from acab.core.parsing.pyparse_ext.param_core import ParamCore
 
 if TYPE_CHECKING:
     # tc only imports

@@ -1,5 +1,5 @@
 """
-A DSL interface for the system, which
+A DSL interface for the system
 
 """
 # pylint: disable=multiple-statements,abstract-method,too-many-ancestors,too-few-public-methods

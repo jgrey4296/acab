@@ -6,7 +6,7 @@ import acab.interfaces.value as VI
 from acab import AcabConfig
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults.value_keys import SEMANTIC_HINT
-from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
+from acab.core.util.annotation import ValueAnnotation, ValueRepeatAnnotation
 from acab.core.util.sentences import ProductionComponent
 from acab.core.value.instruction import (ProductionContainer,
                                          ProductionStructure)

@@ -5,7 +5,7 @@ import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.engine.util import prep_op_path
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.annotation import ValueRepeatAnnotation
+from acab.core.util.annotation import ValueRepeatAnnotation
 from acab.core.util.sentences import ProductionComponent
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory as VF

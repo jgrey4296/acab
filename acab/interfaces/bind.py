@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+
+"""
 # pylint: disable=multiple-statements,abstract-method,too-many-ancestors,invalid-sequence-index
 from __future__ import annotations
 import abc
@@ -33,4 +35,4 @@ class Bind_i(Protocol):
 
     @staticmethod
     @abc.abstractmethod
-    def bind(val:VI.Value_i, bindings:CI.ContextInstance_i, semSys=None): pass
+    def bind(val:VI.Value_i, bindings:CI.ContextInstance_i): pass

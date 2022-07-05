@@ -18,7 +18,7 @@ with warnings.catch_warnings():
     #     from acab.core.parsing import debug_funcs as DBF
     #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
     import acab.core.defaults.value_keys as DS
-    from acab.core.parsing.annotation import ValueAnnotation
+    from acab.core.util.annotation import ValueAnnotation
     from acab.interfaces.value import ValueFactory as VF
     from acab.core.parsing.component_dsl import Component_DSL
     from acab.core.value.value import AcabValue
@@ -47,8 +47,8 @@ class UnifierTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())

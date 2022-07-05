@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+
+"""
 from __future__ import annotations
 
 import abc
@@ -134,15 +136,25 @@ class ModuleFragment:
     def __bool__(self):
         return any([bool(x) for x in [self.dsl_fragments, self.semantics, self.printers, self.operators]])
 
-    def __repr__(self) -> str:
+
+    def str_parts(self) -> tuple[str, ...]:
+        """
+        Provides a summary of the module fragment, for use in repr,
+        but can also be used for custom repl description (eg: adding colour)
+        """
         frags     = f"{ len(self.dsl_fragments) } DSL"
         semantics = f"{ len(self.semantics) } Sem"
         printers  = f"{ len(self.printers) } Pr"
         operators = f"{ len(self.operators) } Op"
 
-        return f"({frags} | {semantics} | {operators} | {printers} : {self.source})"
+        return (frags, semantics, printers, operators, self.source)
+
+    def __repr__(self) -> str:
+        parts = self.str_parts()
+        return f"({parts[0]} | {parts[1]} | {parts[2]} | {parts[3]} : {parts[4]})"
 
     def report(self) -> str:
+        # TODO add more detail
         frags     = f"{ len(self.dsl_fragments) } DSL Fragments"
         semantics = f"{ len(self.semantics) } Semantic Components"
         printers  = f"{ len(self.printers) } Printers"

@@ -36,7 +36,7 @@ import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import AGENDA_HEAD, NG, N
-from acab.core.parsing.statement_core import StatementCore
+from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 from acab.modules.structures.pipline.constructors import make_agenda
 
 logging = logmod.getLogger(__name__)

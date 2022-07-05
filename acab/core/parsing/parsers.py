@@ -14,7 +14,7 @@ from acab.core.defaults import parse_symbols as PDSYM
 from acab.core.defaults import value_keys as CDS
 from acab.core.parsing import consts as PConst
 from acab.core.parsing import funcs as Pfunc
-from acab.core.parsing.annotation import ModalAnnotation, ValueAnnotation
+from acab.core.util.annotation import ModalAnnotation, ValueAnnotation
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
                                       opLn, orm, s, s_key, s_lit, zrm)

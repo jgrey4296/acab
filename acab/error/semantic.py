@@ -1,17 +1,19 @@
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
+"""
 
-from dataclasses import dataclass, field, InitVar
+"""
+from dataclasses import InitVar, dataclass, field
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 from .base import AcabBasicException
+
 
 @dataclass(repr=False)
 class AcabSemanticException(AcabBasicException):
     """ The Core exception report of semantic operations  """
 
-    msg : str = field(init=False, default="Semantic Failure:\n\t\t{}\n\t\tat: {}")
+    msg    : str = field(init=False, default="Semantic Failure:\n\t\t{}\n\t\tat: {}")
 
     def __str__(self):
         return self.msg.format(self.detail, self.context)

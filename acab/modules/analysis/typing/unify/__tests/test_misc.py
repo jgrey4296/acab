@@ -14,7 +14,7 @@ with warnings.catch_warnings():
     config = acab.setup()
     from acab.core.parsing import pyparse_dsl as ppDSL
 
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.util.annotation import ValueAnnotation
 import acab.core.defaults.value_keys as DS
 from acab.core.value.value import AcabValue
 from acab.modules.analysis.typing.module import TypeSpecFragment
@@ -46,8 +46,8 @@ class UnifierTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())

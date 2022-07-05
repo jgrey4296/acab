@@ -15,7 +15,7 @@ from acab.interfaces import context as CI
 from acab.interfaces import data as DI
 from acab.interfaces import value as VI
 from acab.interfaces.value import Sentence_i, Value_i
-from acab.core.util.singletons import SingletonMeta
+from acab.core.meta_classes.singletons import SingletonMeta
 from acab.interfaces.bind import Bind_i
 
 logging = logmod.getLogger(__name__)
@@ -34,7 +34,7 @@ class Bind(Bind_i):
     total_call     : ClassVar[int] = 0
 
     @staticmethod
-    def bind(val: VI.Value_i, bindings:CI.ContextInstance_i):
+    def bind(val: VI.Value_i, bindings:Mapping):
         """
         Passed in a `val`, return it unchanged if its not a variable,
         if it is a variable, return the value it maps to
@@ -44,7 +44,7 @@ class Bind(Bind_i):
 
         logging.debug("Binding: {} with {}", val, bindings)
         assert(isinstance(val, VI.Value_i)), val
-        assert(isinstance(bindings, CI.ContextInstance_i))
+        assert(hasattr(bindings, "__getitem__") or isinstance(bindings,CI.ContextInstance_i))
 
         result = _bind_top(val, bindings,)
 
@@ -72,16 +72,24 @@ def _bind_top(val, bindings, depth=0):
         case VI.Sentence_i():
             words = [_bind_top(x, bindings, depth=depth+1) for x in val]
             result = val.copy(value=words)
-            if any([DS.FLATTEN in x.data and x.data[DS.FLATTEN] for x in result]):
+            if any(DS.FLATTEN in x.data and x.data[DS.FLATTEN] for x in result):
                 result = result.flatten()
             if val.is_var and len(words) == 1 and isinstance(words[0], VI.Sentence_i):
                 result = words[0]
         case VI.Instruction_i() if val.type[:2] == "_:INSTRUCT.CONTAINER":
-            masked = bindings.copy(mask=val.params)
+            try:
+                masked = bindings.copy(mask=val.params)
+            except TypeError:
+                masked = {x:y for x,y in bindings.items() if x not in val.params}
+
             clauses = [_bind_top(x, masked,depth=depth+1) for x in val.clauses]
             result = val.copy(value=clauses)
         case VI.Instruction_i() if val.type[:2] == "_:INSTRUCT.STRUCT":
-            masked = bindings.copy(mask=val.params)
+            try:
+                masked = bindings.copy(mask=val.params)
+            except TypeError:
+                masked = {x:y for x,y in bindings.items() if x not in val.params}
+
             struct = {k: _bind_top(v, masked, depth=depth+1) for k,v in val.structure.items()}
             result = val.copy(structure=struct)
         case VI.Value_i() if val.is_at_var:

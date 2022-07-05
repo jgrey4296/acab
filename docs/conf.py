@@ -14,8 +14,12 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../acab'))
 
-import  acab
-acab.setup()
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import  acab
+    acab.setup()
 
 # -- Project information -----------------------------------------------------
 

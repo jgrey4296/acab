@@ -11,14 +11,13 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 import pyparsing as pp
 
-logging = logmod.getLogger(__name__)
-
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     # tc only imports
     pass
 
-class AccumulateFoward(pp.Forward):
+logging = logmod.getLogger(__name__)
+
+class AccumulateForward(pp.Forward):
     """
     A Customized PyParsing Forward Declaration,
     which can accumulate definitions instead of overwrite,

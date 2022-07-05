@@ -26,6 +26,7 @@ class ExitCmd:
     """
 
     def __call__(self, line):
+        # TODO add option for saving location
         logging.info("Quitting")
         filename = "repl.auto"
         self._cmd.state.engine.save_file(filename)

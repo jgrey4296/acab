@@ -1,5 +1,5 @@
 """
-The ACAB REPL is structured as follows:
+The ACAB REPL for command line use.
 
 repl.py : The file to run. Is a basic loop.
 

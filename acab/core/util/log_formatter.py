@@ -44,15 +44,22 @@ except ImportError:
     COLOUR_RESET = ""
 
 class SimpleLogColour:
+    def __init__(self):
+        raise TypeError("SimpleLogColour is Static, don't instance it")
+
+    @staticmethod
     def green(s):
         return LEVEL_MAP['green'] + str(s) + COLOUR_RESET
 
+    @staticmethod
     def blue(s):
         return LEVEL_MAP['cyan'] + str(s) + COLOUR_RESET
 
+    @staticmethod
     def yellow(s):
         return LEVEL_MAP['yellow'] + str(s) + COLOUR_RESET
 
+    @staticmethod
     def red(s):
         return LEVEL_MAP['red'] + str(s) + COLOUR_RESET
 
@@ -110,6 +117,7 @@ class AcabMinimalLogRecord(logging.LogRecord):
         both % and .format style messages
         """
         warnings.warn(f"Installing {cls.__name__}", stacklevel=3)
+
         logging.setLogRecordFactory(cls)
 
     def getMessage(self, colour=True):

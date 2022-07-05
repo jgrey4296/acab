@@ -2,6 +2,7 @@
 # from https://alexandra-zaharia.github.io/posts/make-your-own-custom-color-formatter-with-python-logging/
 from __future__ import annotations
 
+import warnings
 import logging
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
@@ -38,7 +39,8 @@ class AcabParseDebugFormat(AcabLogFormatter):
         a specific debug level handler with ParseDebug formatting,
         which is attached to acab.core.parsing.debug_funcs
         """
-        logging.warning("Scaffolding AcabParseDebugFormat")
+        warnings.warn("Scaffolding AcabParseDebugFormat", stacklevel=2)
+
         if not isinstance(logging.getLogRecordFactory(), AcabLogRecord):
             AcabLogRecord.install()
 

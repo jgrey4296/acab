@@ -23,8 +23,8 @@ from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import InitVar, dataclass, field
 from enum import Enum, EnumMeta
 from os import listdir
-from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
-                     splitext)
+from os.path import (abspath, commonpath, exists, expanduser, isdir, isfile,
+                     join, split, splitext)
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
                     Iterable, Iterator, List, Mapping, Match, MutableMapping,
                     Optional, Protocol, Sequence, Set, Tuple, Type, TypeAlias,
@@ -32,7 +32,8 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
 
 from acab.core.config import actions as CA
 from acab.core.config.attr_gen import AttrGenerator
-from acab.core.util.singletons import SingletonMeta
+from acab.core.meta_classes.config import ConfigSingletonMeta
+from acab.core.meta_classes.singletons import SingletonMeta
 from acab.core.util.sorting import sort_by_priority
 from acab.error.config import AcabConfigException
 from acab.error.protocol import AcabProtocolError as APE
@@ -66,40 +67,8 @@ class ConfigSpec(ConfigSpec_d):
             raise err
 
 
-class ConfigSingletonMeta(type(Protocol)):
-    """
-    A Subclass of Protocol's meta class,
-    so singletons can be explicit protocol implementers
-    """
-    _instance : ClassVar[Config_i]
-
-    def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
-        super(ConfigSingletonMeta, cls).__init__(name, bases, data) #type:ignore
-
-
-    def __call__(cls, *paths:str, hooks:None|bool|list[Callable[..., Any]]=None) -> Config_i:
-        """
-        If config Exists, then update it's paths and hooks, otherwise build
-        """
-        paths  = paths or tuple()
-        _hooks = set(hooks or [])
-
-        if not hasattr(ConfigSingletonMeta, "_instance") or ConfigSingletonMeta._instance is None:
-            logging.info(f"Building {cls.__module__}.{cls.__qualname__} Singleton")
-            ConfigSingletonMeta._instance : Config_i = super().__call__(paths, _hooks)
-        elif bool(hooks) or bool(paths):
-            logging.info(f"Updating Hooks and Read List of {cls.__module__}.{cls.__qualname__}") #type:ignore
-            ConfigSingletonMeta._instance.hooks.update(_hooks) #type:ignore
-            ConfigSingletonMeta._instance.read(list(paths)) #type:ignore
-
-        if isinstance(hooks, bool) and not hooks:
-            ConfigSingletonMeta._instance.hooks.clear()
-
-        return ConfigSingletonMeta._instance
-
-
 @APE.assert_implements(Config_i)
-@dataclass
+@dataclass(repr=False)
 class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     """ A Singleton class for the active configuration
     Uses ${SectionName:Key} interpolation in values,
@@ -148,6 +117,12 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         in_defaults = key in self.defaults
         in_overrides = key in self._overrides
         return any([in_print, in_base, in_enums, in_defaults, in_overrides])
+
+    def __repr__(self):
+        common = commonpath(self._files)
+        short_paths = [x[len(common):] for x in self._files]
+        return f"<{self.__class__.__name__} : Base Path: {common}, Loaded Files: {', '.join(short_paths)}>"
+
 
     def read(self, paths:list[str]):
         """ DFS over provided paths, finding the cls.suffix filetype (default=.config) """
@@ -226,7 +201,8 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         has_type_action = spec._type in self.type_actions
 
         if not has_type_action:
-            warnings.warn(f"ConfigSpec Type Specified without handler, will try to straight apply it: {spec.section} {spec.key}: {spec._type}", stacklevel=2)
+            logging.info("ConfigSpec Type Specified without handler, will try to straight apply it: {} {}: {}",
+                         spec.section, spec.key, spec._type, stacklevel=3)
 
         if has_default and not (in_file and in_section):
             warnings.warn(f"Config Spec Missing, but a default was found: {spec.section}.{spec.key}", stacklevel=2)

@@ -13,7 +13,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults.value_keys import TYPE_BASE
 from acab.core.parsing import consts as PConst
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.util.annotation import ValueAnnotation
 from acab.core.util.sentences import ProductionComponent
 from acab.core.value.instruction import (ProductionContainer,
                                          ProductionStructure)

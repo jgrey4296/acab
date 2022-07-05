@@ -31,7 +31,7 @@ from acab.core.value.instruction import ProductionContainer
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import LAYER_HEAD
 from acab.core.parsing.funcs import make_layer
-from acab.core.parsing.statement_core import StatementCore
+from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 
 logging = logmod.getLogger(__name__)
 

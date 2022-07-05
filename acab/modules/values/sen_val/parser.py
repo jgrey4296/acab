@@ -10,7 +10,7 @@ from acab.core.parsing import parsers as PU
 from acab.core.defaults import parse_symbols as PDSym
 from acab.core.defaults import parse_keys as DK
 import acab.core.defaults.value_keys as CDS
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.util.annotation import ValueAnnotation
 
 from acab.modules.analysis.typing import util as TYU
 

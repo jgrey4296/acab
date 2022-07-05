@@ -14,33 +14,34 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     runtime_checkable)
 import warnings
 
-import acab
-from acab import types as AT
-
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
+    import acab
+    from acab import types as AT
     config = acab.setup()
 
-import acab.core.defaults.value_keys as DS
-from acab.core.value import instruction as PO
-from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.value import Instruction_i, Sentence_i, Value_i
+    import acab.core.defaults.value_keys as DS
+    from acab.core.value import instruction as PO
+    from acab.core.value.instruction import Instruction
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.value import Instruction_i, Sentence_i, Value_i
 
+if TYPE_CHECKING:
+    Value_A       : TypeAlias = "AT.Value[AT.ValueCore]"
+    Value_t       : TypeAlias = Type[Value_A]
+    Sen_A         : TypeAlias = AT.Sentence
+    Sen_t         : TypeAlias = Type[Sen_A]
+    Instruction_A : TypeAlias = AT.Instruction
+    Variable      = NewType('Variable', Value_A)
+    ValueData     : TypeAlias = str
+    GenFunc       : TypeAlias = AT.fns.GenFunc
+    SemSys_A      : TypeAlias = AT.SemanticSystem
+
+T                    = TypeVar('T')
 BIND_S               = config.attr.Value.Structure.BIND
 OPERATOR_TYPE_PRIM_S = config.attr.Type.Primitive.OPERATOR_PRIM
 
-T     = TypeVar('T')
-Value_A       : TypeAlias = "AT.Value[AT.ValueCore]"
-Value_t       : TypeAlias = Type[Value_A]
-Sen_A         : TypeAlias = AT.Sentence
-Sen_t         : TypeAlias = Type[Sen_A]
-Instruction_A : TypeAlias = AT.Instruction
-Variable      = NewType('Variable', Value_A)
-ValueData     : TypeAlias = str
-GenFunc       : TypeAlias = AT.fns.GenFunc
-SemSys_A      : TypeAlias = AT.SemanticSystem
 
 
 class BasicTestOp(PO.ProductionOperator):
@@ -68,8 +69,8 @@ class InstructionTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
     @classmethod
     def tearDownClass(cls):

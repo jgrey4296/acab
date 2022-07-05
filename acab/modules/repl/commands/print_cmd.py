@@ -27,8 +27,15 @@ ModuleFragment = AT.ModuleFragment
 @register_class("print")
 class PrintCmd:
     """
-    Print out information on the wm, or a module
-    [wm, module, semantics]
+    Print out details of the current state.
+
+    Usage:
+    print wm                : prints the current working memory
+    print (ctx|c)           : prints the current active context instances
+    print ctx[{num}]        : prints a specific context instance by index
+    print ctx[{num}:{num}]  : prints a slice of the context instances
+    print ctx {binding*}    : prints a specific binding from the context instances
+
     """
 
     def __init__(self):
@@ -54,11 +61,10 @@ class PrintCmd:
     
     def __call__(self, line):
         try:
-            params = self._parser.parse_string(line)
+            params = self._parser.parse_string(line, parse_all=True)
         except pp.ParseException as err:
-            logging.warning("Bad Print Command")
-            logging.warning(err.markInputline())
-            logging.warning("Use: {self._parser}")
+            print("Bad Print Command: ", err.pstring)
+            print(self.__doc__)
             return
 
         logging.info(f"Printing: {line}")
@@ -66,26 +72,14 @@ class PrintCmd:
         if "wm" in params:
             # TODO print everything from a query down
             print(self._cmd.state.engine.pprint())
-        elif "mod_target" in params:
-            print("TODO Specific Module Info: ")
-            # TODO print module doc
-            modules: ModuleFragment = self._cmd.state.engine._module_loader.loaded
-            modules = [x for x in modules if params['mod_target'] in x.source]
-            print("\n".join([x.source for x in modules]))
-        elif "module" in params:
-            print("Modules: ")
-            modules: ModuleFragment = self._cmd.state.engine._module_loader.loaded
-            print("\n".join([x.source for x in modules]))
         elif "context" in params or "short_context" in params or "context_slice" in params:
-            self.print_contexts(params)
-        elif "semantics" in params:
-            print("TODO Semantic Printing not implemented yet")
-        else:
-            print(f"Print Keywords: {self._parser}")
+            self.prep_print_contexts(params)
 
-    def print_contexts(self, params):
+    def prep_print_contexts(self, params):
         ctxs_to_print     = []
         bindings_to_print = []
+
+        # Get the contexts to print
         if "short_context" in params:
             try:
                 ctxs_to_print.append(self._cmd.state.ctxs[params['short_context']])
@@ -97,16 +91,22 @@ class PrintCmd:
             ctxs_to_print += ctx_slice
         elif bool(self._cmd.state.ctxs) and len(self._cmd.state.ctxs) > 0:
             ctxs_to_print += self._cmd.state.ctxs.active_list()
-        else:
+        elif bool(self._cmd.state.ctxs._named_sets):
+            print("Named (continuation) Sets:")
+            print(self._cmd.state.engine.pprint(target=list(self._cmd.state.ctxs._named_sets.keys())))
+
+        if not bool(ctxs_to_print):
             print(f"No applicable contexts to print")
             return
 
         if "bindings" in params:
             bindings_to_print += params.bindings[:]
 
-        logging.info("Ctxs: {}", ctxs_to_print)
-        logging.info("Bindings: {}", bindings_to_print)
+        self.print_contexts(params, ctxs_to_print, bindings_to_print)
 
+    def print_contexts(self, params, ctxs_to_print, bindings):
+        logging.info("Ctxs: {}", ctxs_to_print)
+        logging.info("Bindings: {}", bindings)
         # now print them
         for i,ctx in enumerate(ctxs_to_print):
             if len(ctxs_to_print) > 1:
@@ -115,15 +115,12 @@ class PrintCmd:
                 print("Context: ")
             # if bool(ctx.continuation):
             #     print(f"Continuation: {ctx.continuation}")
-            if bool(bindings_to_print):
-                for x in bindings_to_print:
-                    print("{} : {}".format(x, self._cmd.state.engine.pprint(target=[ctx[x]])))
+            if bool(bindings):
+                for x in bindings:
+                    print("{:<5} : {}".format(x, self._cmd.state.engine.pprint(target=[ctx[x]])))
             else:
                 for x,y in ctx.data.items():
-                    print("{} : {}".format(x, self._cmd.state.engine.pprint(target=[y])))
+                    print("{:<5} : {}".format(x, self._cmd.state.engine.pprint(target=[y])))
 
             print("--------------------")
 
-        if bool(self._cmd.state.ctxs._named_sets):
-            print("Named (continuation) Sets:")
-            print(self._cmd.state.engine.pprint(target=list(self._cmd.state.ctxs._named_sets.keys())))

@@ -1,3 +1,8 @@
+"""
+
+"""
+from __future__ import annotations
+
 import importlib
 import logging as logmod
 import re
@@ -17,6 +22,7 @@ from acab.interfaces.value import Instruction_i
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl.util import init_inspect
+from acab.modules.repl.commands.util import print_module_colour
 
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
@@ -73,16 +79,21 @@ def do_init(self, line):
 @register
 def do_module(self, line):
     """
-    Load an acab compliant python module into the self
+    Load an acab compliant python module into the engine
     Rebuilds the DSL after import.
+    Works like the python import statement.
+
+    Usage:
+    module {a.python.package.path}
+
     """
     params = line.split(" ")
     logging.info(f"Loading Modules: {params}")
     try:
         loaded = self.state.engine.load_modules(*params)
         print(f"Loaded {len(loaded)} modules")
-        for x in loaded:
-            print(x)
+        for mod in loaded:
+            print_module_colour(mod)
 
     except AcabImportException as err:
         traceback.print_tb(err.__traceback__, limit=-4)

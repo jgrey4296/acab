@@ -22,7 +22,7 @@ from acab.error.context import AcabContextException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
 from acab.modules.context.context_instance import ContextInstance
-from acab.modules.context.context_meta import ContextMeta
+from acab.core.meta_classes.context_set import ContextSetMeta
 
 if TYPE_CHECKING:
     from acab import types as AT
@@ -44,7 +44,7 @@ NEGATION_S   = DS.NEGATION
 DELAYED_E    = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
 
 @dataclass
-class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
+class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextSetMeta):
 
     # TODO make operators a stack
     # operators are just the results of a prior query

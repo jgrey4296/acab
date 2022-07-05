@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 import logging as logmod
 logging = logmod.getLogger(__name__)
 
-from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
+from acab.core.util.annotation import ValueAnnotation, ValueRepeatAnnotation
 from acab.core.defaults import parse_keys as DK
 import acab.core.defaults.value_keys as CDS
 
