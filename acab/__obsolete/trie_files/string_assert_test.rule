@@ -1,9 +1,0 @@
-// initial assertions
-a.b."a test string"
-
-// A Retracting rule
-a.string.rule: (::ρ)
-  a.b."a test string"?
-    
-  λS.ActionAdd a.b."an asserted string"
-end
