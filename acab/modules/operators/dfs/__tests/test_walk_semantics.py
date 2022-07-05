@@ -59,8 +59,8 @@ class TestWalkSemantics(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         cls.eng = exlo()
         cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs")

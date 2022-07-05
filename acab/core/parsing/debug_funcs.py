@@ -88,14 +88,16 @@ def dfs_activate(*parsers, remove=False):
         current = queue.pop(0)
         if id(current) in found:
             continue
+        elif current is None:
+            continue
         else:
             found.add(id(current))
 
-        if current.name is not None and not remove:
+        if bool(current.name) and current.name != current._defaultName and not remove:
             current.set_debug_actions(debug_start_action,
                                       debug_success_action,
                                       debug_fail_action)
-        if remove:
+        elif remove:
             current.set_debug_actions(None, None, None)
 
         if hasattr(current, 'expr'):

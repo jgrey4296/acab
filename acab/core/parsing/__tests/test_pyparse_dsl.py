@@ -14,14 +14,12 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
     from acab.core.parsing import pyparse_dsl as ppDSL
+    from acab.core.util.fragments import DSL_Fragment
+    from acab.error.parse import AcabParseException
+    from acab.interfaces import dsl as DSLi
+    from acab.interfaces import handler_system as hi
 
-DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-
-from acab.core.util.fragments import DSL_Fragment
-from acab.error.parse import AcabParseException
-from acab.interfaces import dsl as DSLi
-from acab.interfaces import handler_system as hi
-
+DEFAULT_HANDLER_SIGNAL = config.attr.Handler.System.DEFAULT_SIGNAL
 
 class PyParseDSLTests(unittest.TestCase):
 
@@ -34,8 +32,8 @@ class PyParseDSLTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
     @classmethod
     def tearDownClass(cls):

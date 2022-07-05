@@ -34,7 +34,7 @@ Instruction = 'str|Sentence|Instruction'
 
 @dataclass
 class AcabBasicEngine(AcabEngineImpl, AcabEngine_i):
-    """ The Abstract class of a production system engine. """
+    """ The Default Acab production system engine. """
     # Blocks engine use until build has been called:
     dsl_builder      : Type[DSL_Builder_i] = field(init=False, default=PyParseDSL)
     _module_loader   : ModuleLoader        = field(init=False, default_factory=ModuleLoader)

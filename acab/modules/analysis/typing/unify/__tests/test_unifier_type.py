@@ -47,8 +47,8 @@ class UnifierTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())

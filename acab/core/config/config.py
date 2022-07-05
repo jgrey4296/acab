@@ -85,10 +85,10 @@ class ConfigSingletonMeta(type(Protocol)):
         _hooks = set(hooks or [])
 
         if not hasattr(ConfigSingletonMeta, "_instance") or ConfigSingletonMeta._instance is None:
-            logging.info(f"Building {cls.__module__}.{cls.__qualname__} Singleton")
+            logging.info("Building {}.{} Singleton", cls.__module__, cls.__qualname__)
             ConfigSingletonMeta._instance : Config_i = super().__call__(paths, _hooks)
         elif bool(hooks) or bool(paths):
-            logging.info(f"Updating Hooks and Read List of {cls.__module__}.{cls.__qualname__}") #type:ignore
+            logging.info("Updating Hooks and Read List of {}.{}", cls.__module__, cls.__qualname__) #type:ignore
             ConfigSingletonMeta._instance.hooks.update(_hooks) #type:ignore
             ConfigSingletonMeta._instance.read(list(paths)) #type:ignore
 
@@ -232,7 +232,8 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         has_type_action = spec._type in self.type_actions
 
         if not has_type_action:
-            logging.info(f"ConfigSpec Type Specified without handler, will try to straight apply it: {spec.section} {spec.key}: {spec._type}", stacklevel=3)
+            logging.info("ConfigSpec Type Specified without handler, will try to straight apply it: {} {}: {}",
+                         spec.section, spec.key, spec._type, stacklevel=3)
 
         if has_default and not (in_file and in_section):
             warnings.warn(f"Config Spec Missing, but a default was found: {spec.section}.{spec.key}", stacklevel=2)
