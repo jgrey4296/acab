@@ -1,18 +1,20 @@
 from __future__ import annotations
+
 import logging as logmod
+import unittest
+import warnings
 from os.path import split, splitext
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Sequence, Tuple, TypeAlias,
                     TypeVar, cast)
-import unittest
 from unittest import mock
-import warnings
-import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
+    import acab
     acab.setup()
-    pass
+
+    from acab.core.semantics.ctx_inst_manager import CtxInstManager
 
 class TestQueryManager(unittest.TestCase):
     @classmethod
@@ -25,9 +27,8 @@ class TestQueryManager(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        if bool(logging.root.handlers):
-            logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
     @classmethod
     def tearDownClass(cls):
