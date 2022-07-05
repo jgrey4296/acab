@@ -16,7 +16,7 @@ with warnings.catch_warnings():
 
 from acab.core.data.node import AcabNode
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.param_core import ParamCore
+from acab.core.parsing.pyparse_ext.param_core import ParamCore
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
@@ -33,8 +33,8 @@ class ParamCoreTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
     @classmethod
     def tearDownClass(cls):

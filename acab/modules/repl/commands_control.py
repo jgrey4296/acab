@@ -2,6 +2,8 @@
 Commands for the REPL
 
 """
+from __future__ import annotations
+
 import importlib
 import logging as logmod
 import re
@@ -19,6 +21,11 @@ from acab.interfaces.value import Instruction_i
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 
+try:
+    import readline
+except ImportError:
+    readline = None
+
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
@@ -27,6 +34,9 @@ config  = AcabConfig()
 def do_prompt(self, line):
     """
     Change the prompt of the repl
+
+    Usage:
+    prompt {newprompt}
     """
     self.state.prompt = line.strip()
 
@@ -34,6 +44,7 @@ def do_prompt(self, line):
 def do_multi(self, line):
     """
     Activate multi-line collation
+
     """
     if not self.state.in_multi_line:
         # Start
@@ -42,16 +53,32 @@ def do_multi(self, line):
         self.state.collect_str = []
         self.state.prompt_bkup = self.state.prompt
         self.state.prompt = self.state.prompt_ml
+        self.state.indent = 0
+        if bool(readline):
+            # indent modification based on:
+            # https://stackoverflow.com/questions/8505163
+            def input_hook():
+                indent_str = self.state.indent * "    "
+                readline.insert_text(indent_str)
+                readline.redisplay()
+
+            readline.set_pre_input_hook(input_hook)
     else:
         logging.info("Deactivating multi line")
         collected = "\n".join(self.state.collect_str)
         self.state.in_multi_line = False
         self.state.prompt = self.state.prompt_bkup
+        self.state.indent = 0
+        if bool(readline):
+            readline.set_pre_input_hook()
+
         logging.info(f"Collected: {collected}")
         if bool(line):
             self.onecmd(line + " " + collected)
         else:
             self.onecmd(collected)
+
+
 
 
 @register
@@ -68,7 +95,17 @@ def do_collect(self, line):
     """ Add a line to the multi line collection,
     ready to be used as one statement when multi line is closed """
     assert(self.state.in_multi_line)
-    self.state.collect_str.append(line)
+    if line.strip() == "end":
+        self.state.indent = max(self.state.indent - 1, 0)
+
+
+    curr_indent = self.state.indent
+    curr_indent_str = curr_indent * "    "
+
+    self.state.collect_str.append(curr_indent_str + line)
+    if line[-1] == ":":
+        self.state.indent += 1
+
     logging.info("Collecting: {}".format(self.state.collect_str))
 
 @register

@@ -25,7 +25,7 @@ with warnings.catch_warnings():
     from acab.core.defaults.value_keys import (BIND, NEGATION, OPERATOR, QUERY,
                                                QUERY_FALLBACK)
     from acab.core.parsing import parsers as PU
-    from acab.core.parsing.annotation import ValueRepeatAnnotation
+    from acab.core.util.annotation import ValueRepeatAnnotation
     from acab.core.util.sentences import ProductionComponent
 
     from acab.core.value.instruction import (Instruction, ProductionContainer,
@@ -49,8 +49,8 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         QP.HOTLOAD_QUERY_OP << PU.OPERATOR_SUGAR
 

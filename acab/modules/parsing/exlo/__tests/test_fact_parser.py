@@ -20,7 +20,7 @@ with warnings.catch_warnings():
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.util.annotation import ValueAnnotation
 import acab.core.defaults.value_keys as DS
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import Sentence_i, Value_i

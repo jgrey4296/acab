@@ -1,18 +1,23 @@
+from __future__ import annotations
+
+import builtins
+import datetime
 import importlib
 import logging as logmod
-from types import FunctionType, ModuleType
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
 from functools import wraps
-import datetime
-import builtins
-from types import FunctionType
+from types import FunctionType, ModuleType
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
+                    Iterable, Iterator, List, Mapping, Match, MutableMapping,
+                    Optional, Sequence, Set, Tuple, TypeVar, Union, cast)
+from os.path import splitext
 
 import acab
 from acab import AcabConfig
 from acab.interfaces.debugger import AcabDebugger_i
 from acab.interfaces.engine import AcabEngine_i
+
+if TYPE_CHECKING:
+    from acab.interfaces.fragments import ModuleFragment
 
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
@@ -53,12 +58,11 @@ def init_inspect(mod_str):
 
 def build_rebind_instruction(value:str):
     """ Manually construct a startup rebind instruction """
-    from acab.core.value.instruction import ProductionContainer
-    from acab.core.util.sentences import ProductionComponent
-
-    from acab.interfaces.value import ValueFactory as VF
     # from acab.core.value.sentence import Sentence
     import acab.core.defaults.value_keys as DS
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import ProductionContainer
+    from acab.interfaces.value import ValueFactory as VF
 
 
     action_sem_hint = VF.sen() << config.attr.Semantic.Signals.ACTION
@@ -98,3 +102,4 @@ def capture_printing():
             trace_logger.warning(args[0])
 
     builtins.print = intercepted
+

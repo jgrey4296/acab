@@ -23,7 +23,7 @@ with warnings.catch_warnings():
     #     import pyparsing as pp
     #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-    from acab.core.parsing.annotation import ValueAnnotation
+    from acab.core.util.annotation import ValueAnnotation
     import acab.core.defaults.value_keys as DS
     from acab.core.value.sentence import Sentence
 

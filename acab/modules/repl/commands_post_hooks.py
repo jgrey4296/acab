@@ -1,9 +1,12 @@
-#!/usr/bin/env python3
+"""
+
+"""
 from __future__ import annotations
 
 import abc
 import importlib
 import logging as logmod
+import re
 import tracemalloc
 from collections import defaultdict
 from dataclasses import InitVar, dataclass, field
@@ -19,12 +22,6 @@ import acab
 import pyparsing as pp
 from acab import AcabConfig
 from acab import types as AT
-
-config = AcabConfig()
-
-
-import re
-
 from acab.core.parsing import debug_funcs as DBF
 from acab.core.util.debugging import (human, print_diff, print_stat,
                                       print_stat_file, sh_filter)
@@ -33,8 +30,9 @@ from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register, register_default
 
 logging = logmod.getLogger(__name__)
+config  = AcabConfig()
 
-snap_a = None
+snap_a  = None
 
 def display_memory(self):
     """
@@ -119,8 +117,10 @@ def do_ctxprompt(self, line):
     """
     Turn On or Off the prompt notification of the active context amount
     """
-    if ctx_prompt.__name__ not in self.state.post_cmds:
-        self.state.post_cmds[ctx_prompt.__name__] = ctx_prompt
+    hook_name = "a_" + ctx_prompt.__name__
+    if hook_name not in self.state.post_cmds:
+        self.state.post_cmds[hook_name] = ctx_prompt
     else:
-        del self.state.post_cmds[ctx_prompt.__name__]
+        del self.state.post_cmds[hook_name]
         self.prompt = f"{self.state.prompt}: "
+

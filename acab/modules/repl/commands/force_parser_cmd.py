@@ -20,11 +20,17 @@ if TYPE_CHECKING:
 import pyparsing as pp
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register_class
+from acab.interfaces.handler_system import HandlerSpec_i
+from acab.core.parsing.debug_funcs import dfs_activate
 
 rst = RP.rst
 
 @register_class("forcep")
 class ForceParserCmd:
+    """ Force Parser:
+    Query the bootstrap parser,
+    and if supplied text, parse it and try to run it
+    """
 
     def __init__(self):
         self._parser = self._gen_parser()
@@ -37,13 +43,15 @@ class ForceParserCmd:
 
     
     def __call__(self, line):
-        """ Force Parser:
-        Query the bootstrap parser,
-        and if supplied text, parse it and try to run it
-        """
         try:
             # parse the line
-            params = self._parser.parse_string(line)
+            params = self._parser.parse_string(line, parse_all=True)
+        except pp.ParseException as err:
+            print("Unrecognised Option: ", err.pstr)
+            print(self.__doc__)
+            return
+
+        try:
             # Get the handler for the specified signal
             parser = self._cmd.state.engine._dsl[params.query]
             print(f"Retrieved: {parser}\n")
@@ -53,19 +61,30 @@ class ForceParserCmd:
 
             print(f"Trying Parser on: {params.send}")
             # if exists, parse, then call engine on it
-            built = parser.build()
-            built.set_debug(True)
+            if isinstance(parser, HandlerSpec_i):
+                built = parser.build()
+            else:
+                assert(hasattr(parser.func, "parse_string"))
+                built = parser.func
+
+            dfs_activate(built)
             forced_result = built.parse_string(params.send.strip(), parseAll=True)[:]
-            built.set_debug(False)
+            dfs_activate(built, remove=True)
+
+
             self._cmd.state.debug_data = forced_result
             print(f"----- Forced Parse Result: {forced_result}\n")
 
             if isinstance(forced_result, tuple):
                 forced_result = forced_result[1]
 
-            print("Attempting to execute result:")
-            self._cmd.state.ctxs = self._cmd.state.engine(forced_result,
-                                                          ctxset=self._cmd.state.ctxs)
+            answer = input("Execute result? Y/* ")
+            if answer == "Y":
+                print("Attempting to execute result:")
+                self._cmd.state.ctxs = self._cmd.state.engine(forced_result,
+                                                              ctxset=self._cmd.state.ctxs)
+            else:
+                print("Not Executing result")
 
         except pp.ParseException as err:
             traceback.print_tb(err.__traceback__)

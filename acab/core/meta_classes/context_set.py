@@ -24,7 +24,7 @@ from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.value.util import name_sieve_fns
 from acab.core.util.decorators.util import cache
-from acab.core.util.singletons import SingletonMeta
+from acab.core.meta_classes.singletons import SingletonMeta
 from acab.error.base import AcabBasicException
 from acab.interfaces import context as CtxInt
 from acab.interfaces.sieve import AcabSieve
@@ -48,7 +48,7 @@ ValueData     : TypeAlias = str
 
 ProtocolMeta = type(Protocol)
 
-class ContextMeta(ProtocolMeta):
+class ContextSetMeta(ProtocolMeta):
     """ Utility Meta Class for building contexts """
 
     name_sieve           : ClassVar[AcabSieve[str]] = AcabSieve(name_sieve_fns)
@@ -59,7 +59,7 @@ class ContextMeta(ProtocolMeta):
     __subclasses  : ClassVar[dict[str,type[Value_A]]]      = dict()
 
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
-        super(ContextMeta, cls).__init__(name, bases, data)
+        super(ContextSetMeta, cls).__init__(name, bases, data)
 
     def __call__(cls, ops:None|CtxIns|dict[str, VI.Operator_i]|list[AT.ModuleFragment]=None, **kwargs):
         """
@@ -67,13 +67,13 @@ class ContextMeta(ProtocolMeta):
         to construct operator bindings if necessary
         """
         if ops is None:
-            return super(ContextMeta, cls).__call__(**kwargs)
+            return super(ContextSetMeta, cls).__call__(**kwargs)
 
         assert('_operators' not in kwargs)
         match ops:
             case CtxInt.ContextInstance_i():
                 kwargs['_operators'] = ops
-                return super(ContextMeta, cls).__call__(**kwargs)
+                return super(ContextSetMeta, cls).__call__(**kwargs)
             case list():
                 operators = [y for x in ops for y in x.operators]
                 # Build the CtxInst data dict:
@@ -83,7 +83,7 @@ class ContextMeta(ProtocolMeta):
             case dict():
                 op_dict = ops
             case _:
-                raise TypeError("ContextMeta passed an unknown type for operators")
+                raise TypeError("ContextSetMeta passed an unknown type for operators")
 
         # TODO abstract building ctxinst's to the set
         instance = ContextInstance(op_dict, exact=True)
@@ -91,5 +91,5 @@ class ContextMeta(ProtocolMeta):
 
         # Build the actual value
         kwargs['_operators'] = instance
-        new_obj = super(ContextMeta, cls).__call__(**kwargs)
+        new_obj = super(ContextSetMeta, cls).__call__(**kwargs)
         return new_obj

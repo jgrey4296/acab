@@ -12,7 +12,6 @@ Meanwhile ValueSemantics_i are concerned only with the values and structures the
 
 *Dependent* Semantics factor in contexts and a reference to the engine.
 
-
 """
 # pylint: disable=multiple-statements,too-many-ancestors,invalid-sequence-index,abstract-method,arguments-differ
 from __future__ import annotations

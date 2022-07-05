@@ -8,7 +8,7 @@ from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
                                       END, NG, N, component_gap, emptyLine,
                                       gap, ln, op, orm)
-from acab.core.parsing.statement_core import StatementCore
+from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 from acab.modules.parsing.exlo.constructors import build_rule
 from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S, RULE_PRIM
 

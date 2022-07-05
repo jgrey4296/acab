@@ -1,6 +1,4 @@
 """
-acab.core.engine:
-
 Provides Larger structures for use.
 
 Engine, which simplifies *using* acab

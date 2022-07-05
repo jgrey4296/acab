@@ -47,8 +47,8 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         AP.HOTLOAD_OPERATORS << PU.OPERATOR_SUGAR
         QP.HOTLOAD_QUERY_OP  << PU.OPERATOR_SUGAR

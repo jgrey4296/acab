@@ -21,24 +21,24 @@ with warnings.catch_warnings():
     config = acab.setup()
 
 
-import acab.core.defaults.value_keys as DS
-import acab.modules.parsing.exlo.parsers.ActionParser as AP
-import acab.modules.parsing.exlo.parsers.FactParser as FP
-import acab.modules.parsing.exlo.parsers.QueryParser as QP
-import acab.modules.parsing.exlo.parsers.RuleParser as RP
-import acab.modules.parsing.exlo.parsers.TransformParser as TP
-import acab.modules.printing.printers as Printers
-from acab.core.config.config import AcabConfig
-from acab.core.defaults import print_signals as DSig
-from acab.core.value.instruction import (Instruction,
-                                         ProductionContainer,
-                                         ProductionOperator)
-from acab.core.util.sentences import ProductionComponent
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.handler_system import Handler_i
-from acab.modules.printing import default
-from acab.modules.printing.basic_printer import BasicPrinter
+    import acab.core.defaults.value_keys as DS
+    import acab.modules.parsing.exlo.parsers.ActionParser as AP
+    import acab.modules.parsing.exlo.parsers.FactParser as FP
+    import acab.modules.parsing.exlo.parsers.QueryParser as QP
+    import acab.modules.parsing.exlo.parsers.RuleParser as RP
+    import acab.modules.parsing.exlo.parsers.TransformParser as TP
+    import acab.modules.printing.printers as Printers
+    from acab.core.config.config import AcabConfig
+    from acab.core.defaults import print_signals as DSig
+    from acab.core.value.instruction import (Instruction,
+                                            ProductionContainer,
+                                            ProductionOperator)
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.handler_system import Handler_i
+    from acab.modules.printing import default
+    from acab.modules.printing.basic_printer import BasicPrinter
 
 NEGATION_S        = DS.NEGATION
 QUERY_S           = DS.QUERY
@@ -67,8 +67,8 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
     @classmethod
     def tearDownClass(cls):

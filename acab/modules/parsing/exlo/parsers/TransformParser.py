@@ -6,7 +6,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
                                       NG, N, component_gap, ln, op, s, zrm)
-from acab.core.parsing.statement_core import StatementCore
+from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 
 from acab.modules.parsing.exlo.constructors import (build_transform,
                                                     build_transform_component)

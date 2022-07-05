@@ -215,6 +215,6 @@ class CheckStatementFragment(UnifiedFragment_p):
         name_suff = data['suffix'] if data and 'suffix' in data else "_right"
 
         clean_var_names                       = {}
-        clean_type_sens : list[VI.Sentence_i] = [VC.rectx(x, ctx=clean_var_neames, name_suff=name_suff) for x in type_sens]
+        clean_type_sens : list[VI.Sentence_i] = [VC.rectx(x, ctx=clean_var_names, name_suff=name_suff) for x in type_sens]
         unified                               = tuf.type_unify.repeat(to_check, clean_type_sens, ctxs[0])
         return unified

@@ -23,7 +23,7 @@ with warnings.catch_warnings():
 
     import acab.core.defaults.value_keys as DS
     from acab.core.parsing import pyparse_dsl as ppDSL
-    from acab.core.parsing.annotation import ValueRepeatAnnotation
+    from acab.core.util.annotation import ValueRepeatAnnotation
     from acab.core.util.sentences import ProductionComponent
     from acab.core.value.instruction import Instruction, ProductionContainer
     from acab.core.value.sentence import Sentence
@@ -59,8 +59,8 @@ class TestWalkSemantics(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         cls.eng = exlo()
         cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs")

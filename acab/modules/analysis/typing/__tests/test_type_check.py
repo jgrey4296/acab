@@ -20,7 +20,7 @@ with warnings.catch_warnings():
     from acab.interfaces.value import ValueFactory as VF
     from acab.core.data.acab_struct import AcabNode
     from acab.core.defaults.value_keys import BIND
-    from acab.core.parsing.annotation import ValueAnnotation
+    from acab.core.util.annotation import ValueAnnotation
     from acab.core.value.instruction import Instruction
     from acab.core.value.sentence import Sentence
     from acab.core.value.value import AcabValue

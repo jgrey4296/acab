@@ -14,8 +14,8 @@ from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (DBLARROW, DELIM, NG, N, component_gap, ARROW,
                                       emptyLine, ln, op, s, s_key, orm, END)
-from acab.core.parsing.param_core import ParamCore
-from acab.core.parsing.statement_core import StatementCore, type_annotation_gen
+from acab.core.parsing.pyparse_ext.param_core import ParamCore
+from acab.core.parsing.pyparse_ext.statement_core import StatementCore, type_annotation_gen
 from acab.core.defaults.semantic_signals import signals
 
 from acab.core.value.sentence import Sentence

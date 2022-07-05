@@ -2,6 +2,8 @@
 The parser for the REPL
 
 """
+from __future__ import annotations
+
 import logging as logmod
 
 import pyparsing as pp
@@ -13,7 +15,7 @@ from acab.modules.repl.util import build_slice
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
-rst = pp.delimited_list(pp.rest_of_line, delim=pp.White("\n\r"), combine=True).leave_whitespace()
+rst     = pp.delimited_list(pp.rest_of_line, delim=pp.White("\n\r"), combine=True).leave_whitespace()
 
 # multi line ##################################################################
 MULTI_LINE_START = config.prepare("Module.REPL", "MULTI_LINE_START")()

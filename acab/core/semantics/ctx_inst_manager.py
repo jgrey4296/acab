@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 
 import logging as logmod
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
-
-logging = logmod.getLogger(__name__)
-
 from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
+                    Iterable, Iterator, List, Mapping, Match, MutableMapping,
+                    Optional, Sequence, Set, Tuple, TypeVar, Union, cast)
 from uuid import UUID, uuid1
 
 import acab.core.defaults.value_keys as DS
@@ -22,30 +20,32 @@ from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
 
-config = AcabConfig()
+if TYPE_CHECKING:
+    CtxIns           = CtxInt.ContextInstance_i
+    CtxSet           = CtxInt.ContextSet_i
+    Constraints      = 'ConstraintCollection'
+    ProdComp         = ProductionComponent
+    ProdCon          = ProductionContainer
+    Operator         = 'ProductionOperator'
+    Value            = AT.Value
+    Statement        = AT.Instruction
+    Sen              = Sentence_i
+    Node             = AT.StructView
+    ModuleFragment   = AT.ModuleFragment
+    NamedCtxSet      = "NamedCtxSet"
+
+logging   = logmod.getLogger(__name__)
+config    = AcabConfig()
+DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
 
 CONSTRAINT_S     = DS.CONSTRAINT
 NEGATION_S       = DS.NEGATION
 
-CtxIns           = CtxInt.ContextInstance_i
-CtxSet           = CtxInt.ContextSet_i
-Constraints      = 'ConstraintCollection'
-ProdComp         = ProductionComponent
-ProdCon          = ProductionContainer
-Operator         = 'ProductionOperator'
-Value            = AT.Value
-Statement        = AT.Instruction
-Sen              = Sentence_i
-Node             = AT.StructView
-ModuleFragment   = AT.ModuleFragment
-NamedCtxSet      = "NamedCtxSet"
-
-DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
 
 
 @dataclass
-class ContextQueryManager(CtxInt.CtxManager_i):
-    """ Shared State of the current query, between different ctx insts """
+class CtxInstManager(CtxInt.CtxManager_i):
+    """ A Simple Shared State manager for query bookkeeping """
 
     negated       : bool                       = field(init=False, default=False)
     collect_vars  : set[str]                   = field(init=False, default_factory=set)

@@ -60,10 +60,6 @@ class ContextFailState_d:
     failed_on : Value       = field()
     node      : None | View = field()
 
-class _Constraint_p(Protocol):
-    @abc.abstractmethod
-    def test(self, node:View, ctx:CtxIns) -> None: pass
-
 @runtime_checkable
 class ContextSet_p(Hashable, Iterable[CtxIns], Protocol):
 
@@ -94,10 +90,18 @@ class ContextInstance_i(Hashable, Collection[Value], AcabFinishable_p, Protocol)
     @property
     @abc.abstractmethod
     def current_node(self) -> View: pass
+class _Constraint_p(Protocol):
+    @abc.abstractmethod
+    def test(self, node:View, ctx:CtxIns) -> None: pass
+    @abc.abstractmethod
+    def __bool__(self) -> bool: pass
+    @abc.abstractmethod
+    def __getitem__(self, key) -> list[Sen]: pass
+
 @dataclass(frozen=True) #type:ignore[misc]
 class Constraint_i(_Constraint_p):
     source         : Value               = field()
-    _test_mappings : dict[str, list[AT.fns.TestFunc]] = field(repr=False)
+    _test_mappings : dict[str, list[Sen]] = field(repr=False)
 
     # Value -> (key, list[Constraint])
     sieve         : ClassVar[list[GenFunc]]
@@ -106,6 +110,11 @@ class Constraint_i(_Constraint_p):
 
 @dataclass
 class CtxManager_i(ContextManager):
+    """
+    CtxManager_i's do the book keeping for queries,
+    setting the current ctx instance,
+    building and interacting with constraint collections.
+    """
 
     target_clause : None|Sen = field()
     root_node     : View     = field()

@@ -14,7 +14,7 @@ from uuid import UUID, uuid1
 from weakref import ref
 
 import acab.core.defaults.value_keys as DS
-import acab.core.util.part_implementations.value as VSI  # type:ignore
+import acab.core.value.part_implementations.value as VSI  # type:ignore
 import acab.interfaces.protocols.value as VP
 import acab.interfaces.value as VI
 from acab import types as AT

@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+Metaclass for constructing AcabValues.
+"""
 from __future__ import annotations
 
 import abc
@@ -19,13 +21,13 @@ from weakref import ref
 
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
+from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.util.decorators.util import cache
-from acab.core.util.singletons import SingletonMeta
+from acab.core.meta_classes.singletons import SingletonMeta
 from acab.core.value.util import name_sieve_fns
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
-from acab import types as AT
 
 if TYPE_CHECKING:
     ValueData     : TypeAlias = str

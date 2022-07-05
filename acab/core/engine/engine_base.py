@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
+"""
 
+"""
 import logging as logmod
 from os.path import abspath, exists, expanduser, split
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,

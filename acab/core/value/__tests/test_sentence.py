@@ -15,12 +15,12 @@ with warnings.catch_warnings():
     config = acab.setup()
     from acab.core.parsing import pyparse_dsl as ppDSL
 
-import acab.core.defaults.value_keys as DS
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.value import ValueFactory as VF
-from acab.interfaces.value import Sentence_i, Value_i
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    import acab.core.defaults.value_keys as DS
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.value import ValueFactory as VF
+    from acab.interfaces.value import Sentence_i, Value_i
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 dsl = None
 
@@ -35,8 +35,8 @@ class SentenceTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         global dsl
         # Set up the parser to ease test setup

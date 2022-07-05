@@ -13,11 +13,11 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-import acab.core.defaults.value_keys as DS
-from acab.core.data.node import AcabNode
-from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
+    import acab.core.defaults.value_keys as DS
+    from acab.core.data.node import AcabNode
+    from acab.core.value.instruction import Instruction
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
 
 AT_BIND_S = DS.AT_BIND
 BIND_S    = DS.BIND
@@ -41,8 +41,8 @@ class AcabValueTests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
     @classmethod
     def tearDownClass(cls):

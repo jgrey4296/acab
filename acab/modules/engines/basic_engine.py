@@ -34,7 +34,7 @@ Instruction = 'str|Sentence|Instruction'
 
 @dataclass
 class AcabBasicEngine(AcabEngineImpl, AcabEngine_i):
-    """ The Abstract class of a production system engine. """
+    """ The Default Acab production system engine. """
     # Blocks engine use until build has been called:
     dsl_builder      : Type[DSL_Builder_i] = field(init=False, default=PyParseDSL)
     _module_loader   : ModuleLoader        = field(init=False, default_factory=ModuleLoader)
@@ -85,15 +85,3 @@ class AcabBasicEngine(AcabEngineImpl, AcabEngine_i):
         if len(self._cached_bindings) > self._cache_size:
             self._cached_bindings.pop(0)
 
-
-    @staticmethod
-    def from_sentences(self, sens):
-        # TODO make the engine, then load sens
-        # for sen in sens:
-        #     self(sen)
-
-        # return self
-        raise NotImplementedError()
-
-    def to_word(self):
-        raise NotImplementedError()
