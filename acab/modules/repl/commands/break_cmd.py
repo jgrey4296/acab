@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+
+"""
 from __future__ import annotations
 
 import abc
@@ -20,11 +22,9 @@ if TYPE_CHECKING:
     pass
 
 
-logging = logmod.getLogger(__name__)
-config  = AcabConfig()
-
-Debugger = config.prepare("Imports.Targeted", "debug", actions=[config.actions_e.IMCLASS], args={"interface": AcabDebugger_i})()
-
+logging     = logmod.getLogger(__name__)
+config      = AcabConfig()
+Debugger    = config.prepare("Imports.Targeted", "debug", actions=[config.actions_e.IMCLASS], args={"interface": AcabDebugger_i})()
 debug_intro = config.prepare("Module.Repl.Debug.Intro", actions=[config.actions_e.STRIPQUOTE], _type=list)()
 
 the_debugger = Debugger()
@@ -38,6 +38,20 @@ the_debugger = Debugger()
 #
 @register_class("break")
 class BreakCmd:
+    """
+    Control the Acab Debugger.
+    Specified in Config [Module.Debug].
+
+    Usage:
+    break file line maybe_funcname
+    break rule.name?
+
+    break delete num
+    break list
+
+    # To break on semantic execution:
+
+    """
 
     def __init__(self):
         self._parser   = self._gen_parser()
@@ -61,25 +75,17 @@ class BreakCmd:
 
 
     def __call__(self, line):
-        """
-        Control a bdb customization.
-        Specified in Config [Module.Debug].
-
-        break file line maybe_funcname
-        break rule.name?
-
-        break delete num
-        break list
-
-        # To break on semantic execution:
-
-        """
         if not bool(the_debugger):
             the_debugger.set_running_trace()
 
-        ctxs = self._parser.parse_string(line)
-        # TODO refactor the basic/semantic logic into the debugger
+        try:
+            ctxs = self._parser.parse_string(line, parse_all=True)
+        except pp.ParseException as err:
+            print("Unrecognized option: ", err.pstr)
+            print(self.__doc__)
+            return
 
+        # TODO refactor the basic/semantic logic into the debugger
         if "basic" in ctxs:
             self.handle_basic(ctxs)
         elif "semantic" in ctxs:

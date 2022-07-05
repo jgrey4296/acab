@@ -24,7 +24,7 @@ from dataclasses import InitVar, dataclass, field
 from enum import Enum, EnumMeta
 from os import listdir
 from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
-                     splitext)
+                     splitext, commonpath)
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
                     Iterable, Iterator, List, Mapping, Match, MutableMapping,
                     Optional, Protocol, Sequence, Set, Tuple, Type, TypeAlias,
@@ -99,7 +99,7 @@ class ConfigSingletonMeta(type(Protocol)):
 
 
 @APE.assert_implements(Config_i)
-@dataclass
+@dataclass(repr=False)
 class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     """ A Singleton class for the active configuration
     Uses ${SectionName:Key} interpolation in values,
@@ -148,6 +148,12 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         in_defaults = key in self.defaults
         in_overrides = key in self._overrides
         return any([in_print, in_base, in_enums, in_defaults, in_overrides])
+
+    def __repr__(self):
+        common = commonpath(self._files)
+        short_paths = [x[len(common):] for x in self._files]
+        return f"<{self.__class__.__name__} : Base Path: {common}, Loaded Files: {', '.join(short_paths)}>"
+
 
     def read(self, paths:list[str]):
         """ DFS over provided paths, finding the cls.suffix filetype (default=.config) """
@@ -226,7 +232,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         has_type_action = spec._type in self.type_actions
 
         if not has_type_action:
-            warnings.warn(f"ConfigSpec Type Specified without handler, will try to straight apply it: {spec.section} {spec.key}: {spec._type}", stacklevel=2)
+            logging.info(f"ConfigSpec Type Specified without handler, will try to straight apply it: {spec.section} {spec.key}: {spec._type}", stacklevel=3)
 
         if has_default and not (in_file and in_section):
             warnings.warn(f"Config Spec Missing, but a default was found: {spec.section}.{spec.key}", stacklevel=2)
