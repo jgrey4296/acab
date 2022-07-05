@@ -9,7 +9,7 @@ from acab.core.parsing.consts import (DELIM, NG, N, component_gap, ln, op, orm,
                                       s, zrm)
 from acab.core.defaults.parse_keys import OPERATOR
 from acab.core.parsing.parsers import VALBIND
-from acab.core.parsing.statement_core import StatementCore
+from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S, ACTION_COMPONENT
 

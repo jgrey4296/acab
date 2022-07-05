@@ -16,7 +16,7 @@ with warnings.catch_warnings():
 
 from acab.core.data.node import AcabNode
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.statement_core import StatementCore
+from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue

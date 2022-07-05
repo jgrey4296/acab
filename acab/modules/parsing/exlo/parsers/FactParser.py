@@ -15,8 +15,8 @@ from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 from acab.core.parsing.consts import (COLON, COMMA, DELIM, END, FUNC_SYMBOL,
                                       NEGATION, NG, N, emptyLine, ln, op, opLn,
                                       zrm)
-from acab.core.parsing.param_core import ParamCore
-from acab.core.parsing.statement_core import StatementCore
+from acab.core.parsing.pyparse_ext.param_core import ParamCore
+from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.parsers import util as EU
 

@@ -13,7 +13,7 @@ from acab.core.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM,
                                       DOUBLEBAR, END, NG, QUERY, N,
                                       component_gap, ln, op, orm, s, zrm)
 from acab.core.parsing.funcs import build_assignment
-from acab.core.parsing.statement_core import StatementCore
+from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.constructors import build_query
