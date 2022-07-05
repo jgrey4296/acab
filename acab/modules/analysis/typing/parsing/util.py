@@ -9,7 +9,7 @@ import acab.core.defaults.value_keys as DS
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.defaults import parse_keys as DK
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.util.annotation import ValueAnnotation
 from acab.core.parsing.consts import s, s_key
 from acab.interfaces import value as VI
 from acab.modules.analysis.typing import util as TYU

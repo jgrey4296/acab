@@ -18,7 +18,7 @@ with warnings.catch_warnings():
     #     from acab.core.parsing import debug_funcs as DBF
     #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
     import acab.core.defaults.value_keys as DS
-    from acab.core.parsing.annotation import ValueAnnotation
+    from acab.core.util.annotation import ValueAnnotation
     from acab.interfaces.value import ValueFactory as VF
     from acab.core.parsing.component_dsl import Component_DSL
     from acab.core.value.value import AcabValue

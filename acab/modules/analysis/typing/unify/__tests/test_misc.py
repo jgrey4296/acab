@@ -14,7 +14,7 @@ with warnings.catch_warnings():
     config = acab.setup()
     from acab.core.parsing import pyparse_dsl as ppDSL
 
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.util.annotation import ValueAnnotation
 import acab.core.defaults.value_keys as DS
 from acab.core.value.value import AcabValue
 from acab.modules.analysis.typing.module import TypeSpecFragment

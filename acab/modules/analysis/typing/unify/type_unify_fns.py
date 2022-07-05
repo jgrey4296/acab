@@ -15,7 +15,7 @@ import acab.core.defaults.value_keys as DS
 from acab import AcabConfig
 from acab import types as AT
 from acab.core.defaults.value_keys import TYPE_INSTANCE
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.util.annotation import ValueAnnotation
 from acab.core.util.decorators.util import factory
 from acab.core.value.instruction import Instruction
 from acab.error.semantic import AcabSemanticException
