@@ -21,7 +21,7 @@ import acab.core.defaults.value_keys as DS
 import acab.interfaces.protocols.value as VSubP
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.meta_classes.singletons import SingletonMeta
+from acab.core.metaclasses.singletons import SingletonMeta
 from acab.error.config import AcabConfigException
 
 if TYPE_CHECKING:

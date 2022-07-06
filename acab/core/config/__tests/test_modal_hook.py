@@ -1,20 +1,23 @@
+from __future__ import annotations
+
 import logging as logmod
 import unittest
 import unittest.mock as mock
 import warnings
+from importlib.resources import files
 from os.path import split, splitext
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    config = acab.setup()
-
-from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
-from acab.error.config import AcabConfigException
+    from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
+    from acab.error.config import AcabConfigException
+    from acab.core.util.log_formatter import AcabLogRecord
+    from acab.core.config.modal_hook import modal_hook
+    AcabLogRecord.install()
 
 
 class ModalConfigTests(unittest.TestCase):
@@ -31,12 +34,18 @@ class ModalConfigTests(unittest.TestCase):
         logging.root.addHandler(cls.file_h)
         logging.root.handlers[0].setLevel(logmod.WARNING)
 
+        data_path  = files("acab.core.config.__tests")
+        modal_conf = data_path.joinpath("modal.config")
         # Setup default config with default files
-        cls.config = config
+        cls.existing_config = getattr(ConfigSingletonMeta, "_instance", None)
+        setattr(ConfigSingletonMeta, "_instance", None)
+
+        cls.config = AcabConfig(modal_conf, hooks=[modal_hook], build=True)
 
     @classmethod
     def tearDownClass(cls):
         logmod.root.removeHandler(cls.file_h)
+        setattr(ConfigSingletonMeta, "_instance", cls.existing_config)
 
     def test_modal_spec_missing(self):
         """

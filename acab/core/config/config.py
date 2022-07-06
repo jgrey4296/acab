@@ -15,6 +15,7 @@ Actions are available for preprocessing the value
 """
 from __future__ import annotations
 
+from pathlib import Path
 import importlib
 import logging as logmod
 import warnings
@@ -32,8 +33,8 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
 
 from acab.core.config import actions as CA
 from acab.core.config.attr_gen import AttrGenerator
-from acab.core.meta_classes.config import ConfigSingletonMeta
-from acab.core.meta_classes.singletons import SingletonMeta
+from acab.core.metaclasses.config import ConfigSingletonMeta
+from acab.core.metaclasses.singletons import SingletonMeta
 from acab.core.util.sorting import sort_by_priority
 from acab.error.config import AcabConfigException
 from acab.error.protocol import AcabProtocolError as APE
@@ -74,30 +75,35 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     Uses ${SectionName:Key} interpolation in values,
     Turns multi-line values into lists
     """
-    paths     : InitVar[None|list[str]]          = None
-    hooks     : set[GenFunc]                     = field(default_factory=set)
+    paths                : InitVar[None|list[str]|list[Path]] = None
+    hooks                : set[GenFunc]                       = field(default_factory=set)
+    delimiters           : str                                = field(default="=")
+    suffix               : str                                = field(default=".config")
+    logger_name          : str                                = field(default="acab")
 
-    _files    : set[str]                         = field(init=False, default_factory=set)
-    _config   : ConfigParser                     = field(init=False)
-    _overrides: dict[str, str]                   = field(init=False, default_factory=override_constructor)
+    _root_logger         : Logger                             = field(init=False, default=None)
+    _files               : set[str]                           = field(init=False, default_factory=set)
+    _config              : ConfigParser                       = field(init=False)
+    _overrides           : dict[str, str]                     = field(init=False, default_factory=override_constructor)
 
-    # Populated by hooks:
-    enums              : dict[str, EnumMeta]     = field(init=False, default_factory=dict)
-    defaults           : dict[str, Enum]         = field(init=False, default_factory=dict)
-    syntax_extension   : dict[str, Enum]         = field(init=False, default_factory=dict)
-    printing_extension : dict[Enum, str]         = field(init=False, default_factory=dict)
-    attr               : AttrGenerator           = field(init=False)
+    # Populated by hooks :
+    enums                : dict[str, EnumMeta]                = field(init=False, default_factory=dict)
+    defaults             : dict[str, Enum]                    = field(init=False, default_factory=dict)
+    syntax_extension     : dict[str, Enum]                    = field(init=False, default_factory=dict)
+    printing_extension   : dict[Enum, str]                    = field(init=False, default_factory=dict)
+    attr                 : AttrGenerator                      = field(init=False)
 
-    specs_invalid     : dict[int, int]           = field(init=False, default_factory=dict)
-    actions   : dict[Any, GenFunc]               = field(init=False, default_factory=lambda: CA.DEFAULT_ACTIONS)
-    type_actions : dict[Type[Any], GenFunc]      = field(init=False, default_factory=lambda: CA.TYPE_ACTIONS)
-    actions_e : ClassVar[Type[CA.ConfigActions]] = CA.ConfigActions
+    specs_invalid        : dict[int, int]                     = field(init=False, default_factory=dict)
+    actions              : dict[Any, GenFunc]                 = field(init=False, default_factory=lambda: CA.DEFAULT_ACTIONS)
+    type_actions         : dict[Type[Any], GenFunc]           = field(init=False, default_factory=lambda: CA.TYPE_ACTIONS)
+    actions_e            : ClassVar[Type[CA.ConfigActions]]   = CA.ConfigActions
 
 
-    def __post_init__(self, paths: None|list[str]):
-        self._config = ConfigParser(interpolation=ExtendedInterpolation(),
-                                    allow_no_value=True,
-                                    delimiters="=")
+    def __post_init__(self, paths: None|list[str]|list[Path]):
+        self._root_logger = logmod.getLogger(self.logger_name)
+        self._config      = ConfigParser(interpolation=ExtendedInterpolation(),
+                                         allow_no_value=True,
+                                         delimiters=self.delimiters)
         self.attr = AttrGenerator(self._config)
         # Overrides ConfigParser's default of lowercasing everything
         self._config.optionxform = lambda x: x #type:ignore
@@ -111,20 +117,24 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         return self.value(lookup) #type:ignore
 
     def __contains__(self, key):
-        in_print    = key in self.printing_extension
-        in_base     = key in self._config
-        in_enums    = key in self.enums
-        in_defaults = key in self.defaults
-        in_overrides = key in self._overrides
-        return any([in_print, in_base, in_enums, in_defaults, in_overrides])
+        return any(key in x for x in [self.printing_extension,
+                                      self._config,
+                                      self.enums,
+                                      self.defaults,
+                                      self._overrides])
+
 
     def __repr__(self):
-        common = commonpath(self._files)
+        if not bool(self._files):
+            return f"<{self.__class__.__name__} : Nothing Loaded"
+
+
+        common      = commonpath(self._files)
         short_paths = [x[len(common):] for x in self._files]
         return f"<{self.__class__.__name__} : Base Path: {common}, Loaded Files: {', '.join(short_paths)}>"
 
 
-    def read(self, paths:list[str]):
+    def read(self, paths:list[str]|list[Path]):
         """ DFS over provided paths, finding the cls.suffix filetype (default=.config) """
         full_paths = []
 
@@ -162,7 +172,11 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
 
 
     def run_hooks(self):
+        if not bool(self.hooks):
+            logging.info("No Hooks to run")
+
         for hook in sort_by_priority(self.hooks):
+            logging.info("Running Config Hook: {}", hook.__name__)
             hook(self)
 
     def override(self, spec: ConfigSpec_d, value:str) -> None:
@@ -264,7 +278,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     def _enum_value(self, val:Enum) -> str:
         """ Lookup the print representation of an enum value """
         if val not in self.printing_extension:
-            raise AcabConfigException("Unrecognised Enum request: {val}")
+            raise AcabConfigException(f"Unrecognised Enum request: {val}")
 
         return self.printing_extension[val]
 

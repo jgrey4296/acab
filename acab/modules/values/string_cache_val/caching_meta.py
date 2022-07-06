@@ -15,7 +15,7 @@ logging = logmod.getLogger(__name__)
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.meta_classes.value import ValueMeta
+from acab.core.metaclasses.value import ValueMeta
 
 logging        = logmod.getLogger(__name__)
 config         = AcabConfig()

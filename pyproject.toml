@@ -27,4 +27,4 @@ reportUnnecessaryIsInstance = "warning"
 log_cli       = false
 log_level     = "INFO"
 log_cli_level = "WARN"
-log_format    = "%(levelname)s %(shortname)s : %(message)s"
+log_format    = "%(levelname)s %(name)s : %(message)s"

@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 # mypy: disallow-untyped-defs=False
+from __future__ import annotations
+
 import logging as logmod
 import unittest
 import unittest.mock as mock
 import warnings
 from enum import Enum, EnumMeta
+from importlib.resources import files
 from os.path import join, split, splitext
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     import acab
-    from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
-    from acab.error.config import AcabConfigException
+    from acab.core.config.config import (AcabConfig, ConfigSingletonMeta,
+                                         ConfigSpec)
     from acab.core.util.log_formatter import AcabLogRecord
+    from acab.error.config import AcabConfigException
     AcabLogRecord.install()
 
 
@@ -35,8 +38,6 @@ class ConfigTests(unittest.TestCase):
         logging.root.addHandler(cls.file_h)
         logging.root.handlers[0].setLevel(logmod.WARNING)
 
-        cls.base        = split(__file__)[0]
-        # Setup default config with default files
         cls.existing_config = getattr(ConfigSingletonMeta, "_instance", None)
         setattr(ConfigSingletonMeta, "_instance", None)
 
@@ -47,10 +48,13 @@ class ConfigTests(unittest.TestCase):
         setattr(ConfigSingletonMeta, "_instance", cls.existing_config)
 
     def setUp(self):
-        self.config = AcabConfig(join(self.base, "basic.config"), hooks=False)
+        data_path = files("acab.core.config.__tests")
+        config_file = data_path.joinpath("basic.config")
+        self.config = AcabConfig(config_file, build=True)
 
     def tearDown(self):
-        self.config.clear()
+        self.config = None
+        ConfigSingletonMeta._instance = None
 
     def test_config_singleton(self):
         """ Check the config obj is a singleton"""

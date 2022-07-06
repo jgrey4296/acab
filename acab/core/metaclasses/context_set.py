@@ -24,7 +24,7 @@ from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.value.util import name_sieve_fns
 from acab.core.util.decorators.util import cache
-from acab.core.meta_classes.singletons import SingletonMeta
+from acab.core.metaclasses.singletons import SingletonMeta
 from acab.error.base import AcabBasicException
 from acab.interfaces import context as CtxInt
 from acab.interfaces.sieve import AcabSieve
