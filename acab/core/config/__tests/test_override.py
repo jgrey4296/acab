@@ -5,26 +5,27 @@ import logging as logmod
 import unittest
 import warnings
 from dataclasses import InitVar, dataclass, field
+from importlib.resources import files
 from os.path import join, split, splitext
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
 
-logging = logmod.getLogger(__name__)
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
+    from acab.core.config.misc_hooks import attr_hook
+    from acab.core.util.log_formatter import AcabMinimalLogRecord, AcabLogRecord
+    from acab.error.config import AcabConfigException
+    AcabMinimalLogRecord.install()
+    # AcabLogRecord.install()
 
 if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
-from acab.core.config.misc_hooks import attr_hook
-from acab.core.util.log_formatter import AcabMinimalLogRecord
-from acab.error.config import AcabConfigException
-
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    AcabMinimalLogRecord.install()
+logging = logmod.getLogger(__name__)
 
 class ConfigOverrideTests(unittest.TestCase):
 
@@ -32,7 +33,10 @@ class ConfigOverrideTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h    = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        log_format    = "%(levelname)s %(name)s : %(message)s"
+        cls.file_h.setFormatter(logmod.Formatter(log_format))
+
 
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
@@ -41,23 +45,25 @@ class ConfigOverrideTests(unittest.TestCase):
         logging.root.handlers[0].setLevel(logmod.WARNING)
 
         cls.base        = split(__file__)[0]
+        # Manual singleton overriding
+        cls.base = files("acab.core.config.__tests")
 
         # Manual singleton overriding
         cls.existing_config = getattr(ConfigSingletonMeta, "_instance", None)
         setattr(ConfigSingletonMeta, "_instance", None)
 
+        data_path   = files("acab.core.config.__tests")
+        base_config = data_path.joinpath("basic.config")
+        cls.config = AcabConfig(base_config, build=True)
 
     @classmethod
     def tearDownClass(cls):
         logmod.root.removeHandler(cls.file_h)
-        # Manual singleton overriding
         setattr(ConfigSingletonMeta, "_instance", cls.existing_config)
 
     def setUp(self):
-        self.config = AcabConfig(join(self.base, "basic.config"), hooks=False)
-
-    def tearDown(self):
         self.config.clear()
+        self.config = AcabConfig(join(self.base, "basic.config"), hooks=False)
 
     def test_clear(self):
         spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
@@ -123,9 +129,6 @@ class ConfigOverrideTests(unittest.TestCase):
         self.assertEqual(spec(), "test")
         self.config.override(spec, "blah")
         self.assertEqual(spec(), "blah")
-
-
-
 
     def test_spec_non_equality(self):
         spec1 = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")

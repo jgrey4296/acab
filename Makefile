@@ -17,8 +17,8 @@ CACHES			!= find ${TOP} -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache
 doc_target		?= "html"
 SPHINXOPTS		?=
 SPHINXBUILD		?= sphinx-build
-DOCSOURCEDIR    = docs
-DOCBUILDDIR     = dist/docs
+DOCSOURCEDIR     = docs
+DOCBUILDDIR      = dist/docs
 
 
 # If defined, use these overrides

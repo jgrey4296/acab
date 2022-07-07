@@ -1,9 +1,0 @@
-a.b.c
-
-example.one.rule: (::ρ)
-	a.b.c?
-
-  λS.ActionAdd d.e.f
-end
-
-

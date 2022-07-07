@@ -8,6 +8,8 @@ communicate with unity.
 
 util provides standard enums, strings and some utility functions
 """
+from __future__ import annotations
+
 import logging as logmod
 from typing import Callable, Type, TypeAlias
 
@@ -23,7 +25,7 @@ _Value_A : TypeAlias = types.Value
 _Sen_A   : TypeAlias = types.Sentence
 
 
-def setup(location:str=None,
+def setup(location:str|list[str]=None,
           rich_exc:bool=False,
           format_logs:bool=True,
           ) -> types.Config:
@@ -49,9 +51,9 @@ def setup(location:str=None,
     from os.path import join, split
 
     from acab.core.config.config import AcabConfig
-    from acab.core.config.structure_hook import structure_hook
-    from acab.core.config.modal_hook import modal_hook
     from acab.core.config.misc_hooks import attr_hook, pyparsing_hook
+    from acab.core.config.modal_hook import modal_hook
+    from acab.core.config.structure_hook import structure_hook
     AcabMinimalLogRecord.install()
     if format_logs:
         from acab.core.config.log_hook import log_hook
@@ -59,24 +61,25 @@ def setup(location:str=None,
         log_hook = lambda x: x
 
     if location is None or not bool(location):
-        base     = split(__file__)[0]
-        location = [join(base, "__configs", "default")]
+        # Best practice recommended by setuptools
+        from importlib.resources import files
+        location = [files("acab.__configs.default")]
     elif not isinstance(location, list):
         location = [location]
 
-    config = AcabConfig(*location, hooks=[log_hook, modal_hook, attr_hook, pyparsing_hook])
+    config = AcabConfig(*location, hooks=[log_hook, modal_hook, attr_hook, pyparsing_hook], build=True)
 
 
-    if not rich_exc:
+    if rich_exc or config.attr.LOGGING.rich_exceptions:
         try:
             from rich.traceback import install
             install(show_locals=True)
         except ImportError:
             logging.debug("Rich Module not found, using default exception handler")
 
-    from acab.interfaces.value import ValueFactory
     from acab.core.value.sentence import Sentence
     from acab.core.value.value import AcabValue
+    from acab.interfaces.value import ValueFactory
     ValueFactory.set(AcabValue, Sentence)
 
     return config

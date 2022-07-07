@@ -159,15 +159,6 @@ class TestContextInstance(unittest.TestCase):
         self.assertIn("b", result[0])
         self.assertIn("c", result[0])
 
-    def test_instance_val_progress_not_a_variable(self):
-        inst   = ContextInstance({"a": VF.value("blah")})
-
-        with self.assertRaises(AcabContextException) as cm:
-            inst.progress(VF.value("b"), [AcabNode(VF.value("c"))])
-
-        self.assertEqual("Tried to progress without a variable, or sub binds", cm.exception.detail)
-
-
     def test_instance_val_progress(self):
         inst   = ContextInstance({"a": VF.value("blah")})
         result = inst.progress(VF.value("b", data={DS.BIND: True}),

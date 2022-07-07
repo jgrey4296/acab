@@ -4,16 +4,18 @@
 # from https://realpython.com/python-interface/
 # pylint: disable=multiple-statements
 from __future__ import annotations
+
 import abc
 import collections.abc as cABC
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator, Container,
-                    Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
-                    TypeAlias, TypeVar, cast, runtime_checkable)
 from logging import Logger, getLogger
+from pathlib import Path
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Container, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    Protocol, Sequence, Tuple, TypeAlias, TypeVar, cast,
+                    runtime_checkable)
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     # tc only imports
     pass
@@ -42,9 +44,6 @@ class ConfigSpec_d:
 
 @runtime_checkable
 class Config_i(Protocol):
-    suffix      : ClassVar[str]    = ".config"
-    root_logger : ClassVar[Logger] = getLogger('acab')
-
     @abc.abstractmethod
     def __call__(self, lookup) -> Any: pass
     @abc.abstractmethod
@@ -61,6 +60,6 @@ class Config_i(Protocol):
     @abc.abstractmethod
     def prepare(self, *args:Any, **kwargs:Any) -> ConfigSpec_d: pass
     @abc.abstractmethod
-    def read(self, paths: list[str]) -> Config_i: pass
+    def read(self, paths: list[str]|list[Path]) -> Config_i: pass
     @abc.abstractmethod
     def value(self, val: Enum | ConfigSpec_d) -> Any: pass

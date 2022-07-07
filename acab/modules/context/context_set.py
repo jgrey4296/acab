@@ -22,7 +22,7 @@ from acab.error.context import AcabContextException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
 from acab.modules.context.context_instance import ContextInstance
-from acab.core.meta_classes.context_set import ContextSetMeta
+from acab.core.metaclasses.context_set import ContextSetMeta
 
 if TYPE_CHECKING:
     from acab import types as AT
