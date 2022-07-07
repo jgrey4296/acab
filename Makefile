@@ -1,24 +1,25 @@
-SHELL			:= /usr/local/bin/bash
-TOP				:= ./acab
-LOGLEVEL		:= WARNING
+SHELL		:= /usr/local/bin/bash
+LOGLEVEL	:= WARNING
+
+PY_TOP		:= ./acab
+BUILD		:= ./build
 
 # Testing variables:
-TEST_TARGET		?= ${TOP}
-TEST_PAT		:=
 TESTDIRS        := core modules/parsing modules/context modules/structures/trie modules/semantics modules/printing modules/repl modules/analysis/typing/unify modules/operators/dfs modules/values/binding modules/values/sen_val modules/values/string_cache_val
+TEST_TARGET		?= ${PY_TOP}
+TEST_PAT		:=
 TEST_FILE_PAT	:= "test_*.py"
 
 # Clean variables:
-PYS				!= find ${TOP} -name '*.py' -not -name '*context.py' -not -name '__init__.py'
-LOGS			!= find ${TOP} -name '*log.*'
-CACHES			!= find ${TOP} -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache__\|flycheck_.+\)$)
+LOGS			!= find ${PY_TOP} -name '*log.*'
+CACHES			!= find ${PY_TOP} -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache__\|flycheck_.+\)$)
 
 # Documentation variables:
 doc_target		?= "html"
 SPHINXOPTS		?=
 SPHINXBUILD		?= sphinx-build
 DOCSOURCEDIR     = docs
-DOCBUILDDIR      = dist/docs
+DOCBUILDDIR      = ${BUILD}/docs
 
 
 # If defined, use these overrides
@@ -53,9 +54,23 @@ docs: sphinx browse
 all: verbose long
 
 # Building ####################################################################
-build:
-	python -m build
+editlib:
 	pip install -e .
+
+install:
+	pip install --use-feature=in-tree-build --src ${BUILD}/pip_temp -U .
+
+wheel:
+	pip wheel --use-feature=in-tree-build -w ${BUILD}/wheel --use-pep517 --src ${BUILD}/pip_temp .
+
+srcbuild:
+	pip install --use-feature=in-tree-build -t ${BUILD}/pip_src --src ${BUILD}/pip_temp -U .
+
+uninstall:
+	pip uninstall -y rust_py
+
+requirements:
+	pip freeze --all --exclude-editable -r requirements.txt > requirements.txt
 
 freeze:
 	bash -ic "conda list --export > ./conda_env.txt"
@@ -66,7 +81,7 @@ long:
 	python -m unittest discover -s ${TEST_TARGET} -p "*_tests.py"
 
 test:
-	python -m unittest discover -v -s ${TEST_TARGET} -p ${TEST_FILE_PAT} -t ${TOP} ${TEST_PAT}
+	python -m unittest discover -v -s ${TEST_TARGET} -p ${TEST_FILE_PAT} -t ${PY_TOP} ${TEST_PAT}
 
 dtest: ${TESTDIRS}
 	@echo "Tested: "
@@ -74,13 +89,13 @@ dtest: ${TESTDIRS}
 
 $(TESTDIRS):
 	@echo "--------------------"
-	@echo "Target: ${TOP}/$@"
-	python -m unittest discover -v -s "${TOP}/$@" -p ${TEST_FILE_PAT} -t ${TOP}
-	@echo "Target: ${TOP}/$@"
+	@echo "Target: ${PY_TOP}/$@"
+	python -m unittest discover -v -s "${PY_TOP}/$@" -p ${TEST_FILE_PAT} -t ${PY_TOP}
+	@echo "Target: ${PY_TOP}/$@"
 
 faily:
 	@echo "Testing with early fail"
-	python -m unittest discover -v -f -s ${TEST_TARGET} ${TEST_PAT} -t ${TOP} -p ${TEST_FILE_PAT}
+	python -m unittest discover -v -f -s ${TEST_TARGET} ${TEST_PAT} -t ${PY_TOP} -p ${TEST_FILE_PAT}
 
 
 
@@ -104,18 +119,18 @@ vr: vrepl
 # Reports #####################################################################
 check:
 	@echo "Shell	= " ${SHELL}
-	@echo "Top		= " ${TOP}
+	@echo "Top		= " ${PY_TOP}
 	@echo "Search	= " ${TEST_TARGET}
 	@echo "Pattern	= " ${TEST_PAT}
 
 
 line_report:
 	@echo "Counting Lines into linecounts.stats"
-	find ${TOP} -name "*.py" -not -name "test_*.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.report
+	find ${PY_TOP} -name "*.py" -not -name "test_*.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.report
 
 class_report:
 	@echo "Getting Class Relations"
-	find ${TOP} -name "*.py" -not -name "flycheck*" | xargs awk '/^class/ {print $0}' > class.report
+	find ${PY_TOP} -name "*.py" -not -name "flycheck*" | xargs awk '/^class/ {print $0}' > class.report
 
 
 export_env:
@@ -124,16 +139,16 @@ export_env:
 # Linting #####################################################################
 pylint:
 	@echo "Linting"
-	pylint --rcfile=./.pylintrc ${TOP} --ignore=${ig} --ignore-patterns=${igpat}
+	pylint --rcfile=./.pylintrc ${PY_TOP} --ignore=${ig} --ignore-patterns=${igpat}
 
 elint:
 	@echo "Linting -E"
-	pylint --rcfile=./.pylintrc ${TOP} --ignore=${ig} --ignore-patterns=${igpat} -E
+	pylint --rcfile=./.pylintrc ${PY_TOP} --ignore=${ig} --ignore-patterns=${igpat} -E
 
 # Cleaning ####################################################################
 init:
 	@echo "Auto-creating empty __init__.py's"
-	find ${TOP} -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
+	find ${PY_TOP} -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
 
 clean:
 	@echo "Cleaning"
@@ -148,4 +163,4 @@ ifeq (${CACHES}, )
 else
 	-rm -r ${CACHES}
 endif
-	-rm -rf dist
+	-rm -rf ${BUILD}
