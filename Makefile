@@ -54,6 +54,9 @@ docs: sphinx browse
 all: verbose long
 
 # Building ####################################################################
+nodep:
+	pip install --no-deps -e .
+
 editlib:
 	pip install -e .
 
@@ -67,7 +70,7 @@ srcbuild:
 	pip install --use-feature=in-tree-build -t ${BUILD}/pip_src --src ${BUILD}/pip_temp -U .
 
 uninstall:
-	pip uninstall -y rust_py
+	pip uninstall -y acab
 
 requirements:
 	pip freeze --all --exclude-editable -r requirements.txt > requirements.txt

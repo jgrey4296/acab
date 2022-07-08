@@ -15,7 +15,8 @@ classifiers     = [
 ]
 
 dependencies   = [
-    "acab-config @ https://github.com/jgrey4296/acab_config.git",
+    "acab_config >= 0.0.1",
+    # "acab_config @ git+https://github.com/jgrey4296/acab_config.git@0.0.1",
     "pyparsing >= 3.0.9"
 ]
 
@@ -65,7 +66,7 @@ log_format    = "%(levelname)s %(name)s : %(message)s"
 [build-system]
 requires = [
          "setuptools >= 63.1.0",
-         "wheel >= 0.37.1"
+         "wheel >= 0.37.1",
 ]
 
 build-backend = "setuptools.build_meta"
