@@ -9,7 +9,7 @@ import logging as logmod
 import pyparsing as pp
 import pyparsing.core as ppc
 from acab.core.parsing.parse_debug_log_formatter import AcabParseDebugFormat
-from acab.core.util.log_formatter import SimpleLogColour as SC
+from acab_config.utils.log_formatter import SimpleLogColour as SC
 
 logging = logmod.getLogger(__name__)
 logging.addHandler(AcabParseDebugFormat.scaffold())

@@ -12,7 +12,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import pyparsing as pp
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,

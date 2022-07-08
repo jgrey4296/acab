@@ -24,14 +24,14 @@ from weakref import ref
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.core.value.part_implementations.instruction import \
     InstructionProtocolsImpl
 from acab.core.value.part_implementations.value import ValueProtocolsImpl
 from acab.core.value.value import ValueMeta
-from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.value import ValueFactory as VF
+from acab_config import AcabProtocolError as APE
 
 if TYPE_CHECKING:
     Value_A       : TypeAlias = AT.Value

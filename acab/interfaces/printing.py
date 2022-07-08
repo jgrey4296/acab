@@ -16,7 +16,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 from acab import AcabConfig
 from acab import types as AT
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.defaults.print_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException

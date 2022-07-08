@@ -12,7 +12,7 @@ from weakref import ReferenceType, ref
 
 import acab.interfaces.data as DI
 import acab.interfaces.value as VI
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.interfaces.value import ValueFactory as VF
 from acab.core.util.debugging import logdel

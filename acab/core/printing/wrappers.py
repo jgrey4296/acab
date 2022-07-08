@@ -14,7 +14,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import acab.core.defaults.value_keys as DS
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.defaults import print_symbols as DSYM
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory as VF

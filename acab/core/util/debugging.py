@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging as logmod
 
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 
 logging = logmod.getLogger(__name__)
 

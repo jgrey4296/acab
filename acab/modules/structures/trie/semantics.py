@@ -6,14 +6,14 @@ import acab.error.semantic as ASErr
 import acab.interfaces.data as DI
 import acab.interfaces.semantic as SI
 from acab import types as AT
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.semantics import basic
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
-from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.bind import Bind_i
 from acab.interfaces.value import Sentence_i
+from acab_config import AcabProtocolError as APE
 
 from .flatten_query_manager import FlattenQueryManager
 

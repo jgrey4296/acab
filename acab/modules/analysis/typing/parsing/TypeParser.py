@@ -4,15 +4,14 @@ ie:
 a.b.c(::a.type)
 """
 import logging as logmod
+
 import pyparsing as pp
-
-from acab.core.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
-from acab.core.parsing.consts import N, NG, op, OPAR, CPAR
-from acab.interfaces.value import ValueFactory as VF
+from acab import AcabConfig
 from acab.core.parsing import parsers as PU
-
-
-from acab.core.config.config import AcabConfig
+from acab.core.parsing.consts import (COLON, COMMA, CPAR, DBLCOLON, DELIM,
+                                      DOUBLEBAR, NG, OPAR, N, component_gap,
+                                      op)
+from acab.interfaces.value import ValueFactory as VF
 
 from . import util as TU
 

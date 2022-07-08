@@ -16,7 +16,7 @@ config = AcabConfig()
 
 from acab.interfaces import value as VI
 import acab.core.defaults.value_keys as DS
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.util.fragments import (DSL_Fragment, PrinterFragment,
                                       Semantic_Fragment)

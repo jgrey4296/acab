@@ -11,11 +11,12 @@ util provides standard enums, strings and some utility functions
 from __future__ import annotations
 
 import logging as logmod
+from os.path import join, split
 from typing import Callable, Type, TypeAlias
 
+from acab_config import AcabConfig, AcabMinimalLogRecord
+
 import acab.interfaces.type_aliases as types
-from acab.core.config.config import AcabConfig
-from acab.core.util.log_formatter import AcabMinimalLogRecord
 
 logging = logmod.getLogger(__name__)
 
@@ -48,15 +49,15 @@ def setup(location:str|list[str]=None,
     """
     #pylint: disable=import-outside-toplevel
 
-    from os.path import join, split
 
-    from acab.core.config.config import AcabConfig
-    from acab.core.config.misc_hooks import attr_hook, pyparsing_hook
-    from acab.core.config.modal_hook import modal_hook
-    from acab.core.config.structure_hook import structure_hook
     AcabMinimalLogRecord.install()
+
+    from acab_config.hooks.misc_hooks import attr_hook, pyparsing_hook
+    from acab_config.hooks.modal_hook import modal_hook
+    from acab_config.hooks.structure_hook import structure_hook
+
     if format_logs:
-        from acab.core.config.log_hook import log_hook
+        from acab_config.hooks.log_hook import log_hook
     else:
         log_hook = lambda x: x
 

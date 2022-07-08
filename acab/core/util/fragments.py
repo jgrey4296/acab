@@ -13,9 +13,9 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 from uuid import UUID, uuid1
 from weakref import ref
 
-from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces import fragments as FI
 from acab.interfaces import handler_system as HS
+from acab_config import AcabProtocolError as APE
 
 logging = root_logger.getLogger(__name__)
 

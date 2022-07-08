@@ -12,7 +12,6 @@ import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 import pyparsing as pp
 from acab import AcabConfig
-from acab.core.config.config import AcabConfig, ConfigSpec
 from acab.core.defaults import print_symbols as DSYM
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.printing import wrappers as PW

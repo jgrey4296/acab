@@ -10,7 +10,7 @@ from acab import AcabConfig
 config = AcabConfig()
 
 import acab.modules.analysis.typing.printer as TPR
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.util.fragments import (DSL_Fragment, PrinterFragment)
 from acab.core.util.part_implementations.handler_system import HandlerSpec

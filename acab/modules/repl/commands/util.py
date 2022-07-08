@@ -14,7 +14,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 from uuid import UUID, uuid1
 from weakref import ref
 
-from acab.core.util.log_formatter import SimpleLogColour
+from acab_config.utils.log_formatter import SimpleLogColour
 
 logging = logmod.getLogger(__name__)
 SC      = SimpleLogColour

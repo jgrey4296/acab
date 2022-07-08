@@ -6,7 +6,7 @@ from uuid import uuid1
 
 import pyparsing as pp
 from acab import types as AT
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.interfaces.value import ValueFactory
 import acab.core.defaults.value_keys as DS
 from acab.modules.context.context_instance import ContextInstance, MutableContextInstance

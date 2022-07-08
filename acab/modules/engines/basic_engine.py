@@ -12,7 +12,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, Type, TypeVar, Union, cast)
 
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.value.instruction import ProductionContainer, ProductionOperator
 from acab.core.util.decorators.engine import (EnsureEngineInitialised,
                                          MaybeBuildOperatorCtx)

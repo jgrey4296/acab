@@ -5,7 +5,7 @@
 # pylint: disable=bad-whitespace,unnecessary-comprehension
 import acab.core.defaults.value_keys as DS
 import pyparsing as pp
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.defaults import parse_symbols as DSym
 from acab.core.parsing.consts import CPAR, NG, OPAR, N
 from acab.core.parsing.parsers import MODAL

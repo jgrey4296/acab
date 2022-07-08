@@ -4,14 +4,14 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.core.config.config import ConfigSpec
+from acab_config import ConfigSpec
 from acab.core.value import instruction as PA
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces import handler_system as HS
 from acab.interfaces.value import (Sentence_i, Value_i)
 from acab.core.value.instruction import Instruction
 import acab.core.defaults.value_keys as DS
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.printing import basic
 from acab.core.defaults import print_signals as DSig
 

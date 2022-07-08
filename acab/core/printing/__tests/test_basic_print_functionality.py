@@ -19,7 +19,7 @@ with warnings.catch_warnings():
 
     import acab.modules.parsing.exlo.parsers.FactParser as FP
     import acab.modules.printing.printers as Printers
-    from acab.core.config.config import AcabConfig
+    from acab import AcabConfig
     from acab.core.printing import wrappers as PW
     from acab.core.util.sentences import ProductionComponent
     from acab.core.value.instruction import (Instruction, ProductionContainer,

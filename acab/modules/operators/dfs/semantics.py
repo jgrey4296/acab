@@ -11,7 +11,7 @@ import acab.error.semantic as ASErr
 import acab.interfaces.semantic as SI
 import acab.interfaces.data as DI
 from acab import types as AT
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.semantics import basic
 from acab.core.value.instruction import Instruction

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.interfaces.value import ValueFactory as VF
 
 config = AcabConfig()

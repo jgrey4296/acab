@@ -20,9 +20,9 @@ from uuid import UUID, uuid1
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.protocols.value as VSubP
 from acab import types as AT
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.metaclasses.singletons import SingletonMeta
-from acab.error.config import AcabConfigException
+from acab_config import AcabConfigException
 
 if TYPE_CHECKING:
     # tc only imports

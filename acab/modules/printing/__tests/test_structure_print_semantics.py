@@ -21,7 +21,7 @@ with warnings.catch_warnings():
     # DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
     import acab.modules.printing.printers as Printers
-    from acab.core.config.config import AcabConfig
+    from acab import AcabConfig
     from acab.core.defaults import print_signals as DSig
     from acab.core.defaults.value_keys import (AT_BIND, BIND, NEGATION, QUERY,
                                             TYPE_INSTANCE)

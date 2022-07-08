@@ -15,7 +15,7 @@ from os.path import splitext
 import pyparsing as pp
 from acab import AcabConfig
 from acab.modules.repl.repl_commander import register_class
-from acab.core.util.log_formatter import SimpleLogColour
+from acab_config.utils.log_formatter import SimpleLogColour
 import acab.modules.repl.commands.util as ColPr
 from acab.interfaces.fragments import ModuleFragment
 

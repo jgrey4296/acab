@@ -14,7 +14,7 @@ from os.path import abspath, exists, expanduser, split, splitext
 import acab
 from acab import AcabConfig
 from acab.core.value.instruction import ProductionContainer
-from acab.error.config import AcabConfigException
+from acab_config import AcabConfigException
 from acab.error.importer import AcabImportException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.engine import AcabEngine_i
