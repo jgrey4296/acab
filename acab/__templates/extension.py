@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""
+A United Fragment Extension Template,
+to allow for easy addition of
+dsl components,
+semantics,
+and printers
+"""
 from __future__ import annotations
 
 import logging as logmod
@@ -10,11 +17,8 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     TypeVar, cast)
 
 import acab
-import pyparsing as pp
-
-config = acab.AcabConfig()
-
 import acab.core.defaults.value_keys as DS
+import pyparsing as pp
 from acab.core.defaults import print_signals as DSig
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.util import fragments as FR
@@ -25,6 +29,7 @@ from acab.interfaces.fragments import UnifiedFragment_p
 from acab.interfaces.value import Sentence_i
 from acab.interfaces.value import ValueFactory as VF
 
+config = acab.AcabConfig()
 Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
 
 @dataclass

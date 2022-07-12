@@ -9,5 +9,5 @@ config = acab.setup()
 from acab.modules.engines.configured import exlo
 
 default_modules = config.attr.Module.REPL.MODULES
-eng = exlo()
+eng             = exlo()
 cls.eng.load_modules(*default_modules)

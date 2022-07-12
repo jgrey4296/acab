@@ -18,10 +18,9 @@ from unittest.mock import create_autospec
 
 logging = logmod.getLogger(__name__)
 
-import acab
-
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
+    import acab
     config = acab.setup()
 
     from acab.modules.engines.basic_engine import AcabBasicEngine
@@ -47,7 +46,15 @@ class _ENGINE_TEST_TEMPLATE(unittest.TestCase):
                                   semantics=DEFAULT_SEMANTICS(),
                                   printer=DEFAULT_PRINTER(),
                                   modules=[])
+        # Engine can be used to parse and enact instructions as:
+        # self.eng("a.b.c")
 
     @classmethod
     def tearDownClass(cls):
         logging.root.removeHandler(cls.file_h)
+
+    # Add Tests here
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -3,33 +3,32 @@
 A Template for setting up a test case with an acab dsl ready
 """
 from __future__ import annotations
+
 import logging as logmod
 import re
 import unittest
 import unittest.mock as mock
-from os.path import split, splitext
 import warnings
+from os.path import split, splitext
+
+import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
 
-import acab
-import pyparsing as pp
-
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
+    import acab
     config = acab.setup()
-    if '@pytest_ar' in globals():
-        from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # Uncomment this for indepth parse debugging
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    from acab.core.parsing.component_dsl import Component_DSL
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 ##############################
-
-# from acab.core.parsing import debug_funcs as DBF
-# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
-
-from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.core.parsing.component_dsl import Component_DSL
 
 
 class _DSL_TEST_TEMPLATE(unittest.TestCase):
@@ -43,7 +42,6 @@ class _DSL_TEST_TEMPLATE(unittest.TestCase):
 
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
 
         # Set up the parser to ease test setup
@@ -51,8 +49,15 @@ class _DSL_TEST_TEMPLATE(unittest.TestCase):
         cls.dsl.register(EXLO_Parser)
         cls.dsl.register(Component_DSL)
         cls.dsl.build()
-        # dsl()
+        # Can now parse strings with self.dsl("a.b.c")
 
     @classmethod
     def tearDownClass(cls):
         logging.root.removeHandler(cls.file_h)
+
+
+    # Add Tests here:
+
+
+if __name__ == '__main__':
+    unittest.main()
