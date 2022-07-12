@@ -10,7 +10,7 @@ from uuid import uuid1
 
 import pyparsing as pp
 from acab import types as AT
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.value.instruction import Instruction
 from acab.core.parsing.consts import s, s_key
 from acab.error.semantic import AcabSemanticException
@@ -75,7 +75,7 @@ class Unifier:
 
         # TODO first, second : (list[Sentences], list[Sentence])
         # TODO add exhaustive / inclusive typing options
-        ctx_prime = MutableContextInstance(None, ctx)
+        ctx_prime = MutableContextInstance(ctx)
         with ctx_prime:
             # PREPARATION AND EARLY EXIT #######################################
             if (logic.early_exit is not None and

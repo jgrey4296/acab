@@ -14,6 +14,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
 
 logging = logmod.getLogger(__name__)
 
+from acab_config.utils.decorators import registerOn
 
 if TYPE_CHECKING:
     # tc only imports
@@ -36,28 +37,6 @@ def ForceListArgDecorator(f:Callable[..., T]) -> Callable[..., T]:
         return f(self, *forced, **the_kwargs)
 
     return wrapped
-
-def registerOn(cls:type) -> Callable[..., Any]:
-    """ Decorator for registering a function onto a class as a method """
-    def wrapper(fn):
-        logging.info(f"Method Registration: {cls.__name__} . {fn.__name__}")
-        assert(fn.__name__ not in dir(cls))
-        setattr(cls, fn.__name__, fn) #type:ignore
-        return fn
-
-    return wrapper
-
-
-def mapToEnum(the_dict:dict[Enum, Any], enum_v:Enum) -> Callable[..., Any]:
-    """
-    Utility decorator to simplify creating a mapping of enum entries to
-    functions.
-    """
-    def wrapper(fn):
-        the_dict[enum_v] = fn
-        return fn
-
-    return wrapper
 
 def cache(f:Callable[..., T]) -> Callable[..., T]:
     cache_key : str = f"{f.__name__}.__cached_val"

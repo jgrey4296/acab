@@ -26,8 +26,8 @@ from acab.core.util.decorators.dsl import EnsureDSLInitialised
 from acab.core.util.part_implementations import handler_system as HS
 from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
-from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.dsl import DSL_Builder_i, DSL_Spec_i
+from acab_config import AcabProtocolError as APE
 
 if TYPE_CHECKING:
     # tc only imports

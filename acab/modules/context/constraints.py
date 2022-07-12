@@ -18,7 +18,7 @@ from acab.core.value.instruction import ProductionOperator
 from acab.interfaces.bind import Bind_i
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.constraint_sieve import default_sieve
-from acab.core.meta_classes.constraint import ConstraintMeta
+from acab.core.metaclasses.constraint import ConstraintMeta
 
 if TYPE_CHECKING:
     CtxIns      = 'ContextInstance'

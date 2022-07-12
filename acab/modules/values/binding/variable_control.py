@@ -15,7 +15,7 @@ from acab.interfaces import context as CI
 from acab.interfaces import data as DI
 from acab.interfaces import value as VI
 from acab.interfaces.value import Sentence_i, Value_i
-from acab.core.meta_classes.singletons import SingletonMeta
+from acab.core.metaclasses.singletons import SingletonMeta
 from acab.interfaces.bind import Bind_i
 
 logging = logmod.getLogger(__name__)

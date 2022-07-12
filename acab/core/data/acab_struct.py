@@ -5,7 +5,7 @@ import logging as logmod
 from dataclasses import dataclass, field
 from weakref import WeakValueDictionary
 
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.data.node import AcabNode
 from acab.core.util.decorators.util import cache
 from acab.interfaces.data import Structure_i

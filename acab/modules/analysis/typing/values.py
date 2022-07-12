@@ -9,7 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.defaults import value_keys as DS
 from acab.core.value.instruction import Instruction
 from acab.error.parse import AcabParseException

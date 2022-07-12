@@ -28,7 +28,7 @@ with warnings.catch_warnings():
     import acab.interfaces.value as VI
     from acab.core.parsing import pyparse_dsl as ppDSL
     from acab.core.parsing.component_dsl import Component_DSL
-    from acab.core.util.log_formatter import AcabStringFormatter
+    from acab_config.utils.log_formatter import AcabStringFormatter
     from acab.modules.context.context_instance import ContextInstance
     from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
     from acab.modules.values.binding import binding as B

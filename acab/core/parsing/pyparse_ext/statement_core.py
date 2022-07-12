@@ -13,7 +13,6 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 import pyparsing as pp
 from acab import AcabConfig
-from acab.core.config.config import AcabConfig
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults import parse_symbols as PDSYM
 from acab.core.parsing import consts as PConst

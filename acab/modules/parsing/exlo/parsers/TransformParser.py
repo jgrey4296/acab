@@ -2,7 +2,7 @@
 import logging as logmod
 
 import pyparsing as pp
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
                                       NG, N, component_gap, ln, op, s, zrm)

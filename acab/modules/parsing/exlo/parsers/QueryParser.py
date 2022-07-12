@@ -3,7 +3,7 @@ import logging as logmod
 
 import acab.core.defaults.value_keys as CDS
 import pyparsing as pp
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults.parse_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing import funcs as Pfunc

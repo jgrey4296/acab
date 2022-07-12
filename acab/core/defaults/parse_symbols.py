@@ -4,7 +4,7 @@ These are actual symbols to be parsed for.
 ie: pp.Literal(END)
 
 """
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 config = AcabConfig()
 
 SymbolDict      = config.prepare("Symbols", _type=dict)()

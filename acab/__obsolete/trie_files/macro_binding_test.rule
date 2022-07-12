@@ -1,4 +1,0 @@
-$x <- a.b.c
-$x.d
-$x.e
-clear $x

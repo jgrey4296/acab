@@ -1,10 +1,91 @@
+[project]
+name            = "acab"
+version         = "0.0.1"
+description     = "Production System DSL"
+readme          = "README.md"
+requires-python = ">=3.10"
+license         = {file = "LICENSE"}
+keywords        = ["AI", "Production System", "rules", "DSL"]
+authors         = [
+    {email = "jgrey4296@gmail.com"},
+    {name  = "J Grey"}
+]
+classifiers     = [
+    "Programming Language :: Python :: 3.10"
+]
+
+dependencies   = [
+    "acab_config >= 0.0.1",
+    # "acab_config @ git+https://github.com/jgrey4296/acab_config.git@0.0.1",
+    "pyparsing >= 3.0.9"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest > 7.0.0",
+]
+color = [
+    "sty > 1.0.0",
+]
+visual = [
+    "seaborn > 61.2.0",
+    "railroad-diagrams >= 1.1.1"
+]
+numbers = [
+    "numpy > 1.22.0",
+]
+exceptions = [
+    "rich",
+]
+docs = [
+    "sphinx > 4.4.0"
+]
+
+[project.urls]
+homepage      = "https://github.com/jgrey4296/acab"
+documentation = "https://readthedocs.org/acab"
+repository    = "https://github.com/jgrey4296/acab"
+changelog     = "https://github.com/jgrey4296/acab/blob/master/CHANGELOG.md"
+
+[project.scripts]
+acabr = "acab.cli.repl_main:main_repl"
+acab  = "acab.cli.acab_root:main"
+# todo: add template generation scripts
+
+[project.gui-scripts]
+# spam-gui      = "spam:main_gui"
+
+[project.entry-points."nothing"]
+# tomatoes      = "spam:main_tomatoes"
+
+[tool.pytest.ini_options]
+log_cli       = false
+log_level     = "INFO"
+log_cli_level = "WARN"
+log_format    = "%(levelname)s %(name)s : %(message)s"
+
 [build-system]
 requires = [
-         "setuptools>=42",
-         "wheel"
+         "setuptools >= 63.1.0",
+         "wheel >= 0.37.1",
 ]
 
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# packages = ['acab']
+include-package-data = true
+
+[tool.setuptools.packages.find]
+namespaces = true
+where = ["."]
+
+[tool.setuptools.package-data]
+acab = []
+
+[tool.setuptools.exclude-package-data]
+
+
 
 [tool.pyright]
 # strict = acab.*
@@ -22,9 +103,3 @@ reportUnknownParameterType  = "information"
 reportUnknownVariableType   = "warning"
 reportUnnecessaryCast       = "information"
 reportUnnecessaryIsInstance = "warning"
-
-[tool.pytest.ini_options]
-log_cli       = false
-log_level     = "INFO"
-log_cli_level = "WARN"
-log_format    = "%(levelname)s %(shortname)s : %(message)s"

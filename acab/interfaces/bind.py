@@ -15,8 +15,8 @@ from typing import (Any, ClassVar, Container, Final, Generic, Literal, Mapping,
 from uuid import UUID, uuid1
 
 from acab import types as AT
-from acab.core.config.config import AcabConfig
-from acab.error.config import AcabConfigException
+from acab import AcabConfig
+from acab_config import AcabConfigException
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

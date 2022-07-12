@@ -10,7 +10,7 @@ logging = logmod.getLogger(__name__)
 trace_logger = logmod.getLogger('acab.repl.trace')
 
 from acab.interfaces.debugger import AcabDebugger_i
-from acab.core.meta_classes.singletons import SingletonMeta
+from acab.core.metaclasses.singletons import SingletonMeta
 
 # TODO track semantic debugging in RunningDebugger
 # TODO refactor this to be a handler registration

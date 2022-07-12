@@ -7,7 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.core.defaults.value_keys as DS
 import pyparsing as pp
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.defaults import parse_keys as DK
 from acab.core.util.annotation import ValueAnnotation
 from acab.core.parsing.consts import s, s_key

@@ -13,7 +13,6 @@ from uuid import UUID, uuid1
 
 import acab.core.util.part_implementations.handler_system as HS
 from acab import AcabConfig
-from acab.core.config.config import AcabConfig
 from acab.core.defaults.print_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException

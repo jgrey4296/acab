@@ -17,7 +17,7 @@ import acab
 import pyparsing as pp
 from acab import AcabConfig
 from acab.error.base import AcabBasicException
-from acab.error.config import AcabConfigException
+from acab_config import AcabConfigException
 from acab.error.parse import AcabParseException
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.engine import AcabEngine_i

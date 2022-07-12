@@ -9,21 +9,21 @@ from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
 from functools import reduce
 from re import Pattern
-from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence, Tuple, Type,
-                    TypeAlias, TypeVar, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
+                    Iterator, Mapping, Match, MutableMapping, Sequence, Tuple,
+                    Type, TypeAlias, TypeVar, cast)
 from uuid import UUID, uuid1
 from weakref import ref
 
 import acab.core.defaults.value_keys as DS
 import acab.core.value.part_implementations.sentence as SSI  # type:ignore
 import acab.interfaces.value as VI
-from acab.core.config.config import AcabConfig
-from acab.core.meta_classes.value import ValueMeta
+from acab import AcabConfig
+from acab.core.metaclasses.value import ValueMeta
 from acab.error.base import AcabBasicException
-from acab.error.protocol import AcabProtocolError as APE
 from acab.error.semantic import AcabOperatorMissingException
 from acab.interfaces.value import ValueFactory
+from acab_config import AcabProtocolError as APE
 
 if TYPE_CHECKING:
     from acab import types as AT

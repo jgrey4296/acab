@@ -12,7 +12,7 @@ import pyparsing as pp
 from acab.interfaces.value import ValueFactory
 import acab.core.defaults.value_keys as DS
 from acab import types as AT
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.value.instruction import Instruction
 from acab.core.parsing.consts import s, s_key
 from acab.error.semantic import AcabSemanticException

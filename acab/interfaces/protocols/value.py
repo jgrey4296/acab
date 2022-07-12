@@ -16,7 +16,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection,
 from uuid import UUID, uuid1
 
 from acab import types as AT
-from acab.error.config import AcabConfigException
+from acab_config import AcabConfigException
 
 if TYPE_CHECKING:
     # tc only imports

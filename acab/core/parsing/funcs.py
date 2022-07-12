@@ -9,7 +9,7 @@ import logging as logmod
 
 import acab.core.defaults.value_keys as DS
 import pyparsing as pp
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults.value_keys import TYPE_BASE
 from acab.core.parsing import consts as PConst

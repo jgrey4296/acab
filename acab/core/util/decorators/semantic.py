@@ -6,7 +6,7 @@ from enum import Enum
 from functools import wraps
 from typing import TYPE_CHECKING
 
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.util.delayed_commands import DelayedCommands_i
 from acab.core.value.instruction import ProductionOperator
 from acab.interfaces.value import ValueFactory as VF

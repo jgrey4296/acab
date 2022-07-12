@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging as logmod
 
 import pyparsing as pp
-from acab.core.config.config import AcabConfig
+from acab import AcabConfig
 from acab.core.defaults import parse_keys as DS
 from acab.core.defaults import parse_symbols as DSYM
 

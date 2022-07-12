@@ -77,7 +77,7 @@ class TransformAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
         operators = ctxs._operators
         transform =  instruction
         for ctxIns in ctxs.active_list(clear=True):
-            with MutableContextInstance(ctxs, ctxIns) as mutx:
+            with MutableContextInstance(ctxIns, parent_set=ctxs) as mutx:
                 for clause in transform.clauses:
                     assert(len(clause) == 3)
                     # TODO replace this with bind
@@ -105,7 +105,7 @@ class TransformPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i
         operators = ctxs._operators
         transform =  instruction
         for ctxIns in ctxs.active_list(clear=True):
-            with MutableContextInstance(ctxs, ctxIns) as mutx:
+            with MutableContextInstance(ctxIns, parent_set=ctxs) as mutx:
                 for clause in transform.clauses:
                     if clause.type == "_:SENTENCE.COMPONENT.TRANSFORM":
                         self.basic_transform(clause, mutx)
