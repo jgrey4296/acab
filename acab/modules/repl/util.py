@@ -11,8 +11,6 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
                     Optional, Sequence, Set, Tuple, TypeVar, Union, cast)
 from os.path import splitext
 
-import acab
-from acab import AcabConfig
 from acab.interfaces.debugger import AcabDebugger_i
 from acab.interfaces.engine import AcabEngine_i
 
@@ -20,7 +18,6 @@ if TYPE_CHECKING:
     from acab.interfaces.fragments import ModuleFragment
 
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
 
 def build_slice(s, l, toks):
     first  = None
@@ -56,50 +53,23 @@ def init_inspect(mod_str):
     except:
         breakpoint()
 
-def build_rebind_instruction(value:str):
-    """ Manually construct a startup rebind instruction """
-    # from acab.core.value.sentence import Sentence
-    import acab.core.defaults.value_keys as DS
-    from acab.core.util.sentences import ProductionComponent
-    from acab.core.value.instruction import ProductionContainer
-    from acab.interfaces.value import ValueFactory as VF
+# def build_rebind_instruction(value:str):
+#     """ Manually construct a startup rebind instruction """
+#     # from acab.core.value.sentence import Sentence
+#     import acab.core.defaults.value_keys as DS
+#     from acab.core.util.sentences import ProductionComponent
+#     from acab.core.value.instruction import ProductionContainer
+#     from acab.interfaces.value import ValueFactory as VF
 
 
-    action_sem_hint = VF.sen() << config.attr.Semantic.Signals.ACTION
-    op_sen = VF.sen() << "acab.modules.operators.action.RebindOperator".split(".")
-    section_sen = VF.sen() << "§"
+#     action_sem_hint = VF.sen() << config.attr.Semantic.Signals.ACTION
+#     op_sen = VF.sen() << "acab.modules.operators.action.RebindOperator".split(".")
+#     section_sen = VF.sen() << "§"
 
-    inst = ProductionComponent(op_sen, params=[section_sen, op_sen])
+#     inst = ProductionComponent(op_sen, params=[section_sen, op_sen])
 
-    act = ProductionContainer(value=[inst],
-                              data={DS.SEMANTIC_HINT: action_sem_hint})
-
-
-    return act
+#     act = ProductionContainer(value=[inst],
+#                               data={DS.SEMANTIC_HINT: action_sem_hint})
 
 
-def capture_printing():
-    """
-    Setup a file handler for a separate logger,
-    to keep a trace of anything printed
-    """
-    oldprint = builtins.print
-    # start_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-    TRACE_FILE_NAME = "trace.repl"
-    input_trace_handler = logmod.FileHandler(TRACE_FILE_NAME, mode='w')
-    input_trace_handler.setLevel(logmod.INFO)
-
-    trace_logger = logmod.getLogger('acab.repl.trace')
-    trace_logger.setLevel(logmod.INFO)
-    trace_logger.addHandler(input_trace_handler)
-    trace_logger.propagate = False
-
-    @wraps(oldprint)
-    def intercepted(*args, **kwargs):
-        """ Wraps print to also log to a separate file """
-        oldprint(*args, **kwargs)
-        if bool(args):
-            trace_logger.warning(args[0])
-
-    builtins.print = intercepted
-
+#     return act

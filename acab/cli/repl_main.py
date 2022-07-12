@@ -49,7 +49,7 @@ def main_repl():
     logging = logmod.getLogger(__file__)
 
     # Intercept print and log it to the trace file:
-    from acab.modules.repl.util import capture_printing
+    from acab_config.utils.print_logging import capture_printing
     capture_printing()
 
     #====================

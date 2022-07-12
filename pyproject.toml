@@ -48,7 +48,8 @@ repository    = "https://github.com/jgrey4296/acab"
 changelog     = "https://github.com/jgrey4296/acab/blob/master/CHANGELOG.md"
 
 [project.scripts]
-acabr = "acab.modules.repl.repl_main:main_repl"
+acabr = "acab.cli.repl_main:main_repl"
+acab  = "acab.cli.acab_root:main"
 # todo: add template generation scripts
 
 [project.gui-scripts]
