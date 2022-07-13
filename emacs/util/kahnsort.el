@@ -39,7 +39,7 @@ Returns (SORTED STILL-ACTIVE UNDISCOVERED) "
           (if (not (-contains? exhausted current_name))
               (progn (push current_name exhausted)
                      (puthash current_name (+ 1 maxLayer) maxLayerMap)
-                     (loop for x in outputs do
+                     (cl-loop for x in outputs do
                            (puthash x (max (+ 1 maxLayer) (gethash x maxLayerMap 1)) maxLayerMap)
                            (if (not (-difference (cdr (assoc :inputs (gethash x graph))) exhausted))
                                (progn (message "Adding %s to frontier" x)

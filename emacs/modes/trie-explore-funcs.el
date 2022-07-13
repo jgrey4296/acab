@@ -12,7 +12,7 @@
   )
 (defun trie-explore/clear-overlays ()
   " Clear all overlays "
-  (loop for x in (hash-table-values (trie-explore/tree-data-overlays trie-explore/current-data)) do
+  (cl-loop for x in (hash-table-values (trie-explore/tree-data-overlays trie-explore/current-data)) do
         (delete-overlay x)
         )
   (clrhash (trie-explore/tree-data-overlays trie-explore/current-data))
@@ -79,7 +79,7 @@ calculate the bounds that column falls within "
          )
     (while (and indents (>= col (car indents)))
       (pop indents)
-      (incf cal-layer)
+      (cl-incf cal-layer)
       )
     ;; (message "Col to Layer: %s -> %s" col cal-layer)
     cal-layer

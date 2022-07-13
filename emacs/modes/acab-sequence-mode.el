@@ -47,7 +47,7 @@
 
     ))
 (defun acab-sequence/clear-overlays ()
-  (loop for x in acab-sequence/overlays do
+  (cl-loop for x in acab-sequence/overlays do
         (push x acab-sequence/free-overlays)
         (delete-overlay x)
         )
@@ -88,7 +88,7 @@
        :point)
 
       ;;Overlay on inputs
-      (loop for x in inputs do
+      (cl-loop for x in inputs do
             (goto-char (org-table-begin))
             (if (acab-sequence/is-terminal-p x)
                 (progn (search-forward x)
@@ -103,7 +103,7 @@
              :input))
 
       ;;Overlay on outputs
-      (loop for x in outputs do
+      (cl-loop for x in outputs do
             (goto-char (org-table-begin))
             (if (acab-sequence/is-terminal-p x)
                 (progn (search-forward x)
@@ -400,7 +400,7 @@ https://stackoverflow.com/questions/1249497 "
     (forward-line)
     ;; down below the first hline
     ;;loop over values, inserting them
-    (loop for x in vals do
+    (cl-loop for x in vals do
           ;; extend the table if necessary
           (if (not (org-at-table-p))
               (progn (forward-line -1)
@@ -541,9 +541,9 @@ https://stackoverflow.com/questions/1249497 "
               ('t (push curr rhs)))))
 
     ;; have got lhs and rhs, add them
-    (loop for x in lhs do
+    (cl-loop for x in lhs do
           (acab-sequence/insert-string x nil rhs))
-    (loop for x in rhs do
+    (cl-loop for x in rhs do
           (acab-sequence/insert-string x lhs nil))
     (acab-sequence/analyze-table)
     ;; update table
@@ -659,8 +659,8 @@ https://stackoverflow.com/questions/1249497 "
                               (lambda (x y) (string-lessp (downcase x) (downcase y)))))
       ;;set the columns values
       (acab-sequence/update-column curr-col curr-values)
-      (incf curr-col)
-      (incf curr-count)
+      (cl-incf curr-col)
+      (cl-incf curr-count)
       (acab-sequence/goto-position 2 curr-col)
       )
     (setq curr-values (sort (seq-copy (aref column-values 0))

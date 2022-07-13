@@ -99,7 +99,7 @@
                                                "Outputs"))))
 
     ;;Insert data strings
-    (loop for x in (plist-get data :list) do
+    (cl-loop for x in (plist-get data :list) do
           (insert (format "  %s\n" x)) ;;Maybe propertize
           )
     )

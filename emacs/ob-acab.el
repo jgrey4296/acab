@@ -49,6 +49,9 @@
 (defvar org-babel-acab-command  "python"
   "Name of the acab executable command.")
 
+;; TODO
+(defvar org-babel-acab-command-args (list "-m" "acab"))
+
 (defun org-babel-execute:acab (body params)
   "Execute the acab in BODY according to the block's header PARAMS.
 
@@ -182,7 +185,6 @@ STDERR with org-babel-eval-error-notify'.
              nil)
             (t
              (buffer-string))))))
-
 
 (defun org-babel-acab--answer-correction (string)
   "If STRING is acab's "Correct to:" prompt, send a refusal."
