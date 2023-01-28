@@ -71,6 +71,7 @@ def main():
     match args.instruction, len(args.args):
         # Default
         case "list", _:
+            print("All Cops are Bastards")
             print("Acab Utilities:")
             print("acab                 : list available commands")
             print("acab template        : list available templates")

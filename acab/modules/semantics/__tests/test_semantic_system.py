@@ -104,5 +104,7 @@ class SemanticSystemTests(unittest.TestCase):
     def test_hooks(self):
         pass
 
+##-- ifmain
 if __name__ == '__main__':
     unittest.main()
+##-- end ifmain

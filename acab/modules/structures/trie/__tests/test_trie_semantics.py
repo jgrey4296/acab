@@ -726,5 +726,7 @@ class TrieSemanticTests(unittest.TestCase):
         node = ctx_set[0].nodes['y'].node.parent()
         self.assertEqual(node.value, "second")
 
+##-- ifmain
 if __name__ == '__main__':
     unittest.main()
+##-- end ifmain

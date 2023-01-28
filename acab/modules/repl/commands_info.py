@@ -1,6 +1,7 @@
 """
 
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -27,6 +28,8 @@ from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 
+##-- end imports
+
 config = AcabConfig()
 
 
@@ -42,7 +45,7 @@ shortcut_pairs   = sorted([(shortcut_config[cmd], cmd) for cmd in shortcut_confi
 @register
 def do_parser(self, line):
     """
-
+    obsolete
     """
     params = RP.parse_info_parser.parse_string(line)
     # TODO add * for each spec with debug activated

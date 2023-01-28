@@ -3,6 +3,7 @@
 A DSL interface for the system, which
 
 """
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -12,12 +13,9 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
                     Iterable, Iterator, List, Mapping, Match, MutableMapping,
                     Optional, Sequence, Set, Tuple, TypeVar, Union, cast)
 
-import pyparsing as pp
-
-logging = logmod.getLogger(__name__)
-
 import acab.core.parsing.debug_funcs as DBF
 import acab.interfaces.dsl as dsl
+import pyparsing as pp
 from acab import AcabConfig
 from acab import types as AT
 from acab.core.parsing import dsl_builder as DSLImpl
@@ -38,6 +36,9 @@ if TYPE_CHECKING:
     PyParse_Spec_A   = "PyParse_Spec"
     File             = 'FileObj'
 
+##-- end imports
+
+logging = logmod.getLogger(__name__)
 config                 = AcabConfig()
 DEFAULT_HANDLER_SIGNAL = config.attr.Handler.System.DEFAULT_SIGNAL
 
@@ -185,7 +186,7 @@ class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
         try:
             return self[DEFAULT_HANDLER_SIGNAL].parse_string(s, parseAll=True)[:]
         except pp.ParseException as exp:
-            raise AcabParseException(f"Parser {exp.parser_element} failed on line {exp.lineno} column {exp.col}: {exp.markInputline()}") from exp
+            raise AcabParseException(f"(Line {exp.lineno} Column {exp.col}) : Parser {exp.parser_element} : {exp.markInputline()}") from exp
 
 
     def debug_parser(self, s:str):

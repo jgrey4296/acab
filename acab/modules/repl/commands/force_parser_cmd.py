@@ -53,7 +53,7 @@ class ForceParserCmd:
 
         try:
             # Get the handler for the specified signal
-            parser = self._cmd.state.engine._dsl[params.query]
+            parser = self._repl.state.engine._dsl[params.query]
             print(f"Retrieved: {parser}\n")
             if not bool(params.send):
                 print("Nothing sent to parser")
@@ -72,7 +72,7 @@ class ForceParserCmd:
             dfs_activate(built, remove=True)
 
 
-            self._cmd.state.debug_data = forced_result
+            self._repl.state.debug_data = forced_result
             print(f"----- Forced Parse Result: {forced_result}\n")
 
             if isinstance(forced_result, tuple):
@@ -81,8 +81,8 @@ class ForceParserCmd:
             answer = input("Execute result? Y/* ")
             if answer == "Y":
                 print("Attempting to execute result:")
-                self._cmd.state.ctxs = self._cmd.state.engine(forced_result,
-                                                              ctxset=self._cmd.state.ctxs)
+                self._repl.state.ctxs = self._repl.state.engine(forced_result,
+                                                              ctxset=self._repl.state.ctxs)
             else:
                 print("Not Executing result")
 

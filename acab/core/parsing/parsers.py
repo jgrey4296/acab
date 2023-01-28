@@ -27,6 +27,7 @@ ParserElement = AT.Parser
 
 config = AcabConfig()
 
+##-- Forward Declarations
 HOTLOAD_VALUES = pp.Forward()
 HOTLOAD_VALUES.set_name('hotload_values')
 HOTLOAD_HEAD_ANNOTATIONS = pp.Forward()
@@ -38,8 +39,9 @@ Fwd_ArgList = pp.Forward()
 Fwd_ArgList.set_name('fwd_arglist')
 Fwd_TagList = pp.Forward()
 Fwd_TagList.set_name('fwd_taglist')
+##-- end Forward Declarations
 
-# Basic Parsers
+##-- Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
 OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory.sen([t[0]], data={CDS.TYPE_INSTANCE: CDS.OPERATOR}))
 
@@ -54,13 +56,16 @@ STRING.add_parse_action(lambda s, l, t: (CDS.STRING_PRIM, t[0]))
 # TODO add re.RegexFlag 's to parser: g and i
 REGEX       = pp.Regex(r'/.+?/')
 REGEX.set_parse_action(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
+##-- end Basic Parsers
 
-
+##-- modal parsing
 # Generalised modal operator, which is converted to appropriate data later
 # The syntax is constructed automatically from AcabConfig
 MODAL      = pp.Word("".join(config.syntax_extension.keys()))
 MODAL.set_name("MODAL")
 MODAL.set_parse_action(lambda s, l, t: ModalAnnotation(t[0]))
+##-- end modal parsing
+
 
 BASIC_VALUE = ATOM | STRING | REGEX
 BIND        = s_lit(PDSYM.BIND).set_parse_action(lambda s,l,t: ValueAnnotation(CDS.BIND, True))
@@ -92,7 +97,7 @@ tagSen.set_parse_action(lambda s, l, t: (ValueFactory.sen([x[1] for x in t[:]]))
 
 Fwd_TagList <<= pp.IndentedBlock(tagSen + zrm(pp.line_end.suppress() + tagSen))(PDS.TAG)
 
-# NAMING
+##-- debug naming
 # HOTLOAD_VALUES.set_name("HotloadValues")
 VALBIND.set_name("ValBind")
 # ATOM.set_name("NameWord")
@@ -104,3 +109,4 @@ VALBIND.set_name("ValBind")
 tagSen.set_name("TagSentence")
 Fwd_TagList.set_name("TagList")
 Fwd_ArgList.set_name("ArgList")
+##-- end debug naming

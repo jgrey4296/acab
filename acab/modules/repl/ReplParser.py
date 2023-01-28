@@ -2,6 +2,7 @@
 The parser for the REPL
 
 """
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -12,12 +13,14 @@ from acab.core.parsing import consts as PU
 from acab.core.parsing import parsers as AP
 from acab.modules.repl.util import build_slice
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
 rst     = pp.delimited_list(pp.rest_of_line, delim=pp.White("\n\r"), combine=True).leave_whitespace()
 
-# multi line ##################################################################
+##-- multi line
 MULTI_LINE_START = config.prepare("Module.REPL", "MULTI_LINE_START")()
 MULTI_LINE_END   = config.prepare("Module.REPL", "MULTI_LINE_END")()
 
@@ -26,11 +29,14 @@ multi_line_end = pp.Regex(MULTI_LINE_END)
 
 multi_line_start.set_parse_action(lambda s,l,t: "multi")
 multi_line_end.set_parse_action(lambda s,l,t: "multi")
-# ##############################################################
+
+##-- end multi line
+
+
 shortcut_config   = config.attr.Module.REPL.shortcuts
 short_cmd_parsers = []
 
-# Build the shortcut parsers and their actions
+##-- shortcuts
 def gen_action(cmd):
     def __action(s, l, t):
         return cmd
@@ -43,6 +49,8 @@ for cmd in shortcut_config._keys:
     s_cmd_p.set_parse_action(gen_action(cmd))
     short_cmd_parsers.append(s_cmd_p)
 
+##-- end shortcuts
+
 
 sugared = pp.Suppress(pp.Literal(":")) + pp.MatchFirst(short_cmd_parsers) + rst
 
@@ -51,7 +59,8 @@ precmd_parser = pp.MatchFirst([multi_line_start,
                                sugared,
                                rst]).leave_whitespace()
 
-# step kws ####################################################################
+
+##-- step kws
 back_kw     = pp.Keyword("back")
 rule_kw     = pp.Keyword("rule")
 layer_kw    = pp.Keyword("layer")
@@ -63,7 +72,9 @@ step_parser = pp.MatchFirst([back_kw,
                              pipe_kw,
                              pipeline_kw])
 
-# stat kws ####################################################################
+##-- end step kws
+
+##-- stat kws
 operator_kw  = pp.MatchFirst([pp.Keyword("ops"),
                               pp.Keyword("operator")])("operator")
 module_kw    = pp.MatchFirst([pp.Keyword("mod"),
@@ -76,8 +87,9 @@ stats_parser = pp.ZeroOrMore(pp.MatchFirst([operator_kw,
                                             semantic_kw,
                                             printer_kw]))
 
-# listener ####################################################################
+##-- end stat kws
 
+##-- listener
 # add/remove/list/threshold
 add_kw        = pp.Keyword("add")
 remove_kw     = pp.Keyword("remove")
@@ -85,8 +97,9 @@ list_kw       = pp.Keyword("list")
 
 listen_parser = pp.Or([add_kw, remove_kw, list_kw])
 
+##-- end listener
 
-# parser exploration ##########################################################
+##-- parser debug
 signals_kw        = pp.Keyword("signals")("signals")
 sugar_kw          = pp.Keyword("sugar")("sugar")
 debug_kw          = pp.Suppress(pp.Keyword("debug"))
@@ -95,8 +108,9 @@ disable_kw        = pp.Keyword("disable")
 debug_control     = debug_kw + pp.Or([disable_kw, list_kw, rst])("debug")
 parse_info_parser = signals_kw | sugar_kw | debug_control | rst
 
+##-- end parser debug
 
-# context ########################################################################
+##-- contexts
 number = pp.common.integer
 
 slice_p = (PU.s(pp.Literal('[')) +
@@ -118,8 +132,10 @@ binding = AP.VALBIND
 ctx_parser = (ctx_kw + pp.Optional(ctx | ctx_slice)
               + pp.ZeroOrMore(binding)("bindings"))
 
+##-- end contexts
 
-# ctx select ##################################################################
+##-- context selection
+
 ctx_index  = number("subset")
 ctx_subset = slice_p("subset")
 clear_kw   = pp.Keyword("clear")("clear")
@@ -131,3 +147,5 @@ ctx_select_parser = pp.MatchFirst([ctx_subset,
                                    clear_kw,
                                    minus_kw,
                                    rst])
+
+##-- end context selection

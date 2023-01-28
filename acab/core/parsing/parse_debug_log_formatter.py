@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # from https://alexandra-zaharia.github.io/posts/make-your-own-custom-color-formatter-with-python-logging/
+##-- imports
 from __future__ import annotations
 
 import warnings
@@ -12,7 +13,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 from acab_config.utils.log_formatter import (COLOUR_RESET, LEVEL_MAP,
                                            AcabLogFormatter, AcabLogRecord,
                                            SimpleLogColour)
-
+##-- end imports
 
 class AcabParseDebugFormat(AcabLogFormatter):
     """ Guarded Formatter for adding colour.

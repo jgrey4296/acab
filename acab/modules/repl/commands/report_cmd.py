@@ -80,7 +80,7 @@ class ReportCmd:
             return
 
         allow_all    : bool                 = (not bool(params)) or "all" in params
-        self.modules : list[ModuleFragment] = self._cmd.state.engine._module_loader.loaded
+        self.modules : list[ModuleFragment] = self._repl.state.engine._module_loader.loaded
         # modules
         if allow_all or "module" in params:
             self.print_modules(params)
@@ -114,13 +114,13 @@ class ReportCmd:
 
     def print_dsl(self, params):
         ColPr.print_header("DSL")
-        dsl = self._cmd.state.engine._dsl
+        dsl = self._repl.state.engine._dsl
         ColPr.print_class_colour("DSL Base", dsl)
         ColPr.print_handler_system(dsl)
 
     def print_semantics(self, params):
         ColPr.print_header("Semantics")
-        semantic = self._cmd.state.engine.semantics
+        semantic = self._repl.state.engine.semantics
         ColPr.print_class_colour("Semantic Base", semantic)
         ColPr.print_handler_system(semantic)
 
@@ -140,7 +140,7 @@ class ReportCmd:
         for mod in self.modules:
             count += len(mod.operators)
             for op in mod.operators:
-                print("\t", ColPr.two_part_split(self._cmd.state.engine.pprint(target=[op])))
+                print("\t", ColPr.two_part_split(self._repl.state.engine.pprint(target=[op])))
 
         print("--")
         print(f"Loaded Operators: {SC.green(count)}")
@@ -149,7 +149,7 @@ class ReportCmd:
 
     def print_printers(self, params):
         ColPr.print_header("Printers")
-        printer = self._cmd.state.engine.printer
+        printer = self._repl.state.engine.printer
         ColPr.print_class_colour("Printing Base", printer)
         ColPr.print_handler_system(printer)
 
@@ -165,7 +165,7 @@ class ReportCmd:
 
     def print_engine(self, params):
         ColPr.print_header("Engine")
-        engine = self._cmd.state.engine
+        engine = self._repl.state.engine
         ColPr.print_class_colour("Active Engine", engine)
         load_paths = '\n\t'.join(engine.load_paths) or SC.red("None")
         print(f"\nLoad Paths:\n\t{load_paths}")

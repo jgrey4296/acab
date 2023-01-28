@@ -93,6 +93,10 @@ class BreakCmd:
         elif "parser" in ctxs:
             self.handle_parser(ctxs)
         else:
+            repl   = self._repl
+            state  = self._repl.state
+            engine = self._repl.state.engine
+            ctxs   = self._repl.state.ctxs
             print("")
             print("\n\t".join(debug_intro))
             print("")
@@ -140,20 +144,20 @@ class BreakCmd:
 
     def handle_semantic(self, ctxs):
         # run query
-        self._cmd.state.ctxs = self._cmd.state.engine(ctxs.semantic)
+        self._repl.state.ctxs = self._repl.state.engine(ctxs.semantic)
         # attach semantic breakpoints to each prod_abstraction
-        if (len(self._cmd.state.ctxs) == 1 and
-            isinstance(self._cmd.state.ctxs[0]._current.value, Instruction_i)):
-            curr = self._cmd.state.ctxs[0]._current.value
+        if (len(self._repl.state.ctxs) == 1 and
+            isinstance(self._repl.state.ctxs[0]._current.value, Instruction_i)):
+            curr = self._repl.state.ctxs[0]._current.value
             curr.breakpoint = not curr.breakpoint
             if curr.breakpoint:
                 print(f"Breakpoint Set: {repr(curr)} : {curr.uuid}")
             else:
                 print(f"Breakpoint Unset: {repr(curr)} : {curr.uuid}")
 
-        elif bool(self._cmd.state.ctxs):
+        elif bool(self._repl.state.ctxs):
             count = 0
-            for inst in self._cmd.state.ctxs:
+            for inst in self._repl.state.ctxs:
                 for bind in inst.data.items():
                     if isinstance(bind, Instruction_i):
                         bind.breakpoint = not bind.breakpoint

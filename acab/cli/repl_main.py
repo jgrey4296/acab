@@ -2,6 +2,7 @@
 """
 An Acab REPL
 """
+##-- imports
 import argparse
 import importlib
 import logging as logmod
@@ -10,8 +11,10 @@ import traceback
 from os.path import abspath, expanduser, split, splitext, join
 import warnings
 
+##-- end imports
 
-##############################
+
+##-- argparser
 # TODO default config file to data dir for distribution
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                  epilog = "\n".join([""]))
@@ -21,6 +24,8 @@ parser.add_argument('-v', '--verbosity', default="WARNING", help="The logging le
 parser.add_argument('-d', '--debug', action="store_true", help="CLI control of parser debugging")
 parser.add_argument('--simple-log', action='store_true')
 
+##-- end argparser
+
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 def main_repl():
     """ Top level entry point for ACAB repl.
@@ -28,11 +33,13 @@ def main_repl():
 
     Defaults to standard config if not overriden
     """
-    # Add acab into the path:
+    ##-- sys path manipulation
     sys.path.append(abspath(join(split(__file__)[0], "../../..")))
+    ##-- end sys path manipulation
+
     args = parser.parse_args()
 
-    ## Setup initial logging
+    ##-- logging setup
     ## (config log hook customizes later)
     LOGLEVEL      = logmod._nameToLevel[args.verbosity.upper()]
     LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
@@ -47,6 +54,8 @@ def main_repl():
     root_logger.addHandler(full_file_handler)
 
     logging = logmod.getLogger(__file__)
+
+    ##-- end logging setup
 
     # Intercept print and log it to the trace file:
     from acab_config.utils.print_logging import capture_printing
