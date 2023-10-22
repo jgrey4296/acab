@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # pylint: disable=no-member
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -13,17 +14,19 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 from os.path import splitext
 
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.modules.repl.repl_commander import register_class
 from acab_config.utils.log_formatter import SimpleLogColour
 import acab.modules.repl.commands.util as ColPr
 from acab.interfaces.fragments import ModuleFragment
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 SC      = SimpleLogColour
 
-config = AcabConfig()
-import_dict = config.prepare("Imports.Targeted", _type=dict)
+config = acab.config
+import_dict = config.imports.specific
 
 @register_class("report")
 class ReportCmd:
@@ -111,7 +114,6 @@ class ReportCmd:
         print("--")
         print(f"Loaded Modules: {SC.green(len(self.modules))}")
 
-
     def print_dsl(self, params):
         ColPr.print_header("DSL")
         dsl = self._repl.state.engine._dsl
@@ -145,7 +147,6 @@ class ReportCmd:
         print("--")
         print(f"Loaded Operators: {SC.green(count)}")
         # TODO print Context Operator Bindings
-
 
     def print_printers(self, params):
         ColPr.print_header("Printers")

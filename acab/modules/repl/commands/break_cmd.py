@@ -1,6 +1,7 @@
 """
 
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -12,7 +13,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.modules.repl.repl_commander import register_class
 from acab.modules.repl.ReplParser import rst
 from acab.interfaces.debugger import AcabDebugger_i
@@ -21,11 +22,14 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
+##-- end imports
+
 
 logging     = logmod.getLogger(__name__)
-config      = AcabConfig()
-Debugger    = config.prepare("Imports.Targeted", "debug", actions=[config.actions_e.IMCLASS], args={"interface": AcabDebugger_i})()
-debug_intro = config.prepare("Module.Repl.Debug.Intro", actions=[config.actions_e.STRIPQUOTE], _type=list)()
+config      = acab.config
+# TODO import
+Debugger    = config.imports.specific.debug
+debug_intro = config.module.REPL.debug.intro
 
 the_debugger = Debugger()
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -14,11 +15,13 @@ logging = logmod.getLogger(__name__)
 
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab import AcabConfig
+import acab
 from acab.core.metaclasses.value import ValueMeta
 
+##-- end imports
+
 logging        = logmod.getLogger(__name__)
-config         = AcabConfig()
+config         = acab.config
 
 class SCAccessor:
     """

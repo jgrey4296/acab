@@ -2,6 +2,7 @@
 Utility functions for building up printed representations of values
 
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -14,7 +15,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import acab.core.defaults.value_keys as DS
-from acab import AcabConfig
+import acab
 from acab.core.defaults import print_symbols as DSYM
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory as VF
@@ -23,12 +24,14 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-config = AcabConfig()
+##-- end imports
+
+config = acab.config
 
 STRING_SEN = VF.sen([DS.STRING_PRIM])
 REGEX_SEN  = VF.sen([DS.REGEX_PRIM])
 
-all_modals = config.prepare("MODAL", _type=list)
+all_modals = config.all_of().modal()
 
 def _maybe_wrap_str(PS, value, current) -> str:
     if value.type != STRING_SEN:

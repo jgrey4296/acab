@@ -16,7 +16,6 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab
 import pyparsing as pp
-from acab import AcabConfig
 from acab.error.base import AcabBasicException
 from acab_config import AcabConfigException
 from acab.error.parse import AcabParseException
@@ -34,10 +33,10 @@ trace_logger = logmod.getLogger('acab.repl.trace')
 ##-- end logging
 
 ##-- config
-config       = AcabConfig()
-initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
+config       = acab.config
+initial_prompt = config.module.REPL.PROMPT
 try:
-    repl_intro     = config.prepare("Module.Repl.Intro", _type=list)()
+    repl_intro     = config.module.REPL.intro
 except AcabConfigException:
     repl_intro = ["Welcome to ACAB.", "Type 'help' or '?' to list commands.", "Type 'tutorial' for a tutorial.", "Type ':q' to quit."]
 

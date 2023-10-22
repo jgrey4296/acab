@@ -1,22 +1,25 @@
 # pylint: disable=bad-whitespace,invalid-name,line-too-long
 #
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
 
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.defaults import parse_keys as DS
 from acab.core.defaults import parse_symbols as DSYM
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 
-config = AcabConfig()
+config = acab.config
 
-COMMENT_RE       = config.prepare("Parse.Patterns", "COMMENT_RE", actions=[config.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
-WORD_COMPONENT_S = config.prepare("Parse.Patterns", "WORD_COMPONENT")()
-WHITE_SPACE      = config.prepare("Parse.Patterns", "WHITE_SPACE", actions=[config.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
-TAB_S            = config.prepare("Parse.Patterns", "TAB", actions=[config.actions_e.STRIPQUOTE])()
+COMMENT_RE       = config.any_of().parse.patterns.COMMENT_RE()
+WORD_COMPONENT_S = config.all_of().parse.patterns.WORD_COMPONENT(wrapper=lambda x: "".join(x))
+WHITE_SPACE      = config.any_of().parse.patterns.WHITE_SPACE()
+TAB_S            = config.any_of().parse.patterns.TAB()
 
 pp.ParserElement.set_default_whitespace_chars(WHITE_SPACE)
 

@@ -8,6 +8,7 @@ ProductionComponent : Pairs the Operator with bindings
 ProductionContainer : Groups Components together
 
 """
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -21,10 +22,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
 from uuid import UUID, uuid1
 from weakref import ref
 
+import acab
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.core.value.part_implementations.instruction import \
     InstructionProtocolsImpl
@@ -42,11 +43,14 @@ if TYPE_CHECKING:
     PStructure    : TypeAlias = AT.ProductionStructure
     ValueData     : TypeAlias = AT.ValueData
 
+##-- end imports
+
 T = TypeVar('T')
 
 logging    = logmod.getLogger(__name__)
-config     = AcabConfig()
-value_meta = config.prepare("Imports.Targeted", "value_meta", actions=[config.actions_e.IMCLASS], default=ValueMeta)()
+config     = acab.config
+# TODO import class
+value_meta = config.on_fail().imports.specific.value_meta(wrapper="import_class")
 
 
 @APE.assert_implements(VI.Instruction_i)

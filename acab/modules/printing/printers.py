@@ -1,3 +1,5 @@
+##-- imports
+from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from itertools import filterfalse, starmap, zip_longest
@@ -7,7 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
-from acab import AcabConfig
+import acab
 from acab.core.defaults import print_signals as DSig
 from acab.core.defaults import print_symbols as DSYM
 from acab.core.printing import basic
@@ -16,13 +18,16 @@ from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.printing import PrintSemantics_i
 from acab.interfaces.value import ValueFactory as VF
+from tomler import Tomler
 
-config = AcabConfig()
+##-- end imports
 
-ALIAS_DICT  = config.prepare("Aliases", _type=dict, actions=[config.actions_e.STRIPQUOTE])()
-ANNOTATIONS = [config.prepare("Value.Structure", x, _type=Enum)() for x in config.prepare("Print.Annotations", _type=list)()]
+config = acab.config
+
+ALIAS_DICT  = config.all_of().alias()
+ANNOTATIONS = config.all_of().print.annotations()
 ATOM_HINT   = DSig.ATOM
-TYPE_BASE   = "_:" + config.prepare("Data", "TYPE_BASE")()
+TYPE_BASE   = "_:" + config.data.TYPE_BASE
 
 SEN_SEN     = VF.sen([DS.SENTENCE_PRIM])
 
@@ -328,7 +333,7 @@ class ConfigBackedSymbolPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     symbol tuples.
     """
     overrides : dict[Any, str] = field(default_factory=dict)
-    _config   : AcabConfig     = field(default_factory=AcabConfig)
+    _config   : Tomler = field(default=acab.config)
 
     def __call__(self, value, top=None, data=None):
         # Look the value up in overrides

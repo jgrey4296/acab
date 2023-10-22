@@ -10,7 +10,7 @@ import logging as logmod
 
 import acab.core.defaults.value_keys as DS
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults.value_keys import TYPE_BASE
 from acab.core.parsing import consts as PConst
@@ -25,7 +25,7 @@ from acab.interfaces.value import ValueFactory
 
 logging = logmod.getLogger(__name__)
 
-config = AcabConfig()
+config = acab.config
 
 ATOM : str = TYPE_BASE
 

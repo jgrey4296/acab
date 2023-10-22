@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -16,12 +17,13 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-
 import pyparsing as pp
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register_class
 from acab.interfaces.handler_system import HandlerSpec_i
 from acab.core.parsing.debug_funcs import dfs_activate
+
+##-- end imports
 
 rst = RP.rst
 
@@ -41,7 +43,6 @@ class ForceParserCmd:
         force_parser = query + pp.Optional(send_to_parser)
         return force_parser
 
-    
     def __call__(self, line):
         try:
             # parse the line
@@ -70,7 +71,6 @@ class ForceParserCmd:
             dfs_activate(built)
             forced_result = built.parse_string(params.send.strip(), parseAll=True)[:]
             dfs_activate(built, remove=True)
-
 
             self._repl.state.debug_data = forced_result
             print(f"----- Forced Parse Result: {forced_result}\n")

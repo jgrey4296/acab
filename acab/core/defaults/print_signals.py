@@ -3,6 +3,7 @@
 These are signals the print system uses, in addition to any specific
 type printers
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -12,31 +13,31 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
 
-if TYPE_CHECKING:
-    # tc only imports
-    pass
-
-from acab import AcabConfig
+import  acab
 from acab.interfaces.value import ValueFactory as VF
 
-config = AcabConfig()
+##-- end imports
+
+config = acab.config
+
+signal_dict = {x:x for x in config.all_of().print.signals.allowed()}
 
 # Print signals with no semantic component are Str's
-TYPE_INSTANCE      = config.attr.Value.Structure.TYPE_INSTANCE
-MODAL              = config.attr.Print.Signals.MODAL
-SYMBOL             = config.attr.Print.Signals.SYMBOL
-ANNOTATIONS        = config.attr.Print.Signals.ANNOTATIONS
-ANNOTATIONS_FINAL  = config.attr.Print.Signals.ANNOTATIONS_FINAL
-CONSTRAINT         = config.attr.Print.Signals.CONSTRAINT
-IMPLICIT_CONTAINER = config.attr.Print.Signals.IMPLICIT_CONTAINER
-TAGS               = config.attr.Print.Signals.TAGS
+TYPE_INSTANCE      = signal_dict.get("TYPE_INSTANCE", "TYPE_INSTANCE")
+MODAL              = signal_dict.get("MODAL", "MODAL")
+SYMBOL             = signal_dict.get("SYMBOL", "SYMBOL")
+ANNOTATIONS        = signal_dict.get("ANNOTATIONS", "ANNOTATIONS")
+ANNOTATIONS_FINAL  = signal_dict.get("ANNOTATIONS_FINAL", "ANNOTATIONS_FINAL")
+CONSTRAINT         = signal_dict.get("CONSTRAINT", "CONSTRAINT")
+IMPLICIT_CONTAINER = signal_dict.get("IMPLICIT_CONTAINER", "IMPLICIT_CONTAINER")
+TAGS               = signal_dict.get("TAGS", "TAGS")
 
 # Signals with semantic/type relevance are Sentences
-INSTR              = VF.sen() << config.attr.Type.Primitive.INSTRUCT
-CONTAINER          = INSTR << config.attr.Type.Primitive.CONTAINER
-STRUCTURE          = INSTR << config.attr.Type.Primitive.STRUCTURE
+INSTR              = VF.sen() << config.types.primitive.INSTRUCT
+CONTAINER          = INSTR << config.types.primitive.CONTAINER
+STRUCTURE          = INSTR << config.types.primitive.STRUCTURE
 
-SENTENCE           = VF.sen() << config.attr.Type.Primitive.SENTENCE
-COMPONENT          = SENTENCE << config.attr.Type.Primitive.COMPONENT
+SENTENCE           = VF.sen() << config.types.primitive.SENTENCE
+COMPONENT          = SENTENCE << config.types.primitive.COMPONENT
 
-ATOM               = VF.sen() << config.attr.Data.TYPE_BASE
+ATOM               = VF.sen() << config.data.TYPE_BASE

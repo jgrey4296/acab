@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -13,7 +15,7 @@ from uuid import UUID, uuid1
 import acab.core.defaults.value_keys as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.util.sentences import ProductionComponent
 from acab.core.value.instruction import ProductionContainer
@@ -21,7 +23,9 @@ from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
 
-config = AcabConfig()
+##-- end imports
+
+config = acab.config
 
 CONSTRAINT_S     = DS.CONSTRAINT
 NEGATION_S       = DS.NEGATION

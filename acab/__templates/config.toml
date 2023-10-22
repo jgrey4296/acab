@@ -1,133 +1,100 @@
-[DEFAULT]
+[default]
 # Note: Use configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation(), allow_no_value=True)
 ## Misc settings that don't fit elsewhere
 
-[LOGGING]
+[logging]
 # Control detailed logging elements here
 # If True, use acab_config.utils.log_formatter
 # else just install the AcabMinimalLogRecord
 ACAB          = True
 
-STREAM_FORMAT = {levelname:10} : {message}
-FILE_FORMAT   = {levelname:10} : {shortname} : {message}
+STREAM_FORMAT = "{levelname:10} : {message}"
+FILE_FORMAT   = "{levelname:10} : {shortname} : {message}"
 
 # Overriden by CLI for the repl, otherwise:
-STREAM_LEVEL  = WARNING
-FILE_LEVEL    = DEBUG
+STREAM_LEVEL  = "WARNING"
+FILE_LEVEL    = "DEBUG"
 # Separate file level semantic trace
-SEMANTIC      = WARNING
+SEMANTIC      = "WARNING"
 # If True, attach a warning log to node and value destructors:
-DEL           = False
+DEL           = false
 # Use the 'rich' module's exception printing:
-rich_exceptions = True
+rich_exceptions = true
 
-[Handler.System]
-DEFAULT_SIGNAL = _default
+[handler.system]
+DEFAULT_SIGNAL = "_default"
 
-[Config.Constraints]
-# LHS value/s must be found in RHS
-# Splits on '/' for section:parameter
-Print.Annotations  = Value.Structure
-
-[Imports]
+[imports]
 # Target Name to try to import when importing a module
 # before falling back to __init__
 # ie: import a.b.c -> a.b.c.{target}
 # See module_loader
-MODULE_TARGET = module
+MODULE_TARGET = "module"
 
-[Imports.Targeted]
+[imports.targeted]
 # Specific classes to use accessed through config,
 # Rather than the parse/semantic/print AcabModules
 # use config.actions_e.IMCLASS to import,
 # and pass an interface/protocol it has to match in args={'interface': {}}
-value_meta = acab.core.metaclasses.value.ValueMeta
+value_meta = "acab.core.metaclasses.value.ValueMeta"
 # value_meta = acab.modules.values.string_cache_val.caching_meta.StringCacheValueMeta
-bind       = acab.modules.values.binding.binding.Bind
-context    = acab.modules.context.context_set.ContextSet
-debug      = acab.modules.debugger.running_debugger.RunningDebugger
-engine     = acab.modules.engines.basic_engine.AcabBasicEngine
-handler    = acab.core.util.patch_handler.PatchHandler
+bind       = "acab.modules.values.binding.binding.Bind"
+context    = "acab.modules.context.context_set.ContextSet"
+debug      = "acab.modules.debugger.running_debugger.RunningDebugger"
+engine     = "acab.modules.engines.basic_engine.AcabBasicEngine"
+handler    = 'acab.core.util.patch_handler.PatchHandler'
 
-[Data]
+[data]
 # The base root name in a data structure:
-ROOT                  = __root
+ROOT                  = "__root"
 # The Base Type:
-TYPE_BASE             = ATOM
-DEFAULT_SETUP_METHOD  = _default_setup
-DEFAULT_UPDATE_METHOD = _update_node
+TYPE_BASE             = "ATOM"
+DEFAULT_SETUP_METHOD  = "_default_setup"
+DEFAULT_UPDATE_METHOD = "_update_node"
 
-[Type.Primitive]
+[[types]]
 # Names to be turned into the base type sentences
 # on top of TYPE_BASE
-ACTION
-COMPONENT
-CONTAINER
-INSTRUCT
-OPERATOR_PRIM
-QUERY
-REGEX
-RULE
-SENTENCE
-STRING
-STRUCTURE
-TRANSFORM
+primitives = ["ACTION", "COMPONENT", "CONTAINER", "INSTRUCT", "OPERATOR_PRIM", "QUERY", "REGEX", "RULE", "SENTENCE", "STRING", "STRUCTURE", "TRANSFORM"]
+structures = ["TRANSFORM", "QUERY", "ACTION"]
 
-[Value.Structure]
+[[values]]
 # These are used in AcabValue.data
 # to add metadata
-ARG
-AT_BIND
-BIND
-CONSTRAINT
-NAME
-NEGATION
-OPERATOR
-PARAMS
-QUERY
-QUERY_FALLBACK
-SEN
-TAG
-TYPE_INSTANCE
-SEMANTIC_HINT
-FLATTEN
+structure = ["ARG", "AT_BIND", "BIND", "CONSTRAINT", "NAME", "NEGATION", "OPERATOR", "PARAMS", "QUERY", "QUERY_FALLBACK", "SEN", "TAG", "TYPE_INSTANCE", "SEMANTIC_HINT", "FLATTEN"]
 
-[Structure.Components]
-# Used for Production Structure's sub-structure
-TRANSFORM
-QUERY
-ACTION
-
-[Symbols]
+[[symbols]]
 # For Parsing / Printing
-[Aliases]
+[[aliases]]
 # Alias with [Semantic.Signals] to provide easier ways of
 # specifying statement types
-[MODAL]
+[[modal]]
 # Modalities to load.
 # DONT FORGET: KEYS ARE STORED *lowercase* in configparsers
 # will insist there is a [Modal.{}] section
 # and [Modal.{}.Symbols] section for each name
 # [Modal.{}] specifies ENUM_VALUES and DEFAULT
 # [Modal.{}.Symbols] specifies the enum_val : parse symbol pairings
-[Print.Signals]
+[[print]]
 # Signals used for sub-printers, below the level of statements/atoms
-[Parse.Signals]
+[[parse]]
 # Signals used for DSL component creation
-[Semantic.Signals]
+[[semantic]]
 # Signals used for assembling semantic components together
 
-[Operator.Sugar]
+[[operators]]
+
+[operators.sugar]
 # Default pairings of operators to simpler sugar for use
 # eg: !! a.b.c instead of λacab.modules.operators.actions.assert a.b.c
-ASSERT          = !!
-PRINT           = %
-REBIND          = §
-EQ              = ==
-NEQ             = !=
-REGEX_MATCH     = ~=
-ELEM            = ∈
-TYPEMATCH       = τ=
-REGEX_TRANSFORM = ~:
-FORMAT          = %:
-DFS             = ᛦ
+ASSERT          = "!!"
+PRINT           = "%"
+REBIND          = "§"
+EQ              = "=="
+NEQ             = "!="
+REGEX_MATCH     = "~="
+ELEM            = "∈"
+TYPEMATCH       = "τ="
+REGEX_TRANSFORM = "~:"
+FORMAT          = "%:"
+DFS             = "ᛦ"

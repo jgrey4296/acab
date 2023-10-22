@@ -1,3 +1,4 @@
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -14,7 +15,7 @@ from uuid import UUID, uuid1
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.context as CtxInt
 import acab.interfaces.value as VI
-from acab import AcabConfig
+import acab
 from acab.core.util.delayed_commands import DelayedCommands_i
 from acab.core.util.sentences import ProductionComponent
 from acab.core.value.instruction import ProductionContainer
@@ -32,12 +33,14 @@ if TYPE_CHECKING:
     Sen              = AT.Sentence
     Node             = AT.StructView
 
+##-- end imports
+
 CtxIns           = CtxInt.ContextInstance_i
 CtxSet           = CtxInt.ContextSet_i
 NamedCtxSet      = CtxInt.NamedCtxSet_d
 ContextFailState = CtxInt.ContextFailState_d
 
-config       = AcabConfig()
+config       = acab.config
 CONSTRAINT_S = DS.CONSTRAINT
 NEGATION_S   = DS.NEGATION
 

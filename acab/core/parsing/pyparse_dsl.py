@@ -16,7 +16,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
 import acab.core.parsing.debug_funcs as DBF
 import acab.interfaces.dsl as dsl
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.parsing import dsl_builder as DSLImpl
 from acab.core.parsing.funcs import clear_parser_names, deep_update_names
@@ -39,9 +39,9 @@ if TYPE_CHECKING:
 ##-- end imports
 
 logging = logmod.getLogger(__name__)
-config                 = AcabConfig()
-DEFAULT_HANDLER_SIGNAL = config.attr.Handler.System.DEFAULT_SIGNAL
+config                 = acab.config
 
+DEFAULT_HANDLER_SIGNAL = config.handler.system.DEFAULT_SIGNAL
 
 #----------------------------------------
 
@@ -79,8 +79,6 @@ class PyParse_Handler(HS.Handler, dsl.DSL_Handler_i):
 
     def verify(self, instruction) -> bool:
         return isinstance(instruction, str)
-
-
 
 @APE.assert_implements(dsl.DSL_Spec_i)
 @dataclass
@@ -169,6 +167,7 @@ class PyParse_Spec(DSLImpl.DSL_Spec, dsl.DSL_Spec_i):
         return self.debug
 
 #----------------------------------------
+
 @APE.assert_implements(dsl.DSL_Builder_i)
 class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
 
@@ -187,7 +186,6 @@ class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
             return self[DEFAULT_HANDLER_SIGNAL].parse_string(s, parseAll=True)[:]
         except pp.ParseException as exp:
             raise AcabParseException(f"(Line {exp.lineno} Column {exp.col}) : Parser {exp.parser_element} : {exp.markInputline()}") from exp
-
 
     def debug_parser(self, s:str):
         if s in self:

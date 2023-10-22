@@ -15,7 +15,7 @@ from os.path import abspath, exists, expanduser, split, splitext
 
 import acab
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.value import Instruction_i
@@ -30,7 +30,7 @@ except ImportError:
 ##-- end imports
 
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config
 
 
 @register

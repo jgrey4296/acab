@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Main System
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -10,7 +11,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.core.defaults.value_keys as DS
 from acab import types as AT
-from acab import AcabConfig
+import acab
 from acab.core.semantics import basic
 from acab.core.util.decorators.semantic import (BuildCtxSetIfMissing,
                                                 RunDelayedCtxSetActions)
@@ -19,14 +20,17 @@ from acab.interfaces.context import ContextSet_i
 from acab.interfaces.handler_system import HandlerOverride
 from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 
 Sentence         = AT.Sentence
 CtxSet           = AT.CtxSet
 ModuleFragment   = AT.ModuleFragment
-config           = AcabConfig()
+config           = acab.config
 
-ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
+# TODO import
+ContextSet = config.imports.specific.context
 SEM_HINT   = DS.SEMANTIC_HINT
 
 # TODO make a queue structured system, where semantics return a list of
@@ -95,7 +99,6 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
 
     def to_sentences(self) -> list[Sentence]:
         # TODO run to_sentences for *all* registered structure semantic specs?
+
         default = self.lookup()
         return default[0].to_sentences(default.struct)
-
-

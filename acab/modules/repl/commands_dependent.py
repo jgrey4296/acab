@@ -14,7 +14,6 @@ from os.path import abspath, exists, expanduser, split, splitext
 
 import acab
 import pyparsing as pp
-from acab import AcabConfig
 from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
@@ -22,7 +21,7 @@ from acab.modules.repl.repl_commander import register
 ##-- end imports
 
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config
 
 
 @register

@@ -65,7 +65,7 @@ def main_repl():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         import acab
-        config = acab.setup(location=args.config, rich_exc=True, format_logs=not args.simple_log)
+        acab.setup(location=args.config, rich_exc=True, format_logs=not args.simple_log)
         logging.info("Loaded Config Location: {}", args.config)
         #====================
 
@@ -75,18 +75,17 @@ def main_repl():
             console_handler.setLevel(LOGLEVEL)
 
         if args.debug:
-            parse_debug_spec = config.prepare("Parse", "DEBUG_PARSERS", _type=bool)
-            config.override(parse_debug_spec, "True")
+            acab.config.override(True).parse.debug_parsers()
 
         #import then build engine or default trie engine from args
-        initial_modules = config.prepare("Module.REPL", "MODULES")().replace("\n", " ")
+        initial_modules = acab.config.on_fail([], list).module.repl.import.modules()
+        initial_cmds    = acab.config.on_fail([], list).module.repl.import.commands()
         #--------------------
         # MAIN REPL LOGIC:
         from acab.modules.repl.repl_commander import AcabREPLCommander
-        for key in config.attr.Module.Repl.CommandImports._keys:
-            logging.debug("Importing: {}", key)
-            importlib.import_module(key)
-
+        for cmd in initial_cmds:
+            logging.debug("Importing: {}", cmd)
+            importlib.import_module(cmd)
 
     repl = AcabREPLCommander()
     repl.onecmd(f"init {args.engine}")

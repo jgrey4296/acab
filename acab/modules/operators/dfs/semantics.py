@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -11,7 +13,7 @@ import acab.error.semantic as ASErr
 import acab.interfaces.semantic as SI
 import acab.interfaces.data as DI
 from acab import types as AT
-from acab import AcabConfig
+import acab
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.semantics import basic
 from acab.core.value.instruction import Instruction
@@ -20,16 +22,18 @@ from acab.modules.operators.dfs.context_walk_manager import ContextWalkManager
 from acab.interfaces.context import ContextInstance_i
 from acab.interfaces.bind import Bind_i
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
-config = AcabConfig()
+config = acab.config
 
 CONSTRAINT_S     = DS.CONSTRAINT
 NEGATION_S       = DS.NEGATION
 QUERY            = DS.QUERY
 QUERY_FALLBACK_S = DS.QUERY_FALLBACK
-DEFAULT_SETUP_S  = config.attr.Data.DEFAULT_SETUP_METHOD
-DEFAULT_UPDATE_S = config.attr.Data.DEFAULT_UPDATE_METHOD
-WALK_SEM_HINT    = Sentence() << config.attr.Type.Primitive.INSTRUCT << config.attr.Semantic.Signals.WALK
+DEFAULT_SETUP_S  = config.data.DEFAULT_SETUP_METHOD
+DEFAULT_UPDATE_S = config.data.DEFAULT_UPDATE_METHOD
+WALK_SEM_HINT    = Sentence() << config.type.primitive.INSTRUCT << config.semantic.signals.WALK
 
 Node          = AT.StructView
 Value         = AT.Value
@@ -41,7 +45,8 @@ ValSem        = AT.ValueSemantics
 StructSem     = AT.StructureSemantics
 Handler       = AT.Handler
 
-Bind = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
+# TODO import
+Bind = config.imports.specific.bind
 
 
 # Dependent Semantics

@@ -1,5 +1,6 @@
 # pylint: disable=abstract-method,invalid-sequence-index,use-a-generator,too-many-lines
 # pyright: reportPrivateUsage=warning
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -10,7 +11,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
                     Iterator, Mapping, Match, MutableMapping, NewType,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeVar, cast)
 
-from acab import AcabConfig
+import acab
 from acab.core.util.decorators.util import cache
 from acab.core.util.part_implementations.handler import BasicHandler
 from acab.error.handler import AcabHandlerException
@@ -38,11 +39,11 @@ if TYPE_CHECKING:
     HandlerComponent_A : TypeAlias = AT.HandlerComponent
     Handler_System_A   : TypeAlias = AT.HandlerSystem
 
+##-- end imports
 
-config = AcabConfig()
-SPACER = config.prepare("Print.Data", "SPACER_SIZE", _type=int)()
-PASSTHROUGH         = "_"
-
+config      = acab.config
+SPACER      = config.any_of().print.SPACER_SIZE()
+PASSTHROUGH = "_"
 
 @APE.assert_concrete
 @dataclass
@@ -68,6 +69,7 @@ class PatchHandler(BasicHandler, HS.Handler_i):
 
     def __patch_call(self):
         assert(callable(self.func))
+
         class PatchedHandler(type(self)):
             __call__ = self.func.__call__
 

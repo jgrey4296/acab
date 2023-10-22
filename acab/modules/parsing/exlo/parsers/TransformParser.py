@@ -1,8 +1,9 @@
 """ Trie-based parser for the transform component of rules """
+##-- imports
+from __future__ import annotations
 import logging as logmod
 
 import pyparsing as pp
-from acab import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
                                       NG, N, component_gap, ln, op, s, zrm)
@@ -14,6 +15,8 @@ from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
                                             TARGET_S, TRANSFORM_COMPONENT)
 
 from .FactParser import SEN_NO_MODAL, SENTENCE, op_sentence
+
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 
@@ -65,5 +68,6 @@ transform_statement.set_name("TransformStatement")
 parse_point = transforms
 
 # Main Parser:
+
 def parse_string(in_string):
     return parse_point.parse_string(in_string)[0][1]

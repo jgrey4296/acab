@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
@@ -12,12 +13,12 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection,
 from uuid import UUID, uuid1
 from weakref import ref
 
+import acab
 import acab.core.defaults.value_keys as DS
 import acab.core.value.part_implementations.value as VSI  # type:ignore
 import acab.interfaces.protocols.value as VP
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
@@ -28,16 +29,18 @@ logging        = logmod.getLogger(__name__)
 if TYPE_CHECKING:
     ValueData     : TypeAlias = str
 
+##-- end imports
+
 Value_A       : TypeAlias = VI.Value_i
 Sen_A         : TypeAlias = VI.Sentence_i
 Instruction_A : TypeAlias = VI.Instruction_i
 
 T              = TypeVar('T', bound=AT.ValueCore)
 
-config         = AcabConfig()
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
-UUID_CHOP      = config.prepare("Print.Data", "UUID_CHOP", _type=bool)()
-BIND_SYMBOL    = config.attr.Symbols.BIND
+config         = acab.config
+FALLBACK_MODAL = config.any_of().symbols.FALLBACK_MODAL()
+UUID_CHOP      = config.any_of().print..UUID_CHOP()
+BIND_SYMBOL    = config.any_of().symbols.BIND()
 
 
 

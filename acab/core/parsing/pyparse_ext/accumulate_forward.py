@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -14,6 +15,8 @@ import pyparsing as pp
 if TYPE_CHECKING:
     # tc only imports
     pass
+
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 

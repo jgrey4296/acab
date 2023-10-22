@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -7,7 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from types import FunctionType
 
-from acab import AcabConfig
+import acab
 from acab import types as AT
 import acab.core.defaults.value_keys as DS
 from acab.error.semantic import AcabSemanticException
@@ -18,13 +19,15 @@ from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.metaclasses.singletons import SingletonMeta
 from acab.interfaces.bind import Bind_i
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 
 __all__ = ['Bind']
 
-config = AcabConfig()
-bind_depth_max = config.attr.Binding.MAX_DEPTH
-bind_total_max = config.attr.Binding.TOTAL_COUNT
+config = acab.config
+bind_depth_max = config.binding.MAX_DEPTH
+bind_total_max = config.binding.TOTAL_COUNT
 
 # TODO make this a handler system, or part of semantics?
 

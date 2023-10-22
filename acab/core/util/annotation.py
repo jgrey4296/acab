@@ -2,12 +2,13 @@
 Dataclasses for wrapping annotations which are applied onto AcabValues
 
 """
+##-- imports
 from dataclasses import InitVar, dataclass, field
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
                     Iterable, Iterator, List, Mapping, Match, MutableMapping,
                     Optional, Sequence, Set, Tuple, TypeVar, Union, cast)
 
-from acab import AcabConfig
+import acab
 from acab.interfaces.value import Value_i
 
 if TYPE_CHECKING:
@@ -17,7 +18,9 @@ if TYPE_CHECKING:
 else:
     ValueData = str
 
-config = AcabConfig()
+##-- end imports
+
+config = acab.config
 
 @dataclass
 class ValueAnnotation:
@@ -51,8 +54,6 @@ class ValueRepeatAnnotation(ValueAnnotation):
             val.data[self.key] = []
         val.data[self.key].append(self.value)
         return val
-
-
 
 class ModalAnnotation(ValueAnnotation):
 

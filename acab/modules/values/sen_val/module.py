@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -11,7 +12,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.defaults import print_symbols as DSYM
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.printing import wrappers as PW
@@ -24,11 +25,13 @@ from . import parser as SVP
 from . import semantics as SVS
 from .printer import SenValPrinter, SenValueAwareSentencePrinter
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 
-config = AcabConfig()
+config = acab.config
 
-WALK_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.WALK
+WALK_SEM_HINT    = Sentence() << config.any_of().semantic.signals.WALK
 
 # TODO sen value spec
 Sen_Val_Frag = Semantic_Fragment(handlers=[SVS.SenQuerySemantics().as_handler(signal=WALK_SEM_HINT)])

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
@@ -12,7 +13,10 @@ from acab.core.defaults import print_signals as DS
 
 from enum import Enum
 
+##-- end imports
+
 # Default Highest Priority Sieve tests
+
 default_sieve_top       : list[Callable] = [
     # override tuple : 1 -> 1 : any
     lambda x              : x.signal if isinstance(x, HandlerOverride) else None,
@@ -25,6 +29,7 @@ default_sieve_top       : list[Callable] = [
     ]
 
 # Default Lowest Priority Sieve Tests
+
 default_sieve_bottom   : list[Callable] = [
     # structure      : m -> m : leaf
     lambda x              : DS.STRUCTURE if isinstance(x, PA.ProductionStructure) else None,

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -11,7 +12,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.core.defaults.value_keys as DS
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.defaults import value_keys as CDS
 from acab.core.parsing import consts as PConst
@@ -40,13 +41,15 @@ from acab.interfaces.fragments import UnifiedFragment_p
 from acab.interfaces.value import ValueFactory
 from acab.interfaces.value import ValueFactory as VF
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
-config = AcabConfig()
+config  = acab.config
 
 
-config = AcabConfig()
 LinkSignalTo = lambda x, y: DSL_Spec(x, struct=y, flags=[DSL_Spec.flag_e.COLLECT])
-Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
+# TODO import
+Handler      = config.imports.specific.handler
 
 @dataclass
 class RegexPlusFragment(UnifiedFragment_p):
@@ -146,7 +149,7 @@ class RegexPlusFragment(UnifiedFragment_p):
 
 
 
-@OperatorSugar(config.attr.Operator.Sugar.REGEX_MATCH)
+@OperatorSugar(config.any_of().operator.sugar.REGEX_MATCH())
 class RegMatch(ProductionOperator):
 
     # TODO implement sub-binds
@@ -159,7 +162,7 @@ class RegMatch(ProductionOperator):
             result = True
         return result
 
-@OperatorSugar(config.attr.Operator.Sugar.REGEX_TRANSFORM)
+@OperatorSugar(config.any_of().operator.sugar.REGEX_TRANSFORM())
 class RegexOp(ProductionOperator):
 
     def __call__(self, value, pattern, *, data=None, ctx=None):

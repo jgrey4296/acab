@@ -20,7 +20,6 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 import acab
 import pyparsing as pp
-from acab import AcabConfig
 from acab import types as AT
 from acab.core.parsing import debug_funcs as DBF
 from acab_config.utils.log_formatter import AcabLogFormatter, AcabMinimalLogRecord
@@ -30,7 +29,7 @@ from acab.modules.repl.repl_commander import register
 
 ##-- end imports
 
-config = AcabConfig()
+config = acab.config
 
 
 logging = logmod.getLogger(__name__)
@@ -39,7 +38,7 @@ logging = logmod.getLogger(__name__)
 ModuleFragment : TypeAlias = AT.ModuleFragment
 
 SPLIT_RE         = re.compile("[ .!?/]")
-shortcut_config  = config.attr.Module.REPL.shortcuts
+shortcut_config  = config.module.REPL.shortcuts
 shortcut_pairs   = sorted([(shortcut_config[cmd], cmd) for cmd in shortcut_config._keys])
 
 @register

@@ -9,8 +9,6 @@ signals.QUERY, and run the attached handlers
 
 """
 
-from acab import AcabConfig
+import acab
 
-config = AcabConfig()
-
-signals = config.attr.Semantic.Signals
+signals = acab.config.all_of().semantic.signals()

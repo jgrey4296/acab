@@ -2,6 +2,8 @@
 A Combined parser to parse rules and facts to assert
 Handles files, and comments
 """
+##-- imports
+from __future__ import annotations
 import pyparsing as pp
 from acab.core.parsing.consts import (ARROW, COLON, COMMA, COMMENT, DELIM,
                                           DOUBLEBAR, NG, N, component_gap,
@@ -14,6 +16,8 @@ from . import ActionParser as AP
 from . import FactParser as FP
 from . import QueryParser as QP
 from . import RuleParser as RP
+
+##-- end imports
 
 HOTLOAD_STATEMENTS = pp.Forward()
 HOTLOAD_STATEMENTS.set_name("hl_statements")

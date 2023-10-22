@@ -1,6 +1,7 @@
 """
 The Core Value_A Classes: AcabValue, Instruction_A, Sentence
 """
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -15,11 +16,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
 from uuid import UUID, uuid1
 from weakref import ref
 
-import acab.core.defaults.value_keys as DS
+import acab
 import acab.core.value.part_implementations.value as VP
 import acab.interfaces.data as DI
 import acab.interfaces.value as VI
-from acab import AcabConfig
 from acab.core.metaclasses.value import ValueMeta
 from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
@@ -33,16 +33,18 @@ if TYPE_CHECKING:
 else:
     ValueCore = "ValueTypes"
 
+##-- end imports
+
 Value_A       : TypeAlias = VI.Value_i
 Sen_A         : TypeAlias = VI.Sentence_i
 Instruction_A : TypeAlias = VI.Instruction_i
-T              = TypeVar('T', bound=ValueCore, covariant=True)
+T                         = TypeVar('T', bound=ValueCore, covariant=True)
 
 logging        = logmod.getLogger(__name__)
-config         = AcabConfig()
-BIND_SYMBOL    = config.attr.Symbols.BIND
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
-UUID_CHOP      = config.prepare("Print.Data", "UUID_CHOP", _type=bool)()
+config         = acab.config
+BIND_SYMBOL    = config.any_of().symbols.BIND()
+FALLBACK_MODAL = config.any_of().symbols.FALLBACK_MODAL()
+UUID_CHOP      = config.any_of().print.UUID_CHOP()
 
 @APE.assert_implements(VI.Value_i)
 @dataclass(frozen=True, repr=False, eq=False)

@@ -1,17 +1,20 @@
 """
 
 """
+##-- imports
 import logging as logmod
 from dataclasses import dataclass, field
 from weakref import WeakValueDictionary
 
-from acab import AcabConfig
+from acab
 from acab.core.data.node import AcabNode
 from acab.core.util.decorators.util import cache
 from acab.interfaces.data import Structure_i
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config
 
 class AcabStruct(Structure_i):
     """ A structure in ACAB,

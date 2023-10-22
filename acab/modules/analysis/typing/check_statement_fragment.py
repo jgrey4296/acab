@@ -12,7 +12,7 @@ from typing import Any, Callable
 import acab.core.defaults.value_keys as DS
 import acab.modules.values.binding.variable_control as VC
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.util.fragments import (DSL_Fragment, PrinterFragment,
@@ -33,7 +33,7 @@ from .unify.util import gen_f
 ##-- end imports
 
 logging = root_logger.getLogger(__name__)
-config = AcabConfig()
+config = acab.config
 Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
 Bind    = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
 

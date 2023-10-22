@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -16,12 +17,10 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
-logging = logmod.getLogger(__name__)
-
+import acab
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab import AcabConfig
 from acab.core.value.util import name_sieve_fns
 from acab.core.util.decorators.util import cache
 from acab.core.metaclasses.singletons import SingletonMeta
@@ -30,13 +29,15 @@ from acab.interfaces import context as CtxInt
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.context_instance import ContextInstance
 
+##-- end imports
+
 logging        = logmod.getLogger(__name__)
 
-config         = AcabConfig()
-BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+config         = acab.config
+BIND_SYMBOL    = config.any_of().symbols.BIND()
+FALLBACK_MODAL = config.any_of().symbols.FALLBACK_MODAL()
 
-UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
+UUID_CHOP      = config.any_of().print.UUID_CHOP()
 
 T              = TypeVar('T', bound=AT.ValueCore)
 C              = TypeVar('C', bound=type)
@@ -52,6 +53,7 @@ class ContextSetMeta(ProtocolMeta):
     """ Utility Meta Class for building contexts """
 
     name_sieve           : ClassVar[AcabSieve[str]] = AcabSieve(name_sieve_fns)
+
     default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BASE,
                                                        DS.BIND : False}
 

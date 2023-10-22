@@ -13,7 +13,6 @@ from enum import Enum
 from os.path import abspath, exists, expanduser, split, splitext
 
 import acab
-from acab import AcabConfig
 from acab.core.value.instruction import ProductionContainer
 from acab_config import AcabConfigException
 from acab.error.importer import AcabImportException
@@ -28,7 +27,7 @@ from acab.modules.repl.commands.util import print_module_colour
 ##-- end imports
 
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config
 
 
 @register

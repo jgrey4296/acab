@@ -19,7 +19,7 @@ logging = logmod.getLogger(__name__)
 
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.defaults import value_keys as DS
 from acab.core.defaults.value_keys import CONSTRAINT, OPERATOR, TYPE_INSTANCE
@@ -27,8 +27,8 @@ from acab.core.util.sentences import ProductionComponent
 from acab.core.value.instruction import ProductionOperator
 from acab.interfaces.value import ValueFactory as VF
 
-config      = AcabConfig()
-ATOM        = "_:" + config.attr.Data.TYPE_BASE
+config      = acab.config
+ATOM        = "_:" + config.data.TYPE_BASE
 TYPE_OP_SEN = VF.sen(["τ="], data={TYPE_INSTANCE: OPERATOR})
 
 default_sieve = [

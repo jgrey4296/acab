@@ -10,13 +10,13 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
 
-from acab import AcabConfig
+import acab
 
 logging = logmod.getLogger(__name__)
-config       = AcabConfig()
+config       = acab.config
 
-initial_prompt    = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
-multi_line_prompt = config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])()
+initial_prompt    = config.module.REPL.PROMPT
+multi_line_prompt = config.module.REPL.PROMPT_ML
 initial_engine    = config.attr.Module.REPL.ENGINE
 
 @dataclass

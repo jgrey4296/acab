@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -8,10 +9,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
                     Optional, Protocol, Sequence, Set, Tuple, TypeVar, Union,
                     cast)
 
+import acab
 import acab.core.defaults.value_keys as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-from acab import AcabConfig
 from acab import types as AT
 from acab.core.util.sentences import ProductionComponent
 from acab.core.value.instruction import ProductionOperator
@@ -29,10 +30,13 @@ if TYPE_CHECKING:
     Sen         = AT.Sentence
     Node        = AT.StructView
 
+##-- end imports
+
 logging       = logmod.getLogger(__name__)
-config        = AcabConfig()
-ATOM          = config.attr.Data.TYPE_BASE
-Bind          = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
+config        = acab.config
+ATOM          = config.data.TYPE_BASE
+# TODO import
+Bind          = config.imports.targeted.bind
 
 CONSTRAINT    = DS.CONSTRAINT
 TYPE_INSTANCE = DS.TYPE_INSTANCE

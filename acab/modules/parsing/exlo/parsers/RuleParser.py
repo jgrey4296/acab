@@ -1,9 +1,10 @@
 """ Trie-based parser to construct rules """
 # pylint: disable=bad-whitespace
+##-- imports
+from __future__ import annotations
 import logging as logmod
 
 import pyparsing as pp
-from acab import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
                                       END, NG, N, component_gap, emptyLine,
@@ -12,11 +13,12 @@ from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 from acab.modules.parsing.exlo.constructors import build_rule
 from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S, RULE_PRIM
 
-
 from . import ActionParser as AP
 from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
+
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 
@@ -32,7 +34,6 @@ rule_body = op(conditions + endOrLine) + op(transforms + endOrLine) + op(actions
 
 rule = StatementCore(RULE_PRIM, rule_body)
 
-
 # Actions:
 rule_body.set_parse_action(build_rule)
 
@@ -45,13 +46,13 @@ rule.set_name("RuleDefinition")
 endOrLine.set_name("endOrLine")
 # rules.set_name("RulePlural")
 
-
 # parse_point = rules.ignore(PU.COMMENT)
 
 # Main Parser
 parse_point = rule
 
 # Main Parser
+
 def parse_string(in_string):
     assert(isinstance(in_string, str))
     return parse_point.parse_string(in_string)[:]

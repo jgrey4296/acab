@@ -1,3 +1,5 @@
+##-- imports
+from __future__ import annotations
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -6,11 +8,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.modules.printing.printers as Printers
 from acab.interfaces.printing import PrintSemantics_i, PrintSystem_i
 from acab.modules.printing.basic_printer  import BasicPrinter
-from acab import AcabConfig
+import acab
 from acab.core.defaults import print_signals as DSig
 
+##-- end imports
 
-config = AcabConfig()
+config = acab.config
 
 atom_pr               = BasicPrinter.Spec(DSig.ATOM).spec_from(PrintSemantics_i)
 annotations_pr        = BasicPrinter.Spec(DSig.ANNOTATIONS).spec_from(PrintSemantics_i)

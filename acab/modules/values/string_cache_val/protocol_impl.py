@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
@@ -14,7 +16,7 @@ from weakref import ref
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab import AcabConfig
+import acab
 from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
@@ -22,13 +24,15 @@ import acab.interfaces.protocols.value as VP
 from acab.interfaces.value import ValueFactory
 from acab.core.util.debugging import logdel
 
+##-- end imports
+
 logging        = logmod.getLogger(__name__)
 
-config         = AcabConfig()
-BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+config         = acab.config
+BIND_SYMBOL    = config.any_of().symbols.BIND()
+FALLBACK_MODAL = config.any_of().symbols.FALLBACK_MODAL()
 
-UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
+UUID_CHOP      = config.any_of().print.UUID_CHOP()
 
 T              = TypeVar('T', bound=AT.ValueCore)
 

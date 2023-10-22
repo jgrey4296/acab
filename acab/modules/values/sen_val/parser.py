@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-
+##-- imports
+from __future__ import annotations
 import logging as logmod
 
 import acab.core.defaults.value_keys as CDS
 import pyparsing as pp
-from acab import AcabConfig
 from acab.core.defaults import parse_keys as DK
 from acab.core.defaults import parse_symbols as PDSym
 from acab.core.parsing import parsers as PU
@@ -14,6 +14,8 @@ from acab.core.parsing.consts import (COLON, COMMA, CPAR, DBLCOLON, DELIM,
 from acab.core.util.annotation import ValueAnnotation
 from acab.core.value.sentence import Sentence
 from acab.modules.analysis.typing import util as TYU
+
+##-- end imports
 
 
 def build_flatten(s, l, t):

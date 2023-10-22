@@ -1,6 +1,7 @@
 """
 
 """
+##-- imports
 from __future__ import annotations
 import re
 from dataclasses import dataclass, field
@@ -8,12 +9,14 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab import AcabConfig
+import acab
 from acab.interfaces.handler_system import Handler_i
 
-config = AcabConfig()
+##-- end imports
 
-MODULE_SPLIT_REG = re.compile(config.attr.Parse.Patterns.MODULE_SPLIT_REG)
+config = acab.config
+
+MODULE_SPLIT_REG = config.on_fail("[._]").parse.patterns.MODULE_SPLIT_REG(wrapper=re.compile)
 
 def applicable(val:Any, base_type:type, *, as_handler=False) -> bool:
     """

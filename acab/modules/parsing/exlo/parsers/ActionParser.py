@@ -1,8 +1,10 @@
 """ A Trie based Parser module for the creation of action """
+##-- imports
+from __future__ import annotations
 import logging as logmod
 
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (DELIM, NG, N, component_gap, ln, op, orm,
@@ -13,8 +15,9 @@ from acab.core.parsing.pyparse_ext.statement_core import StatementCore
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S, ACTION_COMPONENT
 
-
 from .FactParser import SENTENCE, op_sentence
+
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 

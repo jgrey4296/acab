@@ -1,3 +1,4 @@
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -7,8 +8,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 import pyparsing as pp
+import acab
 from acab import types as AT
-from acab import AcabConfig
+
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults import parse_symbols as PDSYM
 from acab.core.defaults import value_keys as CDS
@@ -21,11 +23,13 @@ from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 
 ParserElement = AT.Parser
 
-config = AcabConfig()
+config = acab.config
 
 ##-- Forward Declarations
 HOTLOAD_VALUES = pp.Forward()
@@ -60,12 +64,11 @@ REGEX.set_parse_action(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
 
 ##-- modal parsing
 # Generalised modal operator, which is converted to appropriate data later
-# The syntax is constructed automatically from AcabConfig
-MODAL      = pp.Word("".join(config.syntax_extension.keys()))
+# The syntax is defined in tomls
+MODAL      = pp.Word("".join(config.all_of().modal.symbols().values()))
 MODAL.set_name("MODAL")
 MODAL.set_parse_action(lambda s, l, t: ModalAnnotation(t[0]))
 ##-- end modal parsing
-
 
 BASIC_VALUE = ATOM | STRING | REGEX
 BIND        = s_lit(PDSYM.BIND).set_parse_action(lambda s,l,t: ValueAnnotation(CDS.BIND, True))

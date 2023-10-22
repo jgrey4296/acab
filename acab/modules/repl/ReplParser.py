@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging as logmod
 
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.parsing import consts as PU
 from acab.core.parsing import parsers as AP
 from acab.modules.repl.util import build_slice
@@ -16,13 +16,13 @@ from acab.modules.repl.util import build_slice
 ##-- end imports
 
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config
 
 rst     = pp.delimited_list(pp.rest_of_line, delim=pp.White("\n\r"), combine=True).leave_whitespace()
 
 ##-- multi line
-MULTI_LINE_START = config.prepare("Module.REPL", "MULTI_LINE_START")()
-MULTI_LINE_END   = config.prepare("Module.REPL", "MULTI_LINE_END")()
+MULTI_LINE_START = config.module.REPL.MULTI_LINE_START
+MULTI_LINE_END   = config.module.REPL.MULTI_LINE_END
 
 multi_line_start = pp.Regex(MULTI_LINE_START)
 multi_line_end = pp.Regex(MULTI_LINE_END)
@@ -33,7 +33,7 @@ multi_line_end.set_parse_action(lambda s,l,t: "multi")
 ##-- end multi line
 
 
-shortcut_config   = config.attr.Module.REPL.shortcuts
+shortcut_config   = config.module.REPL.shortcuts
 short_cmd_parsers = []
 
 ##-- shortcuts

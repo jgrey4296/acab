@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -13,12 +14,12 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection, Generic,
 from uuid import UUID, uuid1
 from weakref import ref
 
+import acab
 import acab.core.defaults.value_keys as DS
 import acab.core.value.part_implementations.value as VSI  # type:ignore
 import acab.interfaces.protocols.value as VP
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.interfaces.context import ContextInstance_i
@@ -33,19 +34,22 @@ if TYPE_CHECKING:
     Instruction_A : TypeAlias = AT.Instruction
     ValueData     : TypeAlias = str
 
+##-- end imports
+
 T              = TypeVar('T', bound=AT.ValueCore)
 
-config         = AcabConfig()
-BIND_SYMBOL    = config.attr.Symbols.BIND
-FALLBACK_MODAL = config.attr.Symbols.FALLBACK_MODAL
+config         = acab.config
+BIND_SYMBOL    = config.any_of().symbols.BIND()
+FALLBACK_MODAL = config.any_of().symbols.FALLBACK_MODAL()
 
-UUID_CHOP  = config.prepare("Print.Data", "UUID_CHOP", _type=bool)
-ANON_VALUE = config.attr.Symbols.ANON_VALUE
+UUID_CHOP      = config.any_of().print.UUID_CHOP()
+ANON_VALUE     = config.any_of().symbols.ANON_VALUE()
 
 class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p):
     """
     Utility class for basic instruction/sentence methods
     """
+
     @cache
     def __str__(self):
         if self.name != ANON_VALUE:
@@ -65,7 +69,6 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
 
         type_str = "::" + str(self.type) if self.type != "_:SENTENCE" else ""
 
-
         return "<{}{} {}>".format(name_str, type_str, val_str)
 
     def __eq__(self, other):
@@ -84,7 +87,6 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
                 return True
             case _:
                 return False
-
 
     def key(self, suffix=None) -> str:
         # if self.is_var:
@@ -119,7 +121,6 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
             kwargs['data'] = temp
 
         return replace(self, uuid=uuid1(), **kwargs) #type:ignore
-
 
 class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
 
@@ -157,7 +158,6 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
     @property
     def vars(self) -> list[Value_A]:
         return [x for x in self.words if x.is_var]
-
 
 class _SentenceCollectionImpl(VI.Sentence_i, Collection):
 
@@ -198,6 +198,7 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
                 raise ValueError("Unrecognised argument to Sentence.__getitem__", i)
 
 class _SentenceReductionImpl(VI.Sentence_i):
+
     def attach_statement(self, value:Instruction_A) -> Sen_A:
         """
         for this S: first..last
@@ -244,7 +245,6 @@ class _SentenceReductionImpl(VI.Sentence_i):
         sen_copy = self.copy(value=out_words) #type:ignore
         return (sen_copy, statements)
 
-
     def to_word(self) -> Value_A:
         """ Convert a Statement to just an AcabValue, of it's name """
 
@@ -269,7 +269,6 @@ class SentenceProtocolsImpl(_SentenceBasicsImpl, VSI._ValueMetaDataImpl, _Senten
         new_sen = replace(self, value=words)
         return new_sen
 
-
     def clear(self) -> Sen_A:
         """
         return modified copy
@@ -287,7 +286,6 @@ class SentenceProtocolsImpl(_SentenceBasicsImpl, VSI._ValueMetaDataImpl, _Senten
                 return prefix << self
             case VI.Value_i():
                 return self.copy(value=[prefix]+self.words)
-
 
     def remove_prefix(self, prefix:'Value_A|Sen_A|list') -> Sen_A:
         if not isinstance(prefix, (VI.Sentence_i, list)):
@@ -322,4 +320,3 @@ class SentenceProtocolsImpl(_SentenceBasicsImpl, VSI._ValueMetaDataImpl, _Senten
                 assert(not (is_sen and should_flatten))
                 words.append(word)
         return replace(self, value=words)
-

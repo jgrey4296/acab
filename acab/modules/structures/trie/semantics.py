@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+##-- imports
+from __future__ import annotations
 import logging as logmod
 
 import acab.core.defaults.value_keys as DS
@@ -6,7 +8,7 @@ import acab.error.semantic as ASErr
 import acab.interfaces.data as DI
 import acab.interfaces.semantic as SI
 from acab import types as AT
-from acab import AcabConfig
+import acab
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.semantics import basic
 from acab.core.value.instruction import Instruction
@@ -17,8 +19,11 @@ from acab_config import AcabProtocolError as APE
 
 from .flatten_query_manager import FlattenQueryManager
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
-config = AcabConfig()
+
+config = acab.config
 
 Node          = DI.StructView
 Value         = AT.Value
@@ -34,6 +39,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
     Has sentence-flattening logic for querying.
     """
+
     def verify(self, instruction) -> bool:
         return isinstance(instruction, Sentence)
 
@@ -160,13 +166,9 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
         return result_list
 
-
-
     @staticmethod
     def from_sentences(self, sens):
         raise NotImplementedError()
 
     def to_word(self):
         raise NotImplementedError()
-
-

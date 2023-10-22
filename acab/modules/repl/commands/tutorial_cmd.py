@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -11,13 +12,13 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 logging = logmod.getLogger(__name__)
 
+from acab.modules.repl.repl_commander import register_class
+
 if TYPE_CHECKING:
     # tc only imports
     pass
 
-
-from acab.modules.repl.repl_commander import register_class
-
+##-- end imports
 
 @register_class("tutorial")
 class TutorialCmd:
@@ -30,7 +31,6 @@ class TutorialCmd:
 
     def _gen_parser(self):
         pass
-
 
     def __call__(self, line):
         # Print a section, return to main loop,

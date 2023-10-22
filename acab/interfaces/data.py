@@ -2,6 +2,7 @@
 A Collection of interfaces describing how data is used in the system.
 Here, 'Data' means something analogous to ADTs
 """
+##-- imports
 # pylint: disable=multiple-statements,abstract-method,too-few-public-methods,invalid-sequence-index
 from __future__ import annotations
 import abc
@@ -23,6 +24,7 @@ Node      : TypeAlias = "Node_i"
 Structure : TypeAlias = "Structure_i"
 T = TypeVar('T', covariant=True, bound=Node)
 
+##-- end imports
 
 @runtime_checkable
 class _Node_p(cABC.Hashable, Protocol):

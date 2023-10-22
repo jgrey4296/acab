@@ -15,9 +15,10 @@ classifiers     = [
 ]
 
 dependencies   = [
-    "acab_config >= 0.0.1",
+    # "acab_config >= 0.0.1",
     # "acab_config @ git+https://github.com/jgrey4296/acab_config.git@0.0.1",
-    "pyparsing >= 3.0.9"
+    "pyparsing >= 3.0.9",
+    "tomler @ git+https://github.com/jgrey4296/tomler.git",
 ]
 
 [project.optional-dependencies]
@@ -73,9 +74,10 @@ include-package-data = true
 [tool.setuptools.packages.find]
 namespaces = true
 where = ["."]
+include = ["acab"]
 
 [tool.setuptools.package-data]
-acab = []
+"*" = ["*"]
 
 [tool.setuptools.exclude-package-data]
 

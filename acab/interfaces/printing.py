@@ -1,6 +1,7 @@
 """
 
 """
+##-- imports
 # pylint: disable=multiple-statements,protected-access,too-many-ancestors,abstract-method
 # pyright: reportGeneralTypeIssues=warning
 from __future__ import annotations
@@ -14,17 +15,13 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
                     TypeVar, cast, final, overload, runtime_checkable)
 
-from acab import AcabConfig
+import acab
 from acab import types as AT
-from acab import AcabConfig
 from acab.core.defaults.print_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces import handler_system as HS
 from acab.interfaces.protocols import handler_system as HSubP
-
-logging = logmod.getLogger(__name__)
-config = AcabConfig()
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -37,6 +34,11 @@ if TYPE_CHECKING:
     GenFunc          : TypeAlias = AT.fns.GenFunc
     Handler_A        : TypeAlias = AT.Handler
     HandlerSpec_A    : TypeAlias = AT.HandlerSpec
+##-- end imports
+
+logging = logmod.getLogger(__name__)
+config = acab.config
+
 
 # Protocols  ##################################################################
 @runtime_checkable
@@ -72,7 +74,7 @@ class PrintSystem_i(HS.HandlerSystem_i, _PrintSystem_p):
     sieve_fns      : InitVar[list[GenFunc]]       = None
     separator : ConfigSpec     = field(default=PRINT_SEPARATOR_P)
     settings  : dict[str, str] = field(default_factory=dict)
-    _config   : Config_A       = field(init=False, default_factory=AcabConfig)
+    _config   : Config_A       = field(init=False)
 
     # pyrite bug : doesn't handle inherited initvars
     # pylint: disable-next=arguments-renamed

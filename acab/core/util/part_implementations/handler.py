@@ -5,6 +5,7 @@ This is separated from the rest of the handler_system to avoid a circular import
 """
 # pylint: disable=abstract-method,invalid-sequence-index,use-a-generator,too-many-lines
 # pyright: reportPrivateUsage=warning
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -15,7 +16,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
                     Iterator, Mapping, Match, MutableMapping, NewType,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeVar, cast)
 
-from acab import AcabConfig
+import acab
 from acab.core.util.decorators.util import cache
 from acab.error.handler import AcabHandlerException
 from acab.interfaces import handler_system as HS
@@ -39,10 +40,10 @@ if TYPE_CHECKING:
     HandlerComponent_A : TypeAlias = AT.HandlerComponent
     Handler_System_A   : TypeAlias = AT.HandlerSystem
 
+##-- end imports
 
 logging     = logmod.getLogger(__name__)
-config      = AcabConfig()
-
+config      = acab.config
 
 @APE.assert_concrete
 @dataclass
@@ -102,6 +103,7 @@ class BasicHandler(HS.Handler_i):
                               func=self.func,
                               struct=struct or self.struct,
                               flags=flags or self.flags)
+
     @cache
     def __str__(self):
         return str(self.signal)

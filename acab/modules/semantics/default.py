@@ -1,3 +1,5 @@
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -5,7 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.interfaces.semantic as SI
 import acab.modules.semantics.statements as ASem
-from acab import AcabConfig
+import acab
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.util.part_implementations.handler_system import (Handler,
                                                                 HandlerSpec)
@@ -18,19 +20,21 @@ from acab.modules.structures.trie.default import (DEFAULT_TRIE,
                                                   DEFAULT_TRIE_SPEC)
 from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 
+##-- end imports
+
 logging    = logmod.getLogger(__name__)
-config     = AcabConfig()
+config     = acab.config
 
-DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-INSTRUCT_SEN     = VF.sen() << config.attr.Type.Primitive.INSTRUCT
-CONTAINER_SEN    = INSTRUCT_SEN << config.attr.Type.Primitive.CONTAINER
-STRUCT_SEN       = INSTRUCT_SEN << config.attr.Type.Primitive.STRUCTURE
+DEFAULT_HANDLER_SIGNAL = config.handler.system.DEFAULT_SIGNAL
+INSTRUCT_SEN     = VF.sen() << config.any_of().types.primitive.INSTRUCT
+CONTAINER_SEN    = INSTRUCT_SEN << config.any_of().types.primitive.CONTAINER
+STRUCT_SEN       = INSTRUCT_SEN << config.any_of().types.primitive.STRUCTURE
 
-QUERY_SIGNAL     = CONTAINER_SEN << config.attr.Type.Primitive.QUERY
-ACTION_SIGNAL    = CONTAINER_SEN << config.attr.Type.Primitive.ACTION
-TRANSFORM_SIGNAL = CONTAINER_SEN << config.attr.Type.Primitive.TRANSFORM
-RULE_SIGNAL      = STRUCT_SEN    << config.attr.Type.Primitive.RULE
-ATOM_SIGNAL      = VF.sen()      << config.attr.Data.TYPE_BASE
+QUERY_SIGNAL     = CONTAINER_SEN << config.any_of().types.primitive.QUERY
+ACTION_SIGNAL    = CONTAINER_SEN << config.any_of().types.primitive.ACTION
+TRANSFORM_SIGNAL = CONTAINER_SEN << config.any_of().types.primitive.TRANSFORM
+RULE_SIGNAL      = STRUCT_SEN    << config.any_of().types.primitive.RULE
+ATOM_SIGNAL      = VF.sen()      << config.data.TYPE_BASE
 
 query_spec  = BSS.Spec(QUERY_SIGNAL).spec_from(SI.StatementSemantics_i)
 action_spec = BSS.Spec(ACTION_SIGNAL).spec_from(SI.StatementSemantics_i)
