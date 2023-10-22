@@ -1,0 +1,24 @@
+[[parse]]
+
+[parse.patterns]
+TYPE_SYNTAX_EXT     = "αβγδεζθικλμνορστυχψωΑΒΓΔΕΖΘΙΚΛΜΝΟΡΣΤΥΧΨΩ"
+PARAM_JOIN          = ", "
+
+[parse.results]
+structure = ["SYNTAX_BIND"]
+
+# Additional print signals for typing:
+[[print]]
+
+[print.signals]
+allowed = ["TYPE_INSTANCE", "TYPE_DEF", "SUM_TYPE", "OP_DEF", "TYPE_CLASS", "SYNTAX_BIND"]
+
+[[types]]
+# Added to the normal base primitives
+primitive = ["PRIMITIVE", "TYPE_DEF", "OP_DEF", "SUM_DEF", "STRUCT", "TVAR", "SYNTAX_BIND", "TYPE_CLASS"]
+
+[[symbols]]
+NOMINAL    = "τ"
+SUM        = "Σσ"
+STRUCTURE  = "σ"
+TYPE_CLASS = "γ"
