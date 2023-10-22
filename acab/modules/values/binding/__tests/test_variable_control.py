@@ -157,5 +157,7 @@ class TestVarControl(unittest.TestCase):
         self.assertIn("a", mapping)
 
 
+##-- ifmain
 if __name__ == '__main__':
     unittest.main()
+##-- end ifmain

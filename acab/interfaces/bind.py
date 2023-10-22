@@ -1,6 +1,7 @@
 """
 
 """
+##-- import
 # pylint: disable=multiple-statements,abstract-method,too-many-ancestors,invalid-sequence-index
 from __future__ import annotations
 import abc
@@ -14,8 +15,8 @@ from typing import (Any, ClassVar, Container, Final, Generic, Literal, Mapping,
                     Type, TypeAlias, TypeVar, cast, runtime_checkable)
 from uuid import UUID, uuid1
 
+import acab
 from acab import types as AT
-from acab import AcabConfig
 from acab_config import AcabConfigException
 
 from typing import TYPE_CHECKING
@@ -24,6 +25,7 @@ if TYPE_CHECKING:
     from acab.interfaces import value as VI
     from acab.interfaces import context as CI
 
+##-- end import
 
 logging       = logmod.getLogger(__name__)
 

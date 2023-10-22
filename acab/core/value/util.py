@@ -5,11 +5,11 @@ from __future__ import annotations
 
 from re import Pattern
 
+import acab
 import acab.interfaces.value as VI
-from acab import AcabConfig
 
-config           = AcabConfig()
-ANON_VALUE       = config.attr.Symbols.ANON_VALUE
+config           = acab.config
+ANON_VALUE       = config.any_of().symbols.ANON_VALUE()
 
 def class_name_fn(obj):
     if obj['name'] is None and obj['value'] is None:

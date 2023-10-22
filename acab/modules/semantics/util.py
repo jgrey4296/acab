@@ -3,7 +3,7 @@
 import logging as logmod
 from enum import Enum
 
-from acab import AcabConfig
+import acab
 
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config

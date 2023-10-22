@@ -16,6 +16,7 @@ Meanwhile ValueSemantics_i are concerned only with the values and structures the
 
 """
 # pylint: disable=multiple-statements,protected-access,too-many-ancestors
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -29,7 +30,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.handler_system as HS
-from acab import AcabConfig
+import acab
 from acab.core.defaults.value_keys import QUERY
 from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.error.printing import AcabPrintException
@@ -60,8 +61,11 @@ if TYPE_CHECKING:
     Value              : TypeAlias = AT.Value
     ValueSemantics     : TypeAlias = AT.ValueSemantics
 
-config = AcabConfig()
-Bind   = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
+##-- end imports
+
+config = acab.config
+# TODO import
+Bind   = config.imports.specific.bind
 
 # Protocol Implementations #############################################################
 class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):

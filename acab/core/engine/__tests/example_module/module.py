@@ -1,3 +1,4 @@
+##-- imports
 from __future__ import annotations
 import logging as logmod
 import unittest
@@ -11,7 +12,6 @@ from dataclasses import dataclass, field, InitVar
 import pyparsing as pp
 import acab
 
-config = acab.AcabConfig()
 
 import acab.core.defaults.value_keys as DS
 from acab.core.defaults import print_signals as DSig
@@ -31,7 +31,12 @@ from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
 
-Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
+##-- end imports
+
+config = acab.config
+
+# TODO import
+Handler = config.imports.specific.handler
 
 __all__ = ["ExampleExtension"]
 

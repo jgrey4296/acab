@@ -12,6 +12,7 @@ acab project  [name] : create a default acab project directory structure
 Run `acabr` for the REPL
 
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -32,6 +33,8 @@ from weakref import ref
 
 from .repl_main import main_repl
 
+##-- end imports
+
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                  epilog = "\n".join(["General Access to acab utilities"]))
 parser.add_argument('instruction', default="list", nargs='?')
@@ -39,17 +42,12 @@ parser.add_argument('args', nargs="*")
 
 args = parser.parse_args()
 
-if TYPE_CHECKING:
-    # tc only imports
-    pass
-
-
 logging = logmod.getLogger(__name__)
 
 # Env Vars
 ACAB_TEMPLATE_PATHS = "ACAB_TEMPLATE_PATHS"
 
-base_template_path       = files("acab.__templates")
+base_template_path  = files("acab.__templates")
 name_exclusions     = [".DS_Store", "__init__.py", "__init__.pyc"]
 
 template_paths= [base_template_path]
@@ -71,6 +69,7 @@ def main():
     match args.instruction, len(args.args):
         # Default
         case "list", _:
+            print("All Cops are Bastards")
             print("Acab Utilities:")
             print("acab                 : list available commands")
             print("acab template        : list available templates")

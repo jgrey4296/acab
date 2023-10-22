@@ -1,0 +1,308 @@
+Loaded 6 modules
+    (1 DSL | 0 Sem | 6 Op | 6 Pr : acab.modules.operators.query)
+    (0 DSL | 0 Sem | 2 Op | 2 Pr : acab.modules.operators.transform)
+    (0 DSL | 0 Sem | 3 Op | 3 Pr : acab.modules.operators.action)
+    (1 DSL | 1 Sem | 0 Op | 0 Pr : acab.modules.operators.dfs)
+    (2 DSL | 1 Sem | 0 Op | 0 Pr : acab.modules.analysis.typing)
+    (1 DSL | 0 Sem | 0 Op | 0 Pr : acab.core.parsing)
+
+--------------------------------------------------
+[repl]>>> a.b.c
+[repl]>>> a.b.d
+[repl]>>> ⊢ $x ∈ $y
+Parse Failure: : Parser NoMatch failed on line 1 column 1: >!<⊢ $x ∈ $y
+[repl]>>> ?
+[repl]>>> help parser
+[repl]>>> help forcep
+[repl]>>> forcep
+Unrecognised Option: 
+ Force Parser:
+    Query the bootstrap parser,
+    and if supplied text, parse it and try to run it
+    
+[repl]>>> ?
+[repl]>>> help check
+[repl]>>> help module
+[repl]>>> help print
+[repl]>>> print wm
+a.b.c
+a.b.d
+acab.modules.operators.query.SimpleTypeMatch(::OPERATOR_PRIM, τ=)
+acab.modules.operators.query.RegMatch(::OPERATOR_PRIM, ~=)
+acab.modules.operators.query.NEQ(::OPERATOR_PRIM, !=)
+acab.modules.operators.query.HasTag(::OPERATOR_PRIM)
+acab.modules.operators.query.EQ(::OPERATOR_PRIM, ==)
+acab.modules.operators.query.ELEM(::OPERATOR_PRIM, ∈)
+acab.modules.operators.transform.RegexOp(::OPERATOR_PRIM, ~:)
+acab.modules.operators.transform.FormatOp(::OPERATOR_PRIM, %:)
+acab.modules.operators.action.RebindOperator(::OPERATOR_PRIM, §)
+acab.modules.operators.action.AcabPrint(::OPERATOR_PRIM, %)
+acab.modules.operators.action.AcabAssert(::OPERATOR_PRIM, !!)
+[repl]>>> help
+[repl]>>> help report
+[repl]>>> stat dsl
+Parse Failure: : Parser StringEnd failed on line 1 column 6: stat >!<dsl
+[repl]>>> stat
+[repl]>>> stat
+[repl]>>> help
+[repl]>>> help report
+[repl]>>> 
+stat
+a.b.c
+a.b.d
+acab.modules.operators.query.SimpleTypeMatch(::OPERATOR_PRIM, τ=)
+acab.modules.operators.query.RegMatch(::OPERATOR_PRIM, ~=)
+acab.modules.operators.query.NEQ(::OPERATOR_PRIM, !=)
+acab.modules.operators.query.HasTag(::OPERATOR_PRIM)
+acab.modules.operators.query.EQ(::OPERATOR_PRIM, ==)
+acab.modules.operators.query.ELEM(::OPERATOR_PRIM, ∈)
+acab.modules.operators.transform.RegexOp(::OPERATOR_PRIM, ~:)
+acab.modules.operators.transform.FormatOp(::OPERATOR_PRIM, %:)
+acab.modules.operators.action.RebindOperator(::OPERATOR_PRIM, §)
+acab.modules.operators.action.AcabPrint(::OPERATOR_PRIM, %)
+acab.modules.operators.action.AcabAssert(::OPERATOR_PRIM, !!)
+[repl]>>> ~stat
+[repl]>>> 
+a.b.c
+a.b.d
+acab.modules.operators.query.SimpleTypeMatch(::OPERATOR_PRIM, τ=)
+acab.modules.operators.query.RegMatch(::OPERATOR_PRIM, ~=)
+acab.modules.operators.query.NEQ(::OPERATOR_PRIM, !=)
+acab.modules.operators.query.HasTag(::OPERATOR_PRIM)
+acab.modules.operators.query.EQ(::OPERATOR_PRIM, ==)
+acab.modules.operators.query.ELEM(::OPERATOR_PRIM, ∈)
+acab.modules.operators.transform.RegexOp(::OPERATOR_PRIM, ~:)
+acab.modules.operators.transform.FormatOp(::OPERATOR_PRIM, %:)
+acab.modules.operators.action.RebindOperator(::OPERATOR_PRIM, §)
+acab.modules.operators.action.AcabPrint(::OPERATOR_PRIM, %)
+acab.modules.operators.action.AcabAssert(::OPERATOR_PRIM, !!)
+[repl]>>> report
+
+--------------------
+Modules: 
+--------------------
+    (1 DSL | 0 Sem | 6 Op | 6 Pr : acab.modules.operators.query)
+    (0 DSL | 0 Sem | 2 Op | 2 Pr : acab.modules.operators.transform)
+    (0 DSL | 0 Sem | 3 Op | 3 Pr : acab.modules.operators.action)
+    (1 DSL | 1 Sem | 0 Op | 0 Pr : acab.modules.operators.dfs)
+    (2 DSL | 1 Sem | 0 Op | 0 Pr : acab.modules.analysis.typing)
+    (1 DSL | 0 Sem | 0 Op | 0 Pr : acab.core.parsing)
+--
+Loaded Modules: 6
+
+--------------------
+DSL: 
+--------------------
+DSL Base: acab.core.parsing.pyparse_dsl.PyParseDSL
+Instance of:
+    acab.core.parsing.dsl_builder.DSL_Builder
+    acab.interfaces.dsl.DSL_Builder_i
+
+Components: (no. of handlers : signal : flags)
+    11   : sentence.ends                   : COLLECT
+    4    : word.annotation                 : COLLECT
+    2    : action.statement                : COLLECT
+    2    : operators.action                : COLLECT
+    2    : operators.query                 : COLLECT
+    2    : operators.transform             : COLLECT
+    2    : sentence.annotation.head        : COLLECT
+    2    : sentence.annotation.post        : COLLECT
+    1    : _default                       
+    1    : query.statement                 : COLLECT
+    1    : transform.statement             : COLLECT
+    1    : word.constrained               
+    1    : sentence.operator              
+    1    : sentence                        : COLLECT
+    0    : disallowed.words                : COLLECT
+    0    : sentence.annotation.end         : COLLECT
+    0    : statement                       : COLLECT
+    0    : word.value                      : COLLECT
+    0    : word.annotation.head            : COLLECT
+    0    : word.annotation.post            : COLLECT
+
+Handlers not attached to a Signal: 
+    action.core
+    operators
+    operators.modal
+    sentence.plural
+    tag.sentence
+    transform.core
+    word.valbind
+
+--------------------
+Semantics: 
+--------------------
+Semantic Base: acab.modules.semantics.basic_system.BasicSemanticSystem
+ A Complete semantic system 
+Instance of:
+    acab.core.semantics.basic.SemanticSystem
+    acab.interfaces.semantic.SemanticSystem_i
+
+Components: (no. of handlers : signal : flags)
+    2    : [ATOM]                         
+    1    : [INSTRUCT.CONTAINER.QUERY]     
+    1    : [INSTRUCT.CONTAINER.TRANSFORM] 
+    1    : [INSTRUCT.CONTAINER.ACTION]    
+    1    : [INSTRUCT.STRUCTURE.RULE]      
+    1    : [INSTRUCT.CONTAINER]           
+    1    : [TRIE]                         
+    1    : _default                       
+    1    : [INSTRUCT.WALK]                
+    1    : TYPE_CHECK                     
+
+Handlers not attached to a Signal: 
+    trie
+----------
+Module Semantics: 
+Module: acab.modules.operators.dfs
+    <Handler Fragment for <class 'acab.interfaces.semantic.SemanticSystem_i'>: 1 Specs, 3 Handlers>
+Module: acab.modules.analysis.typing
+    <Handler Fragment for <class 'acab.interfaces.semantic.SemanticSystem_i'>: 1 Specs, 1 Handlers>
+
+--------------------
+Operators: 
+--------------------
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+--
+Loaded Operators: 11
+
+--------------------
+Printers: 
+--------------------
+Printing Base: acab.modules.printing.basic_printer.BasicPrinter
+ Handles how to convert values and sentences into strings,
+    does not rely on the underlying data structures
+    
+Instance of:
+    acab.core.printing.basic.PrintSystemImpl
+    acab.interfaces.printing.PrintSystem_i
+
+Components: (no. of handlers : signal : flags)
+    2    : TYPE_INSTANCE                  
+    1    : [ATOM]                         
+    1    : ANNOTATIONS                    
+    1    : ANNOTATIONS_FINAL              
+    1    : [SENTENCE]                     
+    1    : SYMBOL                         
+    1    : CONSTRAINT                     
+    1    : [INSTRUCT.CONTAINER]           
+    1    : IMPLICIT_CONTAINER             
+    1    : MODAL                          
+    1    : [SENTENCE.COMPONENT]           
+    1    : [INSTRUCT.STRUCTURE]           
+    1    : TAGS                           
+    1    : _default                       
+    1    : TYPE_DEF                       
+    1    : SUM_TYPE                       
+    1    : OP_DEF                         
+    1    : TYPE_CLASS                     
+    1    : TYPE_CHECK                     
+
+Handlers not attached to a Signal: 
+----------
+Module Printers: 
+Module: acab.modules.analysis.typing
+<Handler Fragment for <class 'acab.interfaces.printing.PrintSystem_i'>: 5 Specs, 5 Handlers>
+<Handler Fragment for <class 'acab.interfaces.printing.PrintSystem_i'>: 1 Specs, 1 Handlers>
+
+--------------------
+Engine: 
+--------------------
+Active Engine: acab.modules.engines.basic_engine.AcabBasicEngine
+ The Default Acab production system engine. 
+Instance of:
+    acab.core.engine.engine_base.AcabEngineImpl
+    acab.interfaces.engine.AcabEngine_i
+
+Load Paths:
+    None
+
+System Wide Imports:
+    bind                 : acab.modules.values.binding.binding.Bind
+    context              : acab.modules.context.context_set.ContextSet
+    debug                : acab.modules.debugger.running_debugger.RunningDebugger
+    engine               : acab.modules.engines.basic_engine.AcabBasicEngine
+    handler              : acab.core.util.patch_handler.PatchHandler
+    value_meta           : acab.core.metaclasses.value.ValueMeta
+[repl]>>> report DSL
+Unrecognised Command detail: DSL
+
+    Print reports about the system configurationz
+
+    Prints all information by default,
+    If you type `report {section}` prints only that section.
+
+    Available sections:
+    dsl
+    engine
+    module   / mod
+    operator / ops
+    printers
+    semantics
+
+    
+[repl]>>> report dsl
+
+--------------------
+DSL: 
+--------------------
+DSL Base: acab.core.parsing.pyparse_dsl.PyParseDSL
+Instance of:
+    acab.core.parsing.dsl_builder.DSL_Builder
+    acab.interfaces.dsl.DSL_Builder_i
+
+Components: (no. of handlers : signal : flags)
+    11   : sentence.ends                   : COLLECT
+    4    : word.annotation                 : COLLECT
+    2    : action.statement                : COLLECT
+    2    : operators.action                : COLLECT
+    2    : operators.query                 : COLLECT
+    2    : operators.transform             : COLLECT
+    2    : sentence.annotation.head        : COLLECT
+    2    : sentence.annotation.post        : COLLECT
+    1    : _default                       
+    1    : query.statement                 : COLLECT
+    1    : transform.statement             : COLLECT
+    1    : word.constrained               
+    1    : sentence.operator              
+    1    : sentence                        : COLLECT
+    0    : disallowed.words                : COLLECT
+    0    : sentence.annotation.end         : COLLECT
+    0    : statement                       : COLLECT
+    0    : word.value                      : COLLECT
+    0    : word.annotation.head            : COLLECT
+    0    : word.annotation.post            : COLLECT
+
+Handlers not attached to a Signal: 
+    action.core
+    operators
+    operators.modal
+    sentence.plural
+    tag.sentence
+    transform.core
+    word.valbind
+[repl]>>> forcep operators.action?
+Retrieved: operators.action
+
+Nothing sent to parser
+[repl]>>> forcep operators.action? ⊢ $x ∈ $y
+Retrieved: operators.action
+
+Trying Parser on:  ⊢ $x ∈ $y
+  File "/Volumes/documents/github/acab/acab/modules/repl/commands/force_parser_cmd.py", line 71, in __call__
+    forced_result = built.parse_string(params.send.strip(), parseAll=True)[:]
+
+  File "/Users/johngrey/anaconda3/envs/acab-dev/lib/python3.10/site-packages/pyparsing/core.py", line 1141, in parse_string
+    raise exc.with_traceback(None)
+
+[repl]>>> :q

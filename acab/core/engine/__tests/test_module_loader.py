@@ -93,5 +93,7 @@ class TestModuleLoader(unittest.TestCase):
         result = ml.load("acab.core.engine.__tests.example_module.no_all")
         pass
 
+##-- ifmain
 if __name__ == '__main__':
     unittest.main()
+##-- end ifmain

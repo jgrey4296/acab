@@ -2,6 +2,7 @@
 Utility decorators
 """
 #pylint: disable=invalid-sequence-index
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -20,11 +21,14 @@ if TYPE_CHECKING:
     # tc only imports
     from acab import types as AT
 
+##-- end imports
+
 T = TypeVar('T')
 P = ParamSpec('P')
 
 def ForceListArgDecorator(f:Callable[..., T]) -> Callable[..., T]:
     """ Force the first arg to be a list """
+
     @wraps(f)
     def wrapped(self, *the_args, **the_kwargs):
         forced = []
@@ -40,6 +44,7 @@ def ForceListArgDecorator(f:Callable[..., T]) -> Callable[..., T]:
 
 def cache(f:Callable[..., T]) -> Callable[..., T]:
     cache_key : str = f"{f.__name__}.__cached_val"
+
     @wraps(f)
     def wrapped(self, *args, **kwargs):
         if hasattr(self, cache_key): #type:ignore
@@ -53,6 +58,7 @@ def cache(f:Callable[..., T]) -> Callable[..., T]:
 
 def invalidate_cache(f:Callable[..., T]) -> Callable[..., T]:
     cache_key = f"{f.__name__}__cached_val"
+
     @wraps(f)
     def wrapped(self, *args, **kwargs):
         if hasattr(self, cache_key): #type:ignore
@@ -67,8 +73,10 @@ def HandleSignal(sig : str) -> Callable[..., Any]:
     """
     Utility to easily add a signal to classes for use in the handler system
     """
+
     def __add_sig(sig, method):
         """ used to add 'signal' as an argument to a class' init method """
+
         @wraps(method)
         def wrapper(self, *args, **kwargs):
             if 'signal' not in kwargs:
@@ -83,15 +91,15 @@ def HandleSignal(sig : str) -> Callable[..., Any]:
 
     return wrapper
 
-
-
 def factory(f:Callable[..., T]) -> Callable[..., T]:
     """
     Curry a constructor, naming it in a useful way
 
     """
+
     @wraps(f)
     def awaiting_arg(first_arg:Any) -> Callable[..., T]:
+
         @wraps(f)
         def ready_to_apply(*args:Any, **kwargs:Any) -> T:
             return f(first_arg, *args, **kwargs)

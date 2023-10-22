@@ -2,6 +2,7 @@
 Interfaces for the use of actual information, both individual,
 and formed into sentences
 """
+##-- imports
 # pylint: disable=multiple-statements,abstract-method,too-many-ancestors,invalid-sequence-index
 from __future__ import annotations
 
@@ -17,10 +18,9 @@ from typing import (TYPE_CHECKING, Any, ClassVar, Collection, Container, Final,
                     runtime_checkable)
 from uuid import UUID, uuid1
 
-import acab.core.defaults.value_keys as DS
+import acab
 import acab.interfaces.protocols.value as VSubP
 from acab import types as AT
-from acab import AcabConfig
 from acab.core.metaclasses.singletons import SingletonMeta
 from acab_config import AcabConfigException
 
@@ -38,17 +38,19 @@ if TYPE_CHECKING:
     ValueData   : TypeAlias = str
     SemSys      : TypeAlias = AT.SemanticSystem
 
+##-- end imports
 
 __all__ = ['Value_i', 'Instruction_i', 'Sentence_i', 'Operator_i', 'Action_i']
 
 logging       = logmod.getLogger(__name__)
 
-config        = AcabConfig()
+config        = acab.config
 
 T     = TypeVar('T', bound=AT.ValueCore_t, covariant=True)
 T_Cov = TypeVar('T_Cov', covariant=True)
 
 # Data ########################################################################
+
 @dataclass(frozen=True, repr=False, eq=False) #type:ignore[misc]
 class Value_i(VSubP.Value_p, Generic[T]):
     """
@@ -64,7 +66,6 @@ class Value_i(VSubP.Value_p, Generic[T]):
     data   : dict[ValueData, Any] = field(default_factory=dict)
     uuid   : UUID                 = field(default_factory=uuid1)
 
-
     _defaults : ClassVar[dict[str,Any]] = {}
 
     @staticmethod
@@ -79,7 +80,6 @@ class Value_i(VSubP.Value_p, Generic[T]):
         expansion_t : Any = reduce(lambda a, b: a | b, ts, AT.ValueCore_t)
         TValCore          = TypeVar('TValCore', bound=expansion_t)
         AT.TValCore       = TValCore #type:ignore
-
 
     @classmethod
     def _preprocess(cls, value):
@@ -114,18 +114,23 @@ class Sentence_i(Instruction_i, VSubP.Sentence_p):
     def __lshift__(self, other) -> Sen_A: pass
 
 # Combined Interfaces:
+
 class Operator_i(Value_i[None], Generic[T_Cov]):
+
     def is_operator(self) -> Literal[True]: return True
+
     @abc.abstractmethod
     def __call__(self, *params: Sen_A, data:None|dict[str,Any]=None, ctx:CtxInst=None) -> T_Cov: pass
 
 class Action_i(Value_i[None]):
+
     def is_action(self) -> Literal[True] : return True
+
     @abc.abstractmethod
     def __call__(self, *params: Sen_A, data:None|dict[str,Any]=None, semsys:None|SemSys=None) -> None: pass
 
-
 # Factory
+
 class ValueFactory(metaclass=SingletonMeta):
     """ Utility Class for building values
     Must initialize value_fn and sen_fn before using acab

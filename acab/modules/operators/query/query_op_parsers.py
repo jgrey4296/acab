@@ -1,8 +1,10 @@
+##-- imports
+from __future__ import annotations
 import re
 
 import acab.core.defaults.value_keys as DS
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.engine.util import prep_op_path
 from acab.core.parsing import parsers as PU
 from acab.core.util.annotation import ValueRepeatAnnotation
@@ -12,7 +14,9 @@ from acab.interfaces.value import ValueFactory as VF
 
 from . import query_operators as QO
 
-config       = AcabConfig()
+##-- end imports
+
+config       = acab.config
 TAG_S        = DS.TAG
 CONSTRAINT_S = DS.CONSTRAINT
 

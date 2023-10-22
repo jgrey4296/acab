@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 import abc
 import logging as logmod
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
@@ -22,6 +23,8 @@ if TYPE_CHECKING:
 else:
     Sentence = "Sentence_i"
     ModuleFragment   : TypeAlias = "ModuleFragment"
+
+##-- end imports
 
 DSL_Spec_A       : TypeAlias = dsl.DSL_Spec_i
 

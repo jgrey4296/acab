@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -16,12 +17,13 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-
 import pyparsing as pp
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register_class
 from acab.interfaces.handler_system import HandlerSpec_i
 from acab.core.parsing.debug_funcs import dfs_activate
+
+##-- end imports
 
 rst = RP.rst
 
@@ -41,7 +43,6 @@ class ForceParserCmd:
         force_parser = query + pp.Optional(send_to_parser)
         return force_parser
 
-    
     def __call__(self, line):
         try:
             # parse the line
@@ -53,7 +54,7 @@ class ForceParserCmd:
 
         try:
             # Get the handler for the specified signal
-            parser = self._cmd.state.engine._dsl[params.query]
+            parser = self._repl.state.engine._dsl[params.query]
             print(f"Retrieved: {parser}\n")
             if not bool(params.send):
                 print("Nothing sent to parser")
@@ -71,8 +72,7 @@ class ForceParserCmd:
             forced_result = built.parse_string(params.send.strip(), parseAll=True)[:]
             dfs_activate(built, remove=True)
 
-
-            self._cmd.state.debug_data = forced_result
+            self._repl.state.debug_data = forced_result
             print(f"----- Forced Parse Result: {forced_result}\n")
 
             if isinstance(forced_result, tuple):
@@ -81,8 +81,8 @@ class ForceParserCmd:
             answer = input("Execute result? Y/* ")
             if answer == "Y":
                 print("Attempting to execute result:")
-                self._cmd.state.ctxs = self._cmd.state.engine(forced_result,
-                                                              ctxset=self._cmd.state.ctxs)
+                self._repl.state.ctxs = self._repl.state.engine(forced_result,
+                                                              ctxset=self._repl.state.ctxs)
             else:
                 print("Not Executing result")
 

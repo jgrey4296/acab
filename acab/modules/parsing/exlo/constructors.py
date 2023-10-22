@@ -1,9 +1,11 @@
 """
 Constructors for converting parse results -> Acab data
 """
+##-- imports
+from __future__ import annotations
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
-from acab import AcabConfig
+import acab
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults.value_keys import SEMANTIC_HINT
 from acab.core.util.annotation import ValueAnnotation, ValueRepeatAnnotation
@@ -14,7 +16,9 @@ from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory as VF
 from acab.modules.parsing.exlo import util as EXu
 
-config   = AcabConfig()
+##-- end imports
+
+config   = acab.config
 SIGNAL = DS.SEMANTIC_HINT
 
 comp_sen      = VF.sen()      << DS.SENTENCE_PRIM << DS.COMPONENT_PRIM

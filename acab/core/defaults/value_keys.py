@@ -7,17 +7,19 @@ also also includes the modality enum, core type primitives,
 and production structure keys
 
 """
+##-- import
 from __future__ import annotations
 
 from enum import Enum
 from typing import Any
 
-from acab import AcabConfig
+import acab
+##-- end import
 
-config = AcabConfig()
+config = acab.config
 
-DATA_STRUCT_E : Enum = config.prepare("Value.Structure"      , _type=Enum)()
-MODALITIES_E  : Enum = config.prepare("MODAL"                , _type=Enum)()
+DATA_STRUCT_E : Enum = config.all_of().values.structure(wrapper=lambda x: Enum("DATA STRUCT", x))
+MODALITIES_E  : Enum = config.all_of().modal.enum_values(wrapper=lambda x: Enum("MODALS", x))
 
 ARG             = DATA_STRUCT_E.ARG
 AT_BIND         = DATA_STRUCT_E.AT_BIND
@@ -35,27 +37,27 @@ FLATTEN         = DATA_STRUCT_E.FLATTEN
 
 # Core elements of value data
 # TODO move this out of Value.Structure
-OPERATOR       : str = config.attr.Value.Structure.OPERATOR
+OPERATOR       : str = "OPERATOR" # config.any_of().values.structure.OPERATOR()
 
 # TODO refactor to use this instead
-STRUCT_COMP_E : Enum = config.prepare("Structure.Components" , _type=Enum)()
+STRUCT_COMP_E : Enum = config.all_of().types.structure(wrapper=lambda x: Enum("Struct Comp", x))
 # Core Components
-QUERY_COMPONENT     : str = config.attr.Structure.Components.QUERY
-TRANSFORM_COMPONENT : str = config.attr.Structure.Components.TRANSFORM
-ACTION_COMPONENT    : str = config.attr.Structure.Components.ACTION
+QUERY_COMPONENT     : str = "QUERY"     # config.any_of().types.structure.QUERY()
+TRANSFORM_COMPONENT : str = "TRANSFORM" # config.any_of().types.structure.TRANSFORM()
+ACTION_COMPONENT    : str = "ACTION"    # config.any_of().types.structure.ACTION()
 
 # Core data defaults
 
-TYPE_BASE        = config.attr.Data.TYPE_BASE
+TYPE_BASE        = config.data.TYPE_BASE
 
 # TODO refactor to use this instead
-TYPE_PRIM_E   : Enum = config.prepare("Type.Primitive"       , _type=Enum)()
+TYPE_PRIM_E   : Enum = config.all_of().types.primitive(wrapper=lambda x: Enum("Type Primitives", x))
 # Core type primitives
-COMPONENT_PRIM = config.attr.Type.Primitive.COMPONENT
-CONTAINER_PRIM = config.attr.Type.Primitive.CONTAINER
-OPERATOR_PRIM  = config.attr.Type.Primitive.OPERATOR_PRIM
-SENTENCE_PRIM  = config.attr.Type.Primitive.SENTENCE
-STRING_PRIM    = config.attr.Type.Primitive.STRING
-REGEX_PRIM     = config.attr.Type.Primitive.REGEX
-STRUCT_PRIM    = config.attr.Type.Primitive.STRUCTURE
-INSTR_PRIM     = config.attr.Type.Primitive.INSTRUCT
+COMPONENT_PRIM =  "COMPONENT"     # config.any_of().type.primitive.COMPONENT()
+CONTAINER_PRIM =  "CONTAINER"     # config.any_of().type.primitive.CONTAINER()
+OPERATOR_PRIM  =  "OPERATOR_PRIM" # config.any_of().type.primitive.OPERATOR_PRIM()
+SENTENCE_PRIM  =  "SENTENCE"      # config.any_of().type.primitive.SENTENCE()
+STRING_PRIM    =  "STRING"        # config.any_of().type.primitive.STRING()
+REGEX_PRIM     =  "REGEX"         # config.any_of().type.primitive.REGEX()
+STRUCT_PRIM    =  "STRUCTURE"     # config.any_of().type.primitive.STRUCTURE()
+INSTR_PRIM     =  "INSTRUCT"      # config.any_of().type.primitive.INSTRUCT()

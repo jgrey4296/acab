@@ -7,56 +7,49 @@
 
 ;; For working with acab-py, through a comint
 
-(setq acab-comint/acab-py-loc "/Volumes/documents/github/acab/")
-(setq acab-comint/python-cmd "/Volumes/documents/github/acab/acab/modules/repl/repl_main.py")
-(setq acab-comint/python-args '("--config" "/Volumes/documents/github/acab/acab/__configs/default"))
+(defvar acab-comint/acab-py-loc "/Volumes/documents/github/acab/")
+
+;; Repl / Comint
+(defvar acab-comint/python-cmd "python3")
+(defvar acab-comint/python-args '("-m" "acab" "--config" "/Volumes/documents/github/acab/acab/__configs/default"))
+;; Internal management variables
 (defvar acab-comint/process nil)
 (defvar acab-comint/cwd nil)
-(defvar acab-comint/buffer-name "*Acab Comint*")
 (defvar acab-comint/prompt-regexp "^\\(ACAB REPL: \\)")
+;; Buffer names
+(defvar acab-comint/buffer-name "*Acab Comint*")
 
 (defun acab-comint/init ()
   " Startup the Acab Comint "
   (interactive)
-  (let ((buffer (get-buffer-create acab-comint/buffer-name)))
+  (let* ((buffer (get-buffer-create acab-comint/buffer-name)))
     (unless (comint-check-proc buffer)
-      (apply 'make-comint-in-buffer acab-comint/buffer-name buffer
-             acab-comint/python-cmd nil acab-comint/python-args))
+      (python-shell-with-environment
+        (apply 'make-comint-in-buffer acab-comint/buffer-name buffer
+               acab-comint/python-cmd nil acab-comint/python-args)))
     (with-current-buffer buffer
       (acab-comint-mode))
     (setq acab-comint/process (get-buffer-process buffer))
     ;; (switch-to-buffer-other-window buffer)
+    buffer
     )
   )
 
-;; --------- Python subprocess
-(defun acab-comint/run-python-server (loc)
-  "Start a subprocess of python, loading the rule engine
-ready to set the pipeline and rulesets, and to test"
-  (message "Initializing Python Server")
-  ;;start python process
-  (setq trie/python-process (make-process :name "Rule IDE Process"
-                                          :buffer acab-comint/python-process-buffer-name
-                                          :command (list acab-comint/process-python-command
-                                                         acab-comint/process-python-args)
-                                          :connection-type 'pipe
-                                          :filter 'acab-comint/python-filter
-                                          :sentinel 'acab-comint/python-sentinel
-                                          )
-        )
-  ;;initialize
-  (process-send-string trie/python-process (format "load {}\n" loc))
-  ;;populate emacs side data with loaded+parsed info
-
-  )
-(defun acab-comint/python-filter (proc x)
-  ;; TODO Filter to parse and handle python responses
-
-
-  )
-(defun acab-comint/python-sentinel (proc x)
-  ;; TODO Sentinel to handle python state changes
-
+;; Separated for if comint/init is used for IDE tasks
+(defun acab-comint/init-repl ()
+  " Startup the Acab Comint REPL"
+  (interactive)
+  (let* ((buffer (get-buffer-create acab-comint/buffer-name)))
+    (unless (comint-check-proc buffer)
+      (python-shell-with-environment
+        (apply 'make-comint-in-buffer acab-comint/buffer-name buffer
+               acab-comint/python-cmd nil acab-comint/python-args)))
+    (with-current-buffer buffer
+      (acab-comint-mode))
+    (setq acab-comint/process (get-buffer-process buffer))
+    ;; (switch-to-buffer-other-window buffer)
+    buffer
+    )
   )
 
 ;; ---- Low Level

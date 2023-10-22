@@ -5,11 +5,14 @@ Provides Metaclasses for creating Singletons
 Note: superclass is type(Protocol) so classes which
 implement protocol's don't get a metaclass conflict
 """
+##-- imports
 import logging as logmod
 from fractions import Fraction
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence, Protocol,
                     Set, Tuple, TypeAlias, TypeVar, Union, cast)
+
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 

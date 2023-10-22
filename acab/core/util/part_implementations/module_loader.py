@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -18,14 +19,16 @@ if TYPE_CHECKING:
 else:
     ModuleFragment : TypeAlias = "ModuleFragment"
 
+##-- end imports
+
 from acab.error.importer import AcabImportException
 from acab.interfaces.module_loader import ModuleLoader_i
-
 
 class ModuleLoaderImpl(ModuleLoader_i):
     """
     An implemented Module loader, just lacking `extract_from_module`
     """
+
     def __getitem__(self, key:str) -> ModuleFragment:
         return self.loaded_modules[key]
 
@@ -93,7 +96,6 @@ class ModuleLoaderImpl(ModuleLoader_i):
         except NameError as err:
             new_err = AcabImportException(f"{maybe_module} : {err}").with_traceback(err.__traceback__)
             raise new_err from err
-
 
     @property
     def loaded(self) -> list[ModuleFragment]:

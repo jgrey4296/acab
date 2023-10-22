@@ -1,6 +1,7 @@
 """
 Metaclass for constructing AcabValues.
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -19,10 +20,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
 from uuid import UUID, uuid1
 from weakref import ref
 
+import acab
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab import types as AT
-from acab import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.core.metaclasses.singletons import SingletonMeta
 from acab.core.value.util import name_sieve_fns
@@ -32,19 +33,21 @@ from acab.interfaces.sieve import AcabSieve
 if TYPE_CHECKING:
     ValueData     : TypeAlias = str
 
+##-- end imports
+
 Value_A       : TypeAlias = VI.Value_i
 Sen_A         : TypeAlias = VI.Sentence_i
 Instruction_A : TypeAlias = VI.Instruction_i
-T              = TypeVar('T', bound=AT.ValueCore)
-C              = TypeVar('C', bound=type)
+T                         = TypeVar('T', bound=AT.ValueCore)
+C                         = TypeVar('C', bound=type)
 
 ProtocolMeta = type(Protocol)
 
 logging        = logmod.getLogger(__name__)
-config         = AcabConfig()
-BIND_SYMBOL    = config.attr.Symbols.BIND
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
-UUID_CHOP      = config.prepare("Print.Data", "UUID_CHOP", _type=bool)()
+config         = acab.config
+BIND_SYMBOL    = config.any_of().symbols.BIND()
+FALLBACK_MODAL = config.any_of().symbols.FALLBACK_MODAL()
+UUID_CHOP      = config.any_of().print.UUID_CHOP()
 
 class ValueMeta(ProtocolMeta):
     """ Utility Meta Class for building values """
@@ -112,7 +115,7 @@ class ValueMeta(ProtocolMeta):
 
     @staticmethod
     def _build_data_and_type(data:None|dict[ValueData, Any], _type:'None|str|Sen_A'=None, defaults:dict[ValueData, Any]=None) -> dict[str,Any]:
-        # TODO construct defaults in AcabConfig
+        # TODO construct defaults
         _data = {}
         _data.update(ValueMeta.default_data)
         _data.update(defaults)

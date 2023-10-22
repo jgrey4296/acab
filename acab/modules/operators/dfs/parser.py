@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -7,17 +8,19 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.core.defaults.value_keys as DS
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.parsing.consts import QUERY, op, orm, s_lit
 from acab.core.util.sentences import ProductionComponent
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory as VF
 
-config        = AcabConfig()
+##-- end imports
+
+config        = acab.config
 
 QUERY_HINT    = DS.QUERY
 SEM_HINT      = DS.SEMANTIC_HINT
-WALK_SEM_HINT = Sentence() << config.attr.Type.Primitive.INSTRUCT << config.attr.Semantic.Signals.WALK
+WALK_SEM_HINT = Sentence() << config.type.primitive.INSTRUCT << config.semantic.signals.WALK
 
 def build_dfs_query(s, l, toks):
     words = []
@@ -69,7 +72,7 @@ def build_dfs_operator(s, l, toks):
 HOTLOAD_VAR    = pp.Forward()
 HOTLOAD_SEN_OP = pp.Forward()
 
-dfs_operator  = pp.Literal(config.attr.Operator.Sugar.DFS).suppress()
+dfs_operator  = pp.Literal(config.operator.sugar.DFS).suppress()
 dfs_head      = op(HOTLOAD_VAR("root")) + dfs_operator
 
 

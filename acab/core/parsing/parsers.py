@@ -1,3 +1,4 @@
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -7,8 +8,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 import pyparsing as pp
+import acab
 from acab import types as AT
-from acab import AcabConfig
+
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults import parse_symbols as PDSYM
 from acab.core.defaults import value_keys as CDS
@@ -21,12 +23,15 @@ from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 
 ParserElement = AT.Parser
 
-config = AcabConfig()
+config = acab.config
 
+##-- Forward Declarations
 HOTLOAD_VALUES = pp.Forward()
 HOTLOAD_VALUES.set_name('hotload_values')
 HOTLOAD_HEAD_ANNOTATIONS = pp.Forward()
@@ -38,8 +43,9 @@ Fwd_ArgList = pp.Forward()
 Fwd_ArgList.set_name('fwd_arglist')
 Fwd_TagList = pp.Forward()
 Fwd_TagList.set_name('fwd_taglist')
+##-- end Forward Declarations
 
-# Basic Parsers
+##-- Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
 OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory.sen([t[0]], data={CDS.TYPE_INSTANCE: CDS.OPERATOR}))
 
@@ -54,13 +60,15 @@ STRING.add_parse_action(lambda s, l, t: (CDS.STRING_PRIM, t[0]))
 # TODO add re.RegexFlag 's to parser: g and i
 REGEX       = pp.Regex(r'/.+?/')
 REGEX.set_parse_action(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
+##-- end Basic Parsers
 
-
+##-- modal parsing
 # Generalised modal operator, which is converted to appropriate data later
-# The syntax is constructed automatically from AcabConfig
-MODAL      = pp.Word("".join(config.syntax_extension.keys()))
+# The syntax is defined in tomls
+MODAL      = pp.Word("".join(config.all_of().modal.symbols().values()))
 MODAL.set_name("MODAL")
 MODAL.set_parse_action(lambda s, l, t: ModalAnnotation(t[0]))
+##-- end modal parsing
 
 BASIC_VALUE = ATOM | STRING | REGEX
 BIND        = s_lit(PDSYM.BIND).set_parse_action(lambda s,l,t: ValueAnnotation(CDS.BIND, True))
@@ -92,7 +100,7 @@ tagSen.set_parse_action(lambda s, l, t: (ValueFactory.sen([x[1] for x in t[:]]))
 
 Fwd_TagList <<= pp.IndentedBlock(tagSen + zrm(pp.line_end.suppress() + tagSen))(PDS.TAG)
 
-# NAMING
+##-- debug naming
 # HOTLOAD_VALUES.set_name("HotloadValues")
 VALBIND.set_name("ValBind")
 # ATOM.set_name("NameWord")
@@ -104,3 +112,4 @@ VALBIND.set_name("ValBind")
 tagSen.set_name("TagSentence")
 Fwd_TagList.set_name("TagList")
 Fwd_ArgList.set_name("ArgList")
+##-- end debug naming

@@ -3,6 +3,7 @@
 A DSL interface for the system, which
 
 """
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -12,13 +13,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
                     Iterable, Iterator, List, Mapping, Match, MutableMapping,
                     Optional, Sequence, Set, Tuple, TypeVar, Union, cast)
 
-import pyparsing as pp
-
-logging = logmod.getLogger(__name__)
-
 import acab.core.parsing.debug_funcs as DBF
 import acab.interfaces.dsl as dsl
-from acab import AcabConfig
+import pyparsing as pp
+import acab
 from acab import types as AT
 from acab.core.parsing import dsl_builder as DSLImpl
 from acab.core.parsing.funcs import clear_parser_names, deep_update_names
@@ -38,9 +36,12 @@ if TYPE_CHECKING:
     PyParse_Spec_A   = "PyParse_Spec"
     File             = 'FileObj'
 
-config                 = AcabConfig()
-DEFAULT_HANDLER_SIGNAL = config.attr.Handler.System.DEFAULT_SIGNAL
+##-- end imports
 
+logging = logmod.getLogger(__name__)
+config                 = acab.config
+
+DEFAULT_HANDLER_SIGNAL = config.handler.system.DEFAULT_SIGNAL
 
 #----------------------------------------
 
@@ -78,8 +79,6 @@ class PyParse_Handler(HS.Handler, dsl.DSL_Handler_i):
 
     def verify(self, instruction) -> bool:
         return isinstance(instruction, str)
-
-
 
 @APE.assert_implements(dsl.DSL_Spec_i)
 @dataclass
@@ -168,6 +167,7 @@ class PyParse_Spec(DSLImpl.DSL_Spec, dsl.DSL_Spec_i):
         return self.debug
 
 #----------------------------------------
+
 @APE.assert_implements(dsl.DSL_Builder_i)
 class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
 
@@ -185,8 +185,7 @@ class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
         try:
             return self[DEFAULT_HANDLER_SIGNAL].parse_string(s, parseAll=True)[:]
         except pp.ParseException as exp:
-            raise AcabParseException(f"Parser {exp.parser_element} failed on line {exp.lineno} column {exp.col}: {exp.markInputline()}") from exp
-
+            raise AcabParseException(f"(Line {exp.lineno} Column {exp.col}) : Parser {exp.parser_element} : {exp.markInputline()}") from exp
 
     def debug_parser(self, s:str):
         if s in self:

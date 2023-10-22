@@ -1,6 +1,7 @@
 """
 
 """
+##-- imports
 # pylint: disable=multiple-statements,abstract-method,invalid-sequence-index
 from __future__ import annotations
 
@@ -16,7 +17,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection,
                     Type, TypeAlias, TypeVar, cast, final, overload,
                     runtime_checkable)
 
-from acab import AcabConfig
+import acab
 from acab.interfaces.protocols import handler_system as HSubP
 from acab.interfaces.sieve import AcabSieve
 
@@ -38,8 +39,10 @@ if TYPE_CHECKING:
     HandlerFragment_A     : TypeAlias = AT.HandlerFragment
     RegistrationTargets_A : TypeAlias = "HandlerFragment_A|HandlerSpec_A|Handler_A|AT.HandlerOverride|dict[str,Any]"
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config
 
 HandlerFlags          : EnumMeta = Enum("HandlerFlags", "OVERRIDE MERGE APPEND PREPEND COLLECT REDUCE")
 HandlerFlags_t        : TypeAlias = Type[HandlerFlags]

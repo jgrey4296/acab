@@ -228,5 +228,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertIsInstance(spec.struct, set)
 
 
+##-- ifmain
 if __name__ == '__main__':
     unittest.main()
+##-- end ifmain

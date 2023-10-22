@@ -1,6 +1,7 @@
 """
 
 """
+##-- imports
 from __future__ import annotations
 import abc
 import collections.abc as cABC
@@ -11,15 +12,16 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     TypeAlias, TypeVar, cast)
 
 import acab
-from acab import AcabConfig
-
-logging = logmod.getLogger(__name__)
-config  = AcabConfig()
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     # tc only imports
     pass
+
+##-- end imports
+
+logging = logmod.getLogger(__name__)
+config  = acab.config
 
 from acab import types as AT
 GenFunc : TypeAlias = AT.fns.GenFunc
@@ -90,7 +92,6 @@ class AcabSieve(cABC.Container[GenFunc], _AcabSieve_d[T]):
             return result
 
         return None
-
 
     def __len__(self) -> int:
         return len(self.funcs)

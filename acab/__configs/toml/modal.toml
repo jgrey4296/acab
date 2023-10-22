@@ -1,0 +1,19 @@
+# todo symbols:
+# CLASSIC = □◇
+# JUDGE   = ⊨⊢
+# FIRST   = ∀∃
+# SET     = ∈∩∪⊂⊃
+# FSM     = ⇒⇔
+# LIFTER  = ⤴ ⤷
+#
+[[modal]]
+name        = "exop"
+enum-values = ["DOT", "EX"]
+default     = "DOT"
+
+[[symbols]]
+DOT = "."
+EX  = "!"
+
+[[symbols]]
+FALLBACK_MODAL = "."

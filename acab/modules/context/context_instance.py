@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -16,7 +17,7 @@ import acab.core.defaults.value_keys as DS
 import acab.interfaces.context as CtxInt
 import acab.interfaces.data as DI
 import acab.interfaces.value as VI
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.util.delayed_commands import DelayedCommands_i
 from acab.core.util.sentences import ProductionComponent
@@ -40,8 +41,10 @@ if TYPE_CHECKING:
     NamedCtxSet      = CtxInt.NamedCtxSet_d
     ContextFailState = CtxInt.ContextFailState_d
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
-config = AcabConfig()
+config = acab.config
 
 CONSTRAINT_S     = DS.CONSTRAINT
 NEGATION_S       = DS.NEGATION

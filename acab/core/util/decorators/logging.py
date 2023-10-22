@@ -1,6 +1,7 @@
 """
 Utility decorators
 """
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -15,6 +16,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     # tc only imports
     pass
+
+##-- end imports
 
 def LogHelper(prefix, level=logmod.DEBUG):
     """

@@ -2,6 +2,7 @@
 Commands for the REPL
 
 """
+##-- imports
 from __future__ import annotations
 
 import importlib
@@ -14,7 +15,7 @@ from os.path import abspath, exists, expanduser, split, splitext
 
 import acab
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.value import Instruction_i
@@ -26,8 +27,10 @@ try:
 except ImportError:
     readline = None
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config
 
 
 @register

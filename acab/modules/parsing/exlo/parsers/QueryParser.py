@@ -1,9 +1,10 @@
 """ Trie-based parser for constructing queries """
+##-- imports
+from __future__ import annotations
 import logging as logmod
 
 import acab.core.defaults.value_keys as CDS
 import pyparsing as pp
-from acab import AcabConfig
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults.parse_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing import funcs as Pfunc
@@ -20,6 +21,8 @@ from acab.modules.parsing.exlo.constructors import build_query
 from acab.modules.parsing.exlo.util import QUERY_COMPONENT
 
 from .FactParser import SENTENCE, annotations, op_sentence
+
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 

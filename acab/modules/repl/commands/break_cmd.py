@@ -1,6 +1,7 @@
 """
 
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -12,7 +13,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.modules.repl.repl_commander import register_class
 from acab.modules.repl.ReplParser import rst
 from acab.interfaces.debugger import AcabDebugger_i
@@ -21,11 +22,14 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
+##-- end imports
+
 
 logging     = logmod.getLogger(__name__)
-config      = AcabConfig()
-Debugger    = config.prepare("Imports.Targeted", "debug", actions=[config.actions_e.IMCLASS], args={"interface": AcabDebugger_i})()
-debug_intro = config.prepare("Module.Repl.Debug.Intro", actions=[config.actions_e.STRIPQUOTE], _type=list)()
+config      = acab.config
+# TODO import
+Debugger    = config.imports.specific.debug
+debug_intro = config.module.REPL.debug.intro
 
 the_debugger = Debugger()
 
@@ -93,6 +97,10 @@ class BreakCmd:
         elif "parser" in ctxs:
             self.handle_parser(ctxs)
         else:
+            repl   = self._repl
+            state  = self._repl.state
+            engine = self._repl.state.engine
+            ctxs   = self._repl.state.ctxs
             print("")
             print("\n\t".join(debug_intro))
             print("")
@@ -140,20 +148,20 @@ class BreakCmd:
 
     def handle_semantic(self, ctxs):
         # run query
-        self._cmd.state.ctxs = self._cmd.state.engine(ctxs.semantic)
+        self._repl.state.ctxs = self._repl.state.engine(ctxs.semantic)
         # attach semantic breakpoints to each prod_abstraction
-        if (len(self._cmd.state.ctxs) == 1 and
-            isinstance(self._cmd.state.ctxs[0]._current.value, Instruction_i)):
-            curr = self._cmd.state.ctxs[0]._current.value
+        if (len(self._repl.state.ctxs) == 1 and
+            isinstance(self._repl.state.ctxs[0]._current.value, Instruction_i)):
+            curr = self._repl.state.ctxs[0]._current.value
             curr.breakpoint = not curr.breakpoint
             if curr.breakpoint:
                 print(f"Breakpoint Set: {repr(curr)} : {curr.uuid}")
             else:
                 print(f"Breakpoint Unset: {repr(curr)} : {curr.uuid}")
 
-        elif bool(self._cmd.state.ctxs):
+        elif bool(self._repl.state.ctxs):
             count = 0
-            for inst in self._cmd.state.ctxs:
+            for inst in self._repl.state.ctxs:
                 for bind in inst.data.items():
                     if isinstance(bind, Instruction_i):
                         bind.breakpoint = not bind.breakpoint

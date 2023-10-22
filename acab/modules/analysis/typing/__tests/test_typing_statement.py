@@ -1,6 +1,7 @@
 """
 Test the typing checking extension
 """
+##-- imports
 import logging as logmod
 import unittest
 import warnings
@@ -37,6 +38,8 @@ with warnings.catch_warnings():
     from acab.modules.printing.default import DEFAULT_PRINTER
     from acab.modules.semantics.default import DEFAULT_SEMANTICS
     from acab.modules.values.binding.variable_control import rectx
+
+##-- end imports
 
 CtxSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
 
@@ -169,7 +172,7 @@ class TestTypingStatement(unittest.TestCase):
 
 
     def test_op_param_apply_check(self):
-        trans_sen= self.dsl['transform.core'].parse_string("λan.op.def $a $b -> $y")[0][1:]
+        trans_sen = self.dsl['transform.core'].parse_string("λan.op.def $a $b -> $y")[0][1:]
         trans_def = self.dsl['sentence.ends'].parse_string("def(::λ): $x(::blah) $y(::bloo) -> $z")[0][0]
         ctx = CheckStatementFragment().structural_check([trans_sen], [trans_def], None, ctxs=CtxSet())
 

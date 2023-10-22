@@ -2,6 +2,7 @@
 Provides a straightforward way to activate pyparsing debugging,
 with overriding debug functions
 """
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -10,6 +11,7 @@ import pyparsing as pp
 import pyparsing.core as ppc
 from acab.core.parsing.parse_debug_log_formatter import AcabParseDebugFormat
 from acab_config.utils.log_formatter import SimpleLogColour as SC
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 logging.addHandler(AcabParseDebugFormat.scaffold())

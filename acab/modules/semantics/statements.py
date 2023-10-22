@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from collections import defaultdict
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -9,7 +11,7 @@ logging = logmod.getLogger(__name__)
 
 import acab.core.defaults.value_keys as DS
 import acab.core.value.instruction as Instr
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.semantics import basic
 from acab.core.util.decorators.semantic import RunInSubCtxSet
@@ -24,11 +26,14 @@ from acab.interfaces.bind import Bind_i
 from acab.interfaces.context import ContextSet_i
 from acab.modules.context.context_instance import MutableContextInstance
 
+##-- end imports
+
 CtxIns     = AT.CtxIns
 
-config     = AcabConfig()
-ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
-Bind       = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
+config     = acab.config
+# TODO import
+ContextSet = config.imports.specific.context
+Bind       = config.imports.specific.bind
 
 # Primary Statements:
 class QueryAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):

@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
 
-from acab import AcabConfig
+import acab
+
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 
-config  = AcabConfig()
+config  = acab.config
 
 # Destructor Debugging ########################################################
-DEBUG_DEL      = config.attr.LOGGING.DEL
+DEBUG_DEL      = config.logging.DEL
 
 def _debug_del(self):
     """ A Simple debugger del implementation to """

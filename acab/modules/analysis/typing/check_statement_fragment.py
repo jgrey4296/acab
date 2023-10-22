@@ -1,51 +1,52 @@
 #!/usr/bin/env python3
+"""
+
+"""
+##-- imports
 from __future__ import annotations
-from typing import Any
-from typing import Callable
 
 import logging as root_logger
 from dataclasses import dataclass, field
-import pyparsing as pp
+from typing import Any, Callable
 
-logging = root_logger.getLogger(__name__)
-
-from acab import AcabConfig
-from acab import types as AT
-
-config = AcabConfig()
-
-from acab.interfaces import value as VI
 import acab.core.defaults.value_keys as DS
-from acab import AcabConfig
+import acab.modules.values.binding.variable_control as VC
+import pyparsing as pp
+import acab
+from acab import types as AT
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.util.fragments import (DSL_Fragment, PrinterFragment,
                                       Semantic_Fragment)
 from acab.core.util.part_implementations.handler_system import HandlerSpec
-from acab.interfaces import fragments as FI
+from acab.core.value import instruction as Ins
 from acab.interfaces import data as DI
+from acab.interfaces import fragments as FI
 from acab.interfaces import handler_system as HS
+from acab.interfaces import value as VI
 from acab.interfaces.bind import Bind_i
 from acab.interfaces.fragments import UnifiedFragment_p
 from acab.interfaces.value import ValueFactory as VF
-from acab.core.value import instruction as Ins
 
 from .unify import type_unify_fns as tuf
 from .unify.util import gen_f
 
-import acab.modules.values.binding.variable_control as VC
+##-- end imports
 
-config = AcabConfig()
+logging = root_logger.getLogger(__name__)
+config = acab.config
 Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
 Bind    = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
 
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
+##-- signals
 TYPE_INSTANCE = config.attr.Print.Signals.TYPE_INSTANCE
 TYPE_DEF      = config.attr.Print.Signals.TYPE_DEF
 SUM_TYPE      = config.attr.Print.Signals.SUM_TYPE
 OP_DEF        = config.attr.Print.Signals.OP_DEF
 TYPE_CLASS    = config.attr.Print.Signals.TYPE_CLASS
+##-- end signals
 
 comp_sen      = VF.sen()      << DS.SENTENCE_PRIM << DS.COMPONENT_PRIM
 trans_comp    = comp_sen      << DS.TRANSFORM_COMPONENT

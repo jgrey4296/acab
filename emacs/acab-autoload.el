@@ -1,4 +1,4 @@
-;;; ../../../Volumes/documents/github/emacs_files/packages/acab-ide/acab-autoload.el -*- lexical-binding: t; -*-
+;;;acab-ide/acab-autoload.el -*- lexical-binding: t; -*-
 
 (provide 'acab-autoload)
 

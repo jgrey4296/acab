@@ -39,7 +39,7 @@
 ;;--------------------
 (define-minor-mode acab-ide-minor-mode
   "Major Mode for creating rules using Acab"
-  nil
+  :init-value nil
   :lighter "Acab-IDE"
   :keymap acab-ide-minor-mode-map
   :global t

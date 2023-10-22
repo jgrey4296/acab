@@ -1,9 +1,11 @@
 """
 Defintions for Core Transform Operators
 """
+##-- imports
+from __future__ import annotations
 from re import sub
-from acab import AcabConfig
 
+import acab
 from acab.interfaces import value as VI
 from acab.interfaces.value import ValueFactory as VF
 from acab.core.value.instruction import ProductionOperator
@@ -12,9 +14,11 @@ from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap,
                                                OperatorSugar)
 
-config = AcabConfig()
+##-- end imports
 
-@OperatorSugar(config.attr.Operator.Sugar.REGEX_TRANSFORM)
+config = acab.config
+
+@OperatorSugar(config.any_of().operator.sugar.REGEX_TRANSFORM())
 class RegexOp(ProductionOperator):
 
     def __call__(self, value, pattern, replacement, *, data=None, ctx=None):
@@ -38,7 +42,7 @@ class RegexOp(ProductionOperator):
             case _:
                 raise TypeError("Unrecognized type to RegexOp", value)
 
-@OperatorSugar(config.attr.Operator.Sugar.FORMAT)
+@OperatorSugar(config.any_of().operator.sugar.FORMAT())
 class FormatOp(ProductionOperator):
 
     @OperatorDataUnWrap

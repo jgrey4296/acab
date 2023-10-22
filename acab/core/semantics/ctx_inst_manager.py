@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -12,7 +13,7 @@ from uuid import UUID, uuid1
 import acab.core.defaults.value_keys as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.util.sentences import ProductionComponent
 from acab.core.value.instruction import ProductionContainer
@@ -34,8 +35,10 @@ if TYPE_CHECKING:
     ModuleFragment   = AT.ModuleFragment
     NamedCtxSet      = "NamedCtxSet"
 
+##-- end imports
+
 logging   = logmod.getLogger(__name__)
-config    = AcabConfig()
+config    = acab.config
 DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
 
 CONSTRAINT_S     = DS.CONSTRAINT

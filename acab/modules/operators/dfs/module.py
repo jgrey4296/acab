@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 from dataclasses import InitVar, dataclass, field
 
 import acab.core.defaults.value_keys as DS
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.defaults import print_signals as DSig
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing.consts import QUERY, op, orm, s_lit
@@ -25,18 +26,21 @@ from acab.modules.semantics.statements import (ActionPlusAbstraction,
 from . import parser as DOP
 from .semantics import DFSSemantics
 
-config = AcabConfig()
+##-- end imports
 
-Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
+config = acab.config
+
+# TODO import
+Handler = config.imports.specific.handler
 
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
-INSTRUCT_SIGNAL = VF.sen() << config.attr.Type.Primitive.INSTRUCT
-WALK_SIGNAL     = INSTRUCT_SIGNAL << config.attr.Semantic.Signals.WALK
-CONTAIN_SIGNAL  = INSTRUCT_SIGNAL << config.attr.Type.Primitive.CONTAINER
-QUERY_SIGNAL    = CONTAIN_SIGNAL  << config.attr.Type.Primitive.QUERY
-ACTION_SIGNAL   = CONTAIN_SIGNAL  << config.attr.Type.Primitive.ACTION
+INSTRUCT_SIGNAL = VF.sen() << config.types.primitive.INSTRUCT
+WALK_SIGNAL     = INSTRUCT_SIGNAL << config.semantic.signals.WALK
+CONTAIN_SIGNAL  = INSTRUCT_SIGNAL << config.types.primitive.CONTAINER
+QUERY_SIGNAL    = CONTAIN_SIGNAL  << config.types.primitive.QUERY
+ACTION_SIGNAL   = CONTAIN_SIGNAL  << config.types.primitive.ACTION
 
 # TODO printer fragment
 @dataclass

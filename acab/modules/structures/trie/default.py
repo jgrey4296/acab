@@ -3,14 +3,15 @@
 The standard setup of Trie Semantics
 
 """
-
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
 import acab.modules.semantics.statements as ASem
-from acab import AcabConfig
+import acab
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.util.part_implementations.handler_system import Handler
 from acab.core.value.sentence import Sentence
@@ -21,13 +22,15 @@ from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config
 
-DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-ATOM_SIGNAL            = Sentence() << config.attr.Data.TYPE_BASE
+DEFAULT_HANDLER_SIGNAL = config.handler.system.DEFAULT_SIGNAL
+ATOM_SIGNAL            = Sentence() << config.data.TYPE_BASE
 
-TRIE_SIGNAL              = Sentence() << config.attr.Semantic.Signals.TRIE
+TRIE_SIGNAL              = Sentence() << config.semantic.signals.TRIE
 
 def DEFAULT_TRIE_SPEC(name=TRIE_SIGNAL):
     logging.debug("Constructing Default Trie Semantics Spec")

@@ -2,6 +2,7 @@
 """
 Class based constructor for the core acab parser
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -12,7 +13,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
@@ -23,7 +24,9 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-config = AcabConfig()
+##-- end imports
+
+config = acab.config
 
 
 class ParamCore(pp.ParseExpression):

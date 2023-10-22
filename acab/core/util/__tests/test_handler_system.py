@@ -197,5 +197,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertNotEqual(spec, basic["a_signal"])
 
 
+##-- ifmain
 if __name__ == '__main__':
     unittest.main()
+##-- end ifmain

@@ -1,0 +1,6 @@
+[module.network]
+DEFAULT_PORT       = 50000
+DEFAULT_BLOCKSIZE  = 1024
+DEFAULT_HEADERSIZE = 128
+DEFAULT_BACKLOG    = 10
+DEFAULT_HOST       = "localhost"

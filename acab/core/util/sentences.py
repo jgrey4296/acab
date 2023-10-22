@@ -7,6 +7,7 @@ eg: A ProductionComponent has the form:
 of type SENTENCE.component
 
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -21,21 +22,21 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 from uuid import UUID, uuid1
 from weakref import ref
 
+import acab
+from acab.core.defaults import value_keys as DS
+from acab.interfaces.value import ValueFactory as VF
+
 logging = logmod.getLogger(__name__)
 
 if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab import AcabConfig
+##-- end imports
 
-config = AcabConfig()
-
-from acab.core.defaults import value_keys as DS
-from acab.interfaces.value import ValueFactory as VF
+config = acab.config
 
 prod_comp_type = VF.sen() << DS.SENTENCE_PRIM << DS.COMPONENT_PRIM
-
 
 def ProductionComponent(path, name=None, params=None, rebind="unit", _type=None):
     return (VF.sen(data={DS.TYPE_INSTANCE: prod_comp_type << _type})

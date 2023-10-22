@@ -2,6 +2,7 @@
 A Collection of interfaces describing how information in context is collected, constrained,
 and grouped for communication between system components
 """
+##-- imports
 # pylint: disable=multiple-statements,abstract-method
 from __future__ import annotations
 
@@ -28,6 +29,8 @@ if TYPE_CHECKING:
     ModuleFragment      : TypeAlias = AT.ModuleFragment
 
     DelayValue = 'UUID | CtxIns | CtxSet | None'
+
+##-- end imports
 
 CtxIns              : TypeAlias = "ContextInstance_i"
 Value               : TypeAlias = "Value_i"

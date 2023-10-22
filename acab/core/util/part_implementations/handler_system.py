@@ -4,6 +4,7 @@ Basic Implementations of the handler system protocol
 """
 # pylint: disable=abstract-method,invalid-sequence-index,use-a-generator,too-many-lines
 # pyright: reportPrivateUsage=warning
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -14,7 +15,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
                     Iterator, Mapping, Match, MutableMapping, NewType,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeVar, cast)
 
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.util.decorators.util import cache
 from acab.error.handler import (AcabHandlerException,
@@ -28,12 +29,6 @@ from acab.interfaces.sieve import AcabSieve
 from acab.interfaces.value import Sentence_i, Value_i
 from acab_config import AcabProtocolError as APE
 
-logging                = logmod.getLogger(__name__)
-config                 = AcabConfig()
-SPACER                 = int(config.prepare("Print.Data", "SPACER_SIZE")())
-DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-Handler                = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
-
 if TYPE_CHECKING:
     ModuleFragment     : TypeAlias = AT.ModuleFragment
     Overrider          : TypeAlias = AT.HandlerOverride
@@ -44,11 +39,20 @@ if TYPE_CHECKING:
     HandlerSpec_A      : TypeAlias = AT.HandlerSpec
     HandlerComponent_A : TypeAlias = AT.HandlerComponent
     Handler_System_A   : TypeAlias = AT.HandlerSystem
+##-- end imports
+
+logging                = logmod.getLogger(__name__)
+config                 = acab.config
+SPACER                 = config.any_of().print.SPACER_SIZE()
+
+DEFAULT_HANDLER_SIGNAL = config.handler.system.DEFAULT_SIGNAL
+# TODO import wrapper
+Handler                = config.on_fail().imports.specific.handler(wrapper="import"))
 
 PASSTHROUGH         = "_"
 
-
 # Protocols  ##################################################################
+
 @APE.assert_concrete
 class HandlerSystem(HS.HandlerSystem_i):
     """
@@ -72,7 +76,6 @@ class HandlerSystem(HS.HandlerSystem_i):
             self._register_handler(*sorted(init_handlers, key=lambda x: not x.func))
         except AttributeError as err:
             raise AcabHandlerException("Bad Handler in:", rest=init_handlers) from err
-
 
     def __contains__(self, signal) -> bool:
         match signal:
@@ -187,8 +190,6 @@ class HandlerSystem(HS.HandlerSystem_i):
         self._quick_sen_fails.add(sen_str)
         return False
 
-
-
     def override(self, new_signal: bool | str, value, data=None) -> Overrider:
         """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
         data = data or {}
@@ -210,6 +211,7 @@ class HandlerSystem(HS.HandlerSystem_i):
         return HS.HandlerOverride(new_signal, value, data=data)
 
     #pylint: disable-next=too-many-branches
+
     def register(self, *others):
         for other in others:
             match other:
@@ -234,8 +236,6 @@ class HandlerSystem(HS.HandlerSystem_i):
 
         self._register_spec(HandlerSpec(DEFAULT_HANDLER_SIGNAL))
 
-
-
     def _register_spec(self, *specs: HandlerSpec_A):
         for spec in specs:
             as_pseudo = str(spec)
@@ -256,7 +256,6 @@ class HandlerSystem(HS.HandlerSystem_i):
 
         self._data.update(data)
 
-
     def _register_handler(self, *handlers: Handler_A):
         """
         insert a handler into the system, bound to the signal that it listens for
@@ -276,12 +275,14 @@ class HandlerSystem(HS.HandlerSystem_i):
 
     def extend(self, modules:list[ModuleFragment]) -> None:
         raise NotImplementedError()
+
     @property
     def signals(self) -> list[str]:
         return list(self.handler_specs.keys())
 
 @APE.assert_concrete
 class HandlerSpec(HS.HandlerSpec_i):
+
     def __str__(self):
         return str(self.signal)
 
@@ -333,14 +334,17 @@ class HandlerSpec(HS.HandlerSpec_i):
         return copied
 
     # set APIs ################################################################
+
     def spec_from(self, target):
         """
         Decorator to use as the spec's interface.
         ie:
+
         @a_spec(signal).from
         class An_ABC:...
 
         or:
+
         @a_spec(signal).from
         def a_func...
 
@@ -361,15 +365,18 @@ class HandlerSpec(HS.HandlerSpec_i):
         return self
 
     # Create Handler ##########################################################
+
     def on(self, *, target=None, **kwargs) -> Handler_A:
         """
         basicly create a Handler.
         The inverse decorator of `from`.
         ie:
+
         @a_spec.on
         class Implements(An_ABC):...
 
         or
+
         @a_spec.on
         def an_implementing_func....
         """
@@ -378,6 +385,7 @@ class HandlerSpec(HS.HandlerSpec_i):
 
     # Register Handler ########################################################
     #pylint: disable-next=too-many-branches
+
     def register(self, handler: Handler_A) -> None:
         """ Add a handler into the current, according to the spec instructions
         and handler's flags """
@@ -413,7 +421,6 @@ class HandlerSpec(HS.HandlerSpec_i):
             case (history, count, _, stop) if stop < count:
                 raise AcabHandlerException("Handlers Upper Limit Failure")
 
-
     def add_struct(self, handler):
         struct = handler.struct
         if isinstance(struct, type) and isinstance(struct, Structure_i):
@@ -425,8 +432,8 @@ class HandlerSpec(HS.HandlerSpec_i):
         elif self.struct is not None:
             raise AcabHandlerException(f"{self.signal} struct conflict")
 
-
     # Check ###################################################################
+
     def verify(self, instruction) -> bool:
         """
         Check at least 1 handler can accept the instruction
@@ -456,7 +463,6 @@ class HandlerSpec(HS.HandlerSpec_i):
         elif isinstance(self.func_api, Callable) and not (func.__code__.co_argcount == self.func_api.__code__.co_argcount): # type: ignore[arg-type]
             raise AcabHandlerException(f"Handler Functional Args API Mismatch: {self.func_api} against {func}")
 
-
     def check_struct_api(self, struct):
         if self.struct_api is None:
             return
@@ -467,8 +473,6 @@ class HandlerSpec(HS.HandlerSpec_i):
 
         if not any([is_sub or is_ins or is_eq]):
             raise AcabHandlerException("Struct api mismatch: {struct} against {self.struct_api}")
-
-
 
 @APE.assert_concrete(exceptions=['__call__'])
 class HandlerComponent(HS.HandlerComponent_i):
@@ -484,5 +488,3 @@ class HandlerComponent(HS.HandlerComponent_i):
                        func=self,
                        struct=struct,
                        flags=set(flags or []))
-
-

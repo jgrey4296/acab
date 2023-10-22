@@ -1,0 +1,31 @@
+#+title: Value Strings in Acab
+* Value
+Simple atoms should convert directly.
+so:
+a b c
+becomes str(val):
+"a" "b" "c"
+and repr(val):
+"<a>" "<b>" "<c>"
+
+If they have a type other than ATOM, repr should include that:
+a(::blah) -> <a::blah>
+
+* Instruction
+
+* Sentence
+Sentences should join words with fallback modals
+and wrap with parens:
+"[a.b.c]"
+
+unless its a named sentence, then it wraps in single quotes:
+"'query'"
+
+repr should
+1) elide the type if its just SENTENCE
+2) use '∅' for the name if its anonymous
+
+<∅ [a.b.c]>
+
+named:
+<query [a.b.c]>

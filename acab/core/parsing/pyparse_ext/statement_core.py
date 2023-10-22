@@ -2,6 +2,7 @@
 """
 Class Based Constructor for the core statement parser
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -12,7 +13,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults import parse_symbols as PDSYM
 from acab.core.parsing import consts as PConst
@@ -27,8 +28,10 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-config               = AcabConfig()
-aliases              = config.attr.Aliases
+##-- end imports
+
+config               = acab.config
+aliases              = config.all_of().aliases
 type_annotate_prefix = pp.Literal(PDSYM.TYPE_SEN)
 
 def type_annotation_gen(name:str|pp.ParseExpression) -> ParserElement:

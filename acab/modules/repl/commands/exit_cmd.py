@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -15,9 +16,9 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-
 from acab.modules.repl.repl_commander import register_class
 
+##-- end imports
 
 @register_class("exit")
 class ExitCmd:
@@ -29,5 +30,5 @@ class ExitCmd:
         # TODO add option for saving location
         logging.info("Quitting")
         filename = "repl.auto"
-        self._cmd.state.engine.save_file(filename)
+        self._repl.state.engine.save_file(filename)
         return True

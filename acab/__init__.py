@@ -8,28 +8,31 @@ communicate with unity.
 
 util provides standard enums, strings and some utility functions
 """
+##-- imports
 from __future__ import annotations
 
+from importlib.resources import files
 import logging as logmod
 from os.path import join, split
 from typing import Callable, Type, TypeAlias
 
-from acab_config import AcabConfig, AcabMinimalLogRecord
-
 import acab.interfaces.type_aliases as types
+from tomler  import Tomler
+import acab_config
+
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 
-__all__ = ['types', 'setup', 'AcabConfig', 'AcabLogRecord']
+__version__ = "0.0.1"
+__all__     = ['types', 'setup', 'AcabLogRecord']
 
 _Value_A : TypeAlias = types.Value
 _Sen_A   : TypeAlias = types.Sentence
 
+config   : Tomler    = None
 
-def setup(location:str|list[str]=None,
-          rich_exc:bool=False,
-          format_logs:bool=True,
-          ) -> types.Config:
+def setup(location:str|list[str]=None, rich_exc:bool=False, format_logs:bool=True,):
     """
     A Utility to easily setup the config singleton,
     allowing the rest of acab to load.
@@ -48,39 +51,36 @@ def setup(location:str|list[str]=None,
         An initialised Config Object
     """
     #pylint: disable=import-outside-toplevel
+    global config
 
+    acab_config.AcabMinimalLogRecord.install()
 
-    AcabMinimalLogRecord.install()
-
-    from acab_config.hooks.misc_hooks import attr_hook, pyparsing_hook
-    from acab_config.hooks.modal_hook import modal_hook
-    from acab_config.hooks.structure_hook import structure_hook
+    match location:
+        case None | False | []:
+            tomls  = list((files("acab.__configs") / "toml").glob("*.toml"))
+            config = Tomler.load(*tomls)
+        case [*tomls]:
+            config = Tomler.load(*tomls)
+        case pl.Path() if location.is_dir():
+            config = Tomler.load_dir(location)
+        case _:
+            raise Exception("Unknown location for loading toml config")
 
     if format_logs:
         from acab_config.hooks.log_hook import log_hook
     else:
         log_hook = lambda x: x
 
-    if location is None or not bool(location):
-        # Best practice recommended by setuptools
-        from importlib.resources import files
-        location = [files("acab.__configs.default")]
-    elif not isinstance(location, list):
-        location = [location]
-
-    config = AcabConfig(*location, hooks=[log_hook, modal_hook, attr_hook, pyparsing_hook], build=True)
-
-
-    if rich_exc or config.attr.LOGGING.rich_exceptions:
+    if rich_exc or config.logging.rich_exceptions:
         try:
             from rich.traceback import install
             install(show_locals=True)
         except ImportError:
             logging.debug("Rich Module not found, using default exception handler")
 
-    from acab.core.value.sentence import Sentence
-    from acab.core.value.value import AcabValue
     from acab.interfaces.value import ValueFactory
+    from acab.core.value.value import AcabValue
+    from acab.core.value.sentence import Sentence
     ValueFactory.set(AcabValue, Sentence)
 
     return config

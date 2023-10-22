@@ -231,5 +231,7 @@ class ValueSemanticTests(unittest.TestCase):
         self.assertEqual(len(root), 2)
 
 
+##-- ifmain
 if __name__ == '__main__':
     unittest.main()
+##-- end ifmain

@@ -1,0 +1,62 @@
+[[parse]]
+name          = "pyparsing"
+DEBUG_PARSERS = false
+PP_PACKRAT    = true
+
+[parse.patterns]
+MODULE_SPLIT_REG        = "[._]"
+TAB                     = "    "
+TYPE_FMT                = "::{}"
+COMMENT_RE              = "//.*\n"
+WHITE_SPACE             = ' \t'
+WORD_COMPONENT          = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_"
+OPERATOR_SYNTAX         = "%%^&*_-+={}[]|<>?~§;⊂⊃∨∧⧼⧽¿£ΔΣΩ∩∪√∀∈∃¬∄⟙⟘⊢∴◇□⚬!"
+
+[parse.results]
+# These are used in parse results ie: could be a single enum
+structure = ["ACTION", "ANNOTATION", "ARG", "AT_BIND", "BIND", "CONSTRAINT", "DEFAULT_ACTION", "END", "FUNC", "HEAD_ANNOTATION", "LEFT", "MODAL", "NAME", "NEGATION", "OPERATOR", "OP_CLASS", "PARAM", "POST_ANNOTATION", "QUERY", "QUERY_FALLBACK", "RIGHT", "RULE", "SEN", "STATEMENT", "TAG", "TARGET", "TRANSFORM", "TYPE_INSTANCE", "VALUE"]
+
+[parse.signals]
+# TODO link these with code
+allowed = ["action.statement", "disallowed.words", "operators", "operators.action", "operators.modal", "operators.query", "operators.transform", "query.statement", "sentence", "sentence.annotation.end", "sentence.annotation.head", "sentence.annotation.post", "sentence.ends", "sentence.operator", "sentence.plural", "statement", "tag.sentence", "transform.statement", "word.annotation", "word.constrained", "word.valbind", "word.value"]
+
+[[symbols]] # Basic
+ANON_VALUE     = "∅"
+BIND           = "$"
+AT_BIND        = "@"
+END            = "end"
+FUNC           = "λ"
+NEGATION       = "~"
+QUERY          = "?"
+TAG            = "#"
+REBIND         = "->"
+SUGAR          = "=>"
+
+[[symbols]] # Typing
+TYPE_BASE      = "⟘"
+TYPE_SEN       = "::"
+
+[[symbols]] # expansion
+FLATTEN        = "♭"
+SHARP          = "♯"
+
+[[aliases]] # basic
+# Alias with [Semantic.Signals]
+ACTION       = "α"
+FACT         = "Σ"
+QUERY        = "γ"
+RULE         = "ρ"
+TRANSFORM    = "χ"
+UUID         = "υ"
+CTX_COLLAPSE = "ctx.collapse"
+
+[[aliases]] # instruction names
+"[INSTRUCT.CONTAINER.ACTION]"    = "α"
+"[INSTRUCT.CONTAINER.QUERY]"     = "γ"
+"[INSTRUCT.CONTAINER.TRANSFORM]" = "χ"
+"[INSTRUCT.STRUCTURE.RULE]"      = "ρ"
+
+[[aliases]] # Pipeline structure
+AGENDA       = "Agenda"
+LAYER        = "Layer"
+PIPE         = "Pipeline"

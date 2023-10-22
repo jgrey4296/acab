@@ -12,7 +12,7 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 import acab
 import pyparsing as pp
 
-config = acab.AcabConfig()
+config = acab.config
 
 import acab.core.defaults.value_keys as DS
 from acab.core.defaults import print_signals as DSig

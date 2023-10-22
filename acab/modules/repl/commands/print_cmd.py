@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -17,10 +18,11 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-
 from acab.modules.repl.repl_commander import register_class
 from acab.modules.repl.ReplParser import rst, ctx_parser
 from acab import types as AT
+
+##-- end imports
 
 ModuleFragment = AT.ModuleFragment
 
@@ -48,7 +50,6 @@ class PrintCmd:
                                       pp.Keyword("module")])("module")
         semantic_kw  = pp.Keyword("semantics")("semantics")
 
-
         # TODO also handle bind without kw?
         printer_parser = pp.MatchFirst([wm_kw,
                                         module_kw + mod_target,
@@ -58,7 +59,6 @@ class PrintCmd:
 
         return printer_parser
 
-    
     def __call__(self, line):
         try:
             params = self._parser.parse_string(line, parse_all=True)
@@ -71,7 +71,7 @@ class PrintCmd:
         result = []
         if "wm" in params:
             # TODO print everything from a query down
-            print(self._cmd.state.engine.pprint())
+            print(self._repl.state.engine.pprint())
         elif "context" in params or "short_context" in params or "context_slice" in params:
             self.prep_print_contexts(params)
 
@@ -82,18 +82,18 @@ class PrintCmd:
         # Get the contexts to print
         if "short_context" in params:
             try:
-                ctxs_to_print.append(self._cmd.state.ctxs[params['short_context']])
+                ctxs_to_print.append(self._repl.state.ctxs[params['short_context']])
             except IndexError as err:
-                print(f"Selected bad ctx instance. Try 0 <= x < {len(self._cmd.state.ctxs)}.")
+                print(f"Selected bad ctx instance. Try 0 <= x < {len(self._repl.state.ctxs)}.")
 
         elif "context_slice" in params:
-            ctx_slice = self._cmd.state.ctxs[params['context_slice']].active_list()
+            ctx_slice = self._repl.state.ctxs[params['context_slice']].active_list()
             ctxs_to_print += ctx_slice
-        elif bool(self._cmd.state.ctxs) and len(self._cmd.state.ctxs) > 0:
-            ctxs_to_print += self._cmd.state.ctxs.active_list()
-        elif bool(self._cmd.state.ctxs._named_sets):
+        elif bool(self._repl.state.ctxs) and len(self._repl.state.ctxs) > 0:
+            ctxs_to_print += self._repl.state.ctxs.active_list()
+        elif bool(self._repl.state.ctxs._named_sets):
             print("Named (continuation) Sets:")
-            print(self._cmd.state.engine.pprint(target=list(self._cmd.state.ctxs._named_sets.keys())))
+            print(self._repl.state.engine.pprint(target=list(self._repl.state.ctxs._named_sets.keys())))
 
         if not bool(ctxs_to_print):
             print(f"No applicable contexts to print")
@@ -117,10 +117,9 @@ class PrintCmd:
             #     print(f"Continuation: {ctx.continuation}")
             if bool(bindings):
                 for x in bindings:
-                    print("{:<5} : {}".format(x, self._cmd.state.engine.pprint(target=[ctx[x]])))
+                    print("{:<5} : {}".format(x, self._repl.state.engine.pprint(target=[ctx[x]])))
             else:
                 for x,y in ctx.data.items():
-                    print("{:<5} : {}".format(x, self._cmd.state.engine.pprint(target=[y])))
+                    print("{:<5} : {}".format(x, self._repl.state.engine.pprint(target=[y])))
 
             print("--------------------")
-

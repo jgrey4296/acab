@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
@@ -10,12 +11,14 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
-from acab import AcabConfig
+import acab
 from acab.core.defaults import print_symbols as DSYM
 from acab.core.printing import wrappers as PW
 from acab.interfaces.printing import PrintSemantics_i
 
-config = AcabConfig()
+##-- end imports
+
+config = acab.config
 
 @dataclass
 class SenValPrinter(PrintSemantics_i):

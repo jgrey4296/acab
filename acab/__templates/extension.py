@@ -29,8 +29,9 @@ from acab.interfaces.fragments import UnifiedFragment_p
 from acab.interfaces.value import Sentence_i
 from acab.interfaces.value import ValueFactory as VF
 
-config = acab.AcabConfig()
-Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
+config = acab.config
+# TODO import
+Handler = config.imports.specific.handler
 
 @dataclass
 class ExampleExtension(UnifiedFragment_p):

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -16,6 +17,8 @@ from weakref import ref
 
 from acab_config.utils.log_formatter import SimpleLogColour
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 SC      = SimpleLogColour
 
@@ -32,7 +35,6 @@ def print_class_colour(heading, cls):
     print()
     bases = "\n\t".join(f"{SC.yellow(x.__module__)}.{SC.green(x.__qualname__)}" for x in cls.__class__.__bases__)
     print(f"Instance of:\n\t{bases}")
-
 
 def print_module_colour(mod):
     result = []
@@ -56,7 +58,6 @@ def print_module_colour(mod):
     source = splitext(mod.source)
     print(f"\t({' | '.join(result)} : {source[0]}{SC.blue(source[1])})")
 
-
 def print_handler_system(system):
     print("\nComponents: (no. of handlers : signal : flags)")
     sorted_specs = sorted([(len(y), y, x) for x,y in system.handler_specs.items()], reverse=True, key=lambda x: x[0])
@@ -69,7 +70,6 @@ def print_handler_system(system):
     print("\nHandlers not attached to a Signal: ")
     for signal in sorted((x.signal for x in system.loose_handlers)):
         print(f"\t{SC.blue(signal)}")
-
 
 def two_part_split(the_string):
     pair = splitext(the_string)

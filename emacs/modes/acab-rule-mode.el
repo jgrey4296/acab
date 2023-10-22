@@ -42,7 +42,7 @@
    ;; Var Block / Transform arrow
    '("|\\|->" (0 "org-code"))
    ;; Query
-   `(,(rx (+ (or word ?! ?. ?# ?( ?) ?: ?$ ?λ blank)) ??)
+   `(,(rx (+ (or word ?! ?. ?# ?\( ?\) ?: ?$ ?λ blank)) ??)
      (0 "org-headline-todo" nil t)
      )
    ;; Type assign
@@ -64,6 +64,9 @@
 
 (defun acab-rule-indent-line ()
   ;; TODO
+  ;; go back to last line ending in `:` or `end`
+  ;; Get it's indent
+  ;; increment it then add it to the line
   )
 
 (define-derived-mode acab-rule-mode fundamental-mode

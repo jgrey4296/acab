@@ -13,6 +13,7 @@ Meanwhile ValueSemantics_i are concerned only with the values and structures the
 *Dependent* Semantics factor in contexts and a reference to the engine.
 
 """
+##-- imports
 # pylint: disable=multiple-statements,too-many-ancestors,invalid-sequence-index,abstract-method,arguments-differ
 from __future__ import annotations
 
@@ -25,7 +26,6 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
                     TypeVar, cast, final, overload, runtime_checkable)
 
-logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab.error.printing import AcabPrintException
@@ -53,6 +53,9 @@ if TYPE_CHECKING:
     StatementSemantics : TypeAlias = AT.StatementSemantics
     SemanticSystem     : TypeAlias = AT.SemanticSystem
 
+##-- end imports
+
+logging = logmod.getLogger(__name__)
 
 # Protocols  ##################################################################
 class _SemanticSystem_p(HSubP.HandlerSystem_p, Protocol):

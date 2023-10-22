@@ -62,7 +62,7 @@
 
     ;;if a dir chosen, get a name for the
     ;;inst, create a stub, create a data dir
-    (assert (f-exists? location))
+    (cl-assert (f-exists? location))
     (cond ((f-dir? location)
              ;;get name for inst
              (setq inst-name (read-string "Institution Name: ")
@@ -105,7 +105,7 @@
         )
     )
   (setq acab-ide/is-running nil)
-  (assert (not acab-ide/is-running))
+  (cl-assert (not acab-ide/is-running))
   )
 
 ;;Directory and buffer initialisation

@@ -1,6 +1,7 @@
 """
 Provide a number of individual interfaces for top level Engine functionality
 """
+##-- imports
 import abc
 import logging as logmod
 import re
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab import AcabConfig
+import acab
 from acab.core.engine.util import (applicable, ensure_handler, needs_init,
                                    prep_op_path)
 from acab.core.util.part_implementations.module_loader import ModuleLoaderImpl
@@ -31,9 +32,11 @@ from acab.interfaces.fragments import ModuleFragment
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.error.importer import AcabImportException
 
-config           = AcabConfig()
-MODULE_SPLIT_REG = re.compile(config.attr.Parse.Patterns.MODULE_SPLIT_REG)
-MODULE_TARGET    = config.attr.Imports.MODULE_TARGET
+##-- end imports
+
+config           = acab.config
+MODULE_SPLIT_REG = config.on_fail("[._]").parse.patterns.MODULE_SPLIT_REG(wrapper=re.compile)
+MODULE_TARGET    = config.imports.MODULE_TARGET
 
 #--------------------
 class ModuleLoader(ModuleLoaderImpl, ModuleLoader_i):

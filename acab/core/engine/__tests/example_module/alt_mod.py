@@ -11,7 +11,7 @@ from dataclasses import dataclass, field, InitVar
 import pyparsing as pp
 import acab
 
-config = acab.AcabConfig()
+config = acab.config
 
 import acab.core.defaults.value_keys as DS
 from acab.core.defaults import print_signals as DSig

@@ -1,3 +1,5 @@
+##-- imports
+from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -11,12 +13,14 @@ from acab.interfaces import handler_system as HS
 from acab.interfaces.value import (Sentence_i, Value_i)
 from acab.core.value.instruction import Instruction
 import acab.core.defaults.value_keys as DS
-from acab import AcabConfig
+import acab
 from acab.core.printing import basic
 from acab.core.defaults import print_signals as DSig
 
+##-- end imports
 
-config = AcabConfig()
+
+config = acab.config
 
 
 class BasicPrinter(basic.PrintSystemImpl, PrintSystem_i):

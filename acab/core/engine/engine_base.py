@@ -1,6 +1,9 @@
 """
 
 """
+##-- imports
+from __future__ import annotations
+
 import logging as logmod
 from os.path import abspath, exists, expanduser, split
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
@@ -14,14 +17,16 @@ from acab.error.semantic import AcabSemanticException
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
 
-logging = logmod.getLogger(__name__)
-
 if TYPE_CHECKING:
     # tc only imports
     from acab import types as AT
     ModuleFragment : TypeAlias = AT.ModuleFragment
 else:
     ModuleFragment = "ModuleFragment"
+##-- end imports
+
+logging = logmod.getLogger(__name__)
+
 
 class AcabEngineImpl(AcabEngine_i):
     @EnsureEngineInitialised

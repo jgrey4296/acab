@@ -2,6 +2,8 @@
 AcabNode: The internal type which knowledge base data structures use.
 
 """
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
@@ -12,24 +14,20 @@ from weakref import ReferenceType, ref
 
 import acab.interfaces.data as DI
 import acab.interfaces.value as VI
-from acab import AcabConfig
+import acab
 from acab.core.util.decorators.util import cache
 from acab.interfaces.value import ValueFactory as VF
 from acab.core.util.debugging import logdel
 
+##-- end imports
 logging                = logmod.getLogger(__name__)
-
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    # tc only imports
-    pass
 
 Node_A     : TypeAlias = DI.Node_i
 Sentence_A : TypeAlias = VI.Sentence_i
 Value_A    : TypeAlias = VI.Value_i
 
-config                 = AcabConfig()
-ROOT                   = config.attr.Data.ROOT
+config                 = acab.config
+ROOT                   = config.data.ROOT
 
 @logdel
 @dataclass
@@ -39,17 +37,16 @@ class AcabNode(DI.Node_i):
     """
     # TODO make children a dict of dicts
     # value  : AcabValue       = field(default=None)
-    data     : dict[str, Any]             = field(default_factory=dict)
-    path     : 'None|Sentence_A'          = field(default=None)
+    data     : dict[str, Any]               = field(default_factory=dict)
+    path     : None|Sentence_A              = field(default=None)
     parent   : None | ReferenceType[Node_A] = field(default=None)
     children : dict[str, Node_A]            = field(default_factory=dict)
-    uuid     : UUID                       = field(default_factory=uuid1)
+    uuid     : UUID                         = field(default_factory=uuid1)
 
     @staticmethod
     def Root():
         """ Create a new root node """
         return AcabNode(value=VF.value(ROOT))
-
 
     def __post_init__(self):
         if isinstance(self.value, DI.Node_i):
@@ -154,7 +151,6 @@ class AcabNode(DI.Node_i):
             else:
                 del self.children[key.key()]
 
-
         return result
 
     def clear(self) -> list[Node_A]:
@@ -185,10 +181,10 @@ class AcabNode(DI.Node_i):
         path.reverse()
         return VF.sen(path) #type:ignore
 
-
     def _default_setup(self, path: list[Node_A], *, data: dict[Any,Any], context: dict[Any,Any]):
         """ Called by a Semantics upon creation of a new node """
         pass
+
     def _update_node(self, path, data, context):
         """ Called by a semantics for passing through a node """
         pass

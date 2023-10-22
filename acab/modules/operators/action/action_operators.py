@@ -1,6 +1,7 @@
 """
 Definitions of the Core Performance Operators
 """
+##-- imports
 from __future__ import annotations
 import logging as logmod
 from enum import Enum
@@ -9,7 +10,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab import AcabConfig
+import acab
 from acab.core.value.instruction import (ActionOperator,
                                                         ProductionOperator)
 from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
@@ -17,9 +18,11 @@ from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorSugar)
 from acab.error.semantic import AcabSemanticException
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 
-config = AcabConfig()
+config = acab.config
 
 Sentence = AT.Sentence
 Operator = AT.Operator
@@ -35,7 +38,7 @@ Operator = AT.Operator
 
 # TODO action operators joots
 # and/or return instructions for the semantic system
-@OperatorSugar(config.attr.Operator.Sugar.ASSERT)
+@OperatorSugar(config.any_of().operator.sugar.ASSERT())
 class AcabAssert(ActionOperator):
 
     def __call__(self, *params, data=None, semSystem=None):
@@ -44,7 +47,7 @@ class AcabAssert(ActionOperator):
         # TODO enable queing?
         semSystem(params[0])
 
-@OperatorSugar(config.attr.Operator.Sugar.PRINT)
+@OperatorSugar(config.any_of().operator.sugar.PRINT())
 class AcabPrint(ActionOperator):
 
     @OperatorArgUnWrap
@@ -58,7 +61,7 @@ class AcabPrint(ActionOperator):
 
         print(total)
 
-@OperatorSugar(config.attr.Operator.Sugar.REBIND)
+@OperatorSugar(config.any_of().operator.sugar.REBIND())
 class RebindOperator(ActionOperator):
     """ Special Operator to modify the semantic's Operator Cache,
     allowing more concise names of operators

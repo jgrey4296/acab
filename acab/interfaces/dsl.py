@@ -2,6 +2,7 @@
 A DSL interface for the system
 
 """
+##-- imports
 # pylint: disable=multiple-statements,abstract-method,too-many-ancestors,too-few-public-methods
 from __future__ import annotations
 import abc
@@ -25,6 +26,8 @@ if TYPE_CHECKING:
     ModuleFragment   : TypeAlias = AT.ModuleFragment
     DSL_Spec_A       : TypeAlias = AT.DSL_Spec
     File             : TypeAlias = 'io.TextIOBase'
+
+##-- end imports
 
 logging = logmod.getLogger(__name__)
 

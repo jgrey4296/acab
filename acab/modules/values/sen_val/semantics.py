@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from collections import defaultdict
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -7,7 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
-from acab import AcabConfig
+import acab
 from acab import types as AT
 from acab.core.semantics.basic import StatementSemantics
 from acab.core.util.decorators.semantic import RunInSubCtxSet
@@ -19,7 +21,9 @@ from acab.modules.context.context_instance import MutableContextInstance
 from acab.modules.values.sen_val.context_sen_bind_query_manager import \
     ContextSenBindQueryManager
 
-config     = AcabConfig()
+##-- end imports
+
+config = acab.config
 
 CtxIns = AT.CtxIns
 

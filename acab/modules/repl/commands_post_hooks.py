@@ -1,6 +1,7 @@
 """
 
 """
+##-- imports
 from __future__ import annotations
 
 import abc
@@ -20,7 +21,6 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 import acab
 import pyparsing as pp
-from acab import AcabConfig
 from acab import types as AT
 from acab.core.parsing import debug_funcs as DBF
 from acab.core.util.debugging import (human, print_diff, print_stat,
@@ -29,8 +29,10 @@ from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register, register_default
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+config  = acab.config
 
 snap_a  = None
 

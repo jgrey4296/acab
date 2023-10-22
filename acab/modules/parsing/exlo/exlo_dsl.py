@@ -1,14 +1,16 @@
 """
 DSL Interface for exclusion logic, to connect it into Acab
 """
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
 import pyparsing as pp
-from acab import AcabConfig
 from acab.core.util.fragments import DSL_Fragment
+import acab
 from acab.core.parsing import parsers as PU
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing.funcs import clear_parser_names, deep_update_names
@@ -21,12 +23,14 @@ from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
 
+##-- end imports
+
 __all__ = ['EXLO_Parser']
 # TODO change this file to `module`
 
 logging                = logmod.getLogger(__name__)
-config                 = AcabConfig()
-DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+config                 = acab.config
+DEFAULT_HANDLER_SIGNAL = config.handler.system.DEFAULT_SIGNAL
 
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler

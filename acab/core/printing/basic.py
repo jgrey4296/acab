@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+##-- imports
 import abc
 import logging as logmod
 from collections import defaultdict, deque
@@ -12,7 +13,7 @@ from unittest.mock import DEFAULT
 from uuid import UUID, uuid1
 
 import acab.core.util.part_implementations.handler_system as HS
-from acab import AcabConfig
+import acab
 from acab.core.defaults.print_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
@@ -30,9 +31,11 @@ else:
     ModuleFragment = "ModuleFragment"
     GenFunc        = "Callable"
 
+##-- end imports
+
 logging                      = logmod.getLogger(__name__)
-config                       = AcabConfig()
-DEFAULT_HANDLER_SIGNAL       = config.attr.Handler.System.DEFAULT_SIGNAL
+config                       = acab.config
+DEFAULT_HANDLER_SIGNAL       = config.handler.system.DEFAULT_SIGNAL
 
 REGISTER = "REGISTER"
 

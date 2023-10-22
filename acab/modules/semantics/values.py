@@ -1,3 +1,5 @@
+##-- imports
+from __future__ import annotations
 import logging as logmod
 from dataclasses import dataclass
 from enum import Enum
@@ -8,7 +10,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.error.semantic as ASErr
 from acab import types as AT
 from acab.interfaces import value as VI
-from acab import AcabConfig
+import acab
 from acab.core.value.instruction import Instruction
 from acab.core.data.node import AcabNode
 from acab.core.value.sentence import Sentence
@@ -16,16 +18,18 @@ from acab.core.semantics import basic
 from acab.interfaces import semantic as SI
 from acab_config import AcabProtocolError as APE
 
+##-- end imports
+
 Node  = AcabNode
 T     = TypeVar('T')
 
-config       = AcabConfig()
+config       = acab.config
 
 CTX_OP = Enum("ctx", "collect_var")
-# TODO replace operator with specific modal name
-EXOP         = config.prepare("MODAL", "exop")()
-DEFAULT_EXOP = config.default(EXOP)
-EXOP_enum    = config.prepare(EXOP, _type=Enum)()
+# TODO retrieve modal enums
+EXOP         = "exop"
+DEFAULT_EXOP = config.match_on(name=EXOP).default()
+EXOP_enum    = config.match_on(name=EXOP).enum_values()
 
 logging = logmod.getLogger(__name__)
 

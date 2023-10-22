@@ -3,13 +3,14 @@
 Defines functions for parsers and parse -> data transform
 
 """
+##-- imports
 from __future__ import annotations
 
 import logging as logmod
 
 import acab.core.defaults.value_keys as DS
 import pyparsing as pp
-from acab import AcabConfig
+import acab
 from acab.core.defaults import parse_keys as PDS
 from acab.core.defaults.value_keys import TYPE_BASE
 from acab.core.parsing import consts as PConst
@@ -20,9 +21,11 @@ from acab.core.value.instruction import (ProductionContainer,
 from acab.interfaces import value as VI
 from acab.interfaces.value import ValueFactory
 
+##-- end imports
+
 logging = logmod.getLogger(__name__)
 
-config = AcabConfig()
+config = acab.config
 
 ATOM : str = TYPE_BASE
 

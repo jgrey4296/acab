@@ -1,7 +1,8 @@
 """
 
+reminder: https://docs.python.org/3/library/cmd.html
 """
-# https://docs.python.org/3/library/cmd.html
+##-- imports
 from __future__ import annotations
 
 import cmd
@@ -15,7 +16,6 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab
 import pyparsing as pp
-from acab import AcabConfig
 from acab.error.base import AcabBasicException
 from acab_config import AcabConfigException
 from acab.error.parse import AcabParseException
@@ -25,16 +25,22 @@ from acab.modules.repl import ReplParser as RP
 
 from .repl_state import ReplState
 
+##-- end imports
+
+##-- logging
 logging      = logmod.getLogger(__name__)
 trace_logger = logmod.getLogger('acab.repl.trace')
-config       = AcabConfig()
-#--------------------
-initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
+##-- end logging
+
+##-- config
+config       = acab.config
+initial_prompt = config.module.REPL.PROMPT
 try:
-    repl_intro     = config.prepare("Module.Repl.Intro", _type=list)()
+    repl_intro     = config.module.REPL.intro
 except AcabConfigException:
     repl_intro = ["Welcome to ACAB.", "Type 'help' or '?' to list commands.", "Type 'tutorial' for a tutorial.", "Type ':q' to quit."]
 
+##-- end config
 
 class AcabREPLCommander(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
@@ -48,8 +54,8 @@ class AcabREPLCommander(cmd.Cmd):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for inst in self._latebind:
-            assert(getattr(inst, "_cmd") is None)
-            setattr(inst, "_cmd", self)
+            assert(getattr(inst, "_repl") is None)
+            setattr(inst, "_repl", self)
 
         for fn in self._default_startups:
             fn(self, "")
@@ -165,9 +171,9 @@ class AcabREPLCommander(cmd.Cmd):
                 target_cls.__call__.__doc__ = target_cls.__doc__
 
             instance = target_cls()
-            assert(not hasattr(target_cls, "_cmd"))
+            assert(not hasattr(target_cls, "_repl"))
             setattr(cls, f"do_{name}", instance.__call__)
-            setattr(instance, "_cmd", None)
+            setattr(instance, "_repl", None)
 
             cls._latebind.append(instance)
             return target_cls
@@ -187,6 +193,10 @@ class AcabREPLCommander(cmd.Cmd):
         cls.register(fn)
         cls._default_startups.append(fn)
 
+
+##-- utils
 register         = AcabREPLCommander.register
 register_class   = AcabREPLCommander.register_class
 register_default = AcabREPLCommander.register_default
+
+##-- end utils
