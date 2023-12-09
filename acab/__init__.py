@@ -17,7 +17,7 @@ from os.path import join, split
 from typing import Callable, Type, TypeAlias
 
 import acab.interfaces.type_aliases as types
-from tomler  import Tomler
+from tomlguard  import TomlGuard
 import acab_config
 
 ##-- end imports
@@ -30,7 +30,7 @@ __all__     = ['types', 'setup', 'AcabLogRecord']
 _Value_A : TypeAlias = types.Value
 _Sen_A   : TypeAlias = types.Sentence
 
-config   : Tomler    = None
+config   : TomlGuard    = None
 
 def setup(location:str|list[str]=None, rich_exc:bool=False, format_logs:bool=True,):
     """
@@ -58,11 +58,11 @@ def setup(location:str|list[str]=None, rich_exc:bool=False, format_logs:bool=Tru
     match location:
         case None | False | []:
             tomls  = list((files("acab.__configs") / "toml").glob("*.toml"))
-            config = Tomler.load(*tomls)
+            config = TomlGuard.load(*tomls)
         case [*tomls]:
-            config = Tomler.load(*tomls)
+            config = TomlGuard.load(*tomls)
         case pl.Path() if location.is_dir():
-            config = Tomler.load_dir(location)
+            config = TomlGuard.load_dir(location)
         case _:
             raise Exception("Unknown location for loading toml config")
 

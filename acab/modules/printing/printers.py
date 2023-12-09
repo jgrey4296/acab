@@ -18,7 +18,7 @@ from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.printing import PrintSemantics_i
 from acab.interfaces.value import ValueFactory as VF
-from tomler import Tomler
+from tomlguard import TomlGuard
 
 ##-- end imports
 
@@ -184,7 +184,7 @@ class AnnotationFinaliser(basic.PrintSemanticsImpl, PrintSemantics_i):
             val = "".join([x for x in top.print_registers[reg]])
             if bool(val):
                 joined.append(val)
-    
+
         # To decide whether to add anything to main return here:
         if bool(joined):
             return_list.append("(")
@@ -333,7 +333,7 @@ class ConfigBackedSymbolPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     symbol tuples.
     """
     overrides : dict[Any, str] = field(default_factory=dict)
-    _config   : Tomler = field(default=acab.config)
+    _config   : TomlGuard = field(default=acab.config)
 
     def __call__(self, value, top=None, data=None):
         # Look the value up in overrides

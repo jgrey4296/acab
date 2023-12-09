@@ -15,14 +15,12 @@ classifiers     = [
 ]
 
 dependencies   = [
-    # "acab_config >= 0.0.1",
-    # "acab_config @ git+https://github.com/jgrey4296/acab_config.git@0.0.1",
     "pyparsing >= 3.0.9",
-    "tomler @ git+https://github.com/jgrey4296/tomler.git",
+    "tomlguard @ git+https://github.com/jgrey4296/tomlguard.git",
 ]
 
 [project.optional-dependencies]
-test       = ["pytest > 7.0.0",]
+test       = ["pytest > 7.0.0", "pytest-mock"]
 color      = ["sty > 1.0.0",]
 visual     = ["seaborn > 61.2.0", "railroad-diagrams >= 1.1.1"]
 numbers    = ["numpy > 1.22.0",]
