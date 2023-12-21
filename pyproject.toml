@@ -16,7 +16,7 @@ classifiers     = [
 
 dependencies   = [
     "pyparsing >= 3.0.9",
-    "tomlguard @ git+https://github.com/jgrey4296/tomlguard.git",
+    "tomlguard",
 ]
 
 [project.optional-dependencies]
@@ -626,3 +626,22 @@ ignored-argument-names = "_.*"
 redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", "builtins", "io"]
 
 ##-- end pylint
+
+[tool.bumpver]
+current_version    = "0.1.0"
+version_pattern    = "MAJOR.MINOR.PATCH"
+commit_message     = "[bump]: version {old_version} -> {new_version}"
+tag_message        = "{new_version}"
+tag_scope          = "default"
+# commit             = true
+# tag                = true
+# pre_commit_hook  = ""
+# post_commit_hook = ""
+# push             = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml"   = [
+                   '^version\s+=\s+"{version}"',
+                   '^current_version\s+=\s+"{version}"'
+]
+"acab/__init__.py" = ['^__version__\s+=\s+"{version}"']
