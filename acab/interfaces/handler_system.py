@@ -14,30 +14,10 @@ from typing import (Any, Callable, ClassVar, Collection, Container, Final,
                     TypeAlias, TypeVar, cast, final, overload,
                     runtime_checkable)
 
-import acab
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    # tc only imports
-    from acab import types as AT
-    T = TypeVar('T')
-    GenFunc               : TypeAlias = AT.fns.GenFunc
-    HandlerComponent_A    : TypeAlias = AT.HandlerComponent
-    HandlerFragment_A     : TypeAlias = AT.HandlerFragment
-    HandlerOverride_A     : TypeAlias = AT.HandlerOverride
-    HandlerSpec_A         : TypeAlias = AT.HandlerSpec
-    Handler_A             : TypeAlias = AT.Handler
-    Handler_System_A      : TypeAlias = AT.HandlerSystem
-    Instruction_A         : TypeAlias = AT.Instruction
-    ModuleFragment        : TypeAlias = AT.ModuleFragment
-    RegistrationTargets_A : TypeAlias = "HandlerFragment_A|HandlerSpec_A|Handler_A|HandlerOverride_A|dict[str,Any]"
-    Sen_A                 : TypeAlias = AT.Sentence
-    Structure             : TypeAlias = "AT.DataStructure[AT.Node]"
-    Structure_t           : TypeAlias = Type[Structure]
-    Value_A               : TypeAlias = "AT.Value[AT.ValueCore]"
-else:
-    HandlerSpec_A = "HandlerSpec_i"
 ##-- end imports
+
+import acab
 
 logging = logmod.getLogger(__name__)
 config  = acab.config

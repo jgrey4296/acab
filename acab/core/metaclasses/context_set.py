@@ -17,6 +17,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
+##-- end imports
+
 import acab
 import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
@@ -29,7 +31,6 @@ from acab.interfaces import context as CtxInt
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.context_instance import ContextInstance
 
-##-- end imports
 
 logging        = logmod.getLogger(__name__)
 

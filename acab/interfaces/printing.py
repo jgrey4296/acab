@@ -23,21 +23,9 @@ from acab.error.semantic import AcabSemanticException
 from acab.interfaces import handler_system as HS
 from acab.interfaces.protocols import handler_system as HSubP
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    # tc only imports
-    Config_A         : TypeAlias = AT.Config
-    Value_A          : TypeAlias = "AT.Value[AT.ValueCore]"
-    Sentence         : TypeAlias = AT.Sentence
-    ModuleFragment   : TypeAlias = AT.ModuleFragment
-    ConfigSpec       : TypeAlias = AT.ConfigSpec
-    GenFunc          : TypeAlias = AT.fns.GenFunc
-    Handler_A        : TypeAlias = AT.Handler
-    HandlerSpec_A    : TypeAlias = AT.HandlerSpec
 ##-- end imports
 
 logging = logmod.getLogger(__name__)
-config = acab.config
 
 
 # Protocols  ##################################################################
@@ -85,4 +73,3 @@ class PrintSemantics_i(HS.HandlerComponent_i, _PrintSemantics_p):
     transforms  : list[GenFunc] = field(init=False, default_factory=list)
 
     def __post_init__(self) -> None: pass
-

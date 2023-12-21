@@ -16,27 +16,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection,
                     TypeAlias, TypeGuard, TypeVar, cast, runtime_checkable)
 from uuid import UUID, uuid1
 
+##-- end imports
+
 from acab import types as AT
 from acab_config import AcabConfigException
-
-if TYPE_CHECKING:
-    # tc only imports
-    GenFunc       : TypeAlias = AT.fns.GenFunc
-    Instruction_A : TypeAlias = AT.Instruction
-    SemSys_A      : TypeAlias = AT.SemanticSystem
-    Sen_A         : TypeAlias = AT.Sentence
-    Sen_t         : TypeAlias = Type[Sen_A]
-    ValueData     : TypeAlias = str
-    Value_A       : TypeAlias = "AT.Value[AT.ValueCore_t]"
-    Value_t       : TypeAlias = Type[Value_A]
-    Variable      = NewType('Variable', Value_A)
-else:
-    Value_A = "Value_i"
-
-T     = TypeVar('T')
-T_Cov = TypeVar('T_Cov', covariant=True)
-
-##-- end imports
 
 @dataclass(frozen=True)
 class AcabUUID:

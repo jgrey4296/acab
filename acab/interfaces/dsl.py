@@ -16,17 +16,6 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
                     runtime_checkable)
 
 from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    # tc only imports
-    import io
-    from acab import types as AT
-    Parser           : TypeAlias = AT.Parser
-    Sentence         : TypeAlias = AT.Sentence
-    Query            : TypeAlias = AT.Container
-    ModuleFragment   : TypeAlias = AT.ModuleFragment
-    DSL_Spec_A       : TypeAlias = AT.DSL_Spec
-    File             : TypeAlias = 'io.TextIOBase'
-
 ##-- end imports
 
 logging = logmod.getLogger(__name__)

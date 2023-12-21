@@ -17,24 +17,15 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection, Final,
 from uuid import UUID, uuid1
 from weakref import ref
 
-logging = root_logger.getLogger(__name__)
-
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    # tc only imports
-    from acab import types as AT
-    Handler_A       : TypeAlias = AT.Handler
-    ModuleFragment  : TypeAlias = AT.ModuleFragment
-    HandlerSpec_A   : TypeAlias = AT.HandlerSpec
-    HandlerSystem_A : TypeAlias = AT.HandlerSystem
-
 ##-- end imports
+
+logging = root_logger.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.printing import PrintSystem_i
-from acab.interfaces.protocols import handler_system as HSubP
+from acab.interfaces import handler_system as HSubP
 from acab.interfaces.semantic import SemanticSystem_i
 from acab.interfaces.value import Sentence_i, Value_i, Action_i, Operator_i
 
@@ -164,4 +155,3 @@ class ModuleFragment:
         operators = f"{ len(self.operators) } Operators"
 
         return f"Module {self.source}:\n- {frags}\n- {semantics}\n- {operators}\n- {printers}"
-

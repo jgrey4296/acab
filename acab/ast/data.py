@@ -11,19 +11,6 @@ from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator, Container,
                     Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
                     TypeAlias, TypeVar, cast, runtime_checkable)
-
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    # tc only imports
-    from acab import types as AT
-    Value     : TypeAlias = "AT.Value[AT.ValueCore]"
-    CtxIns    : TypeAlias = AT.CtxIns
-    Sen       : TypeAlias = AT.Sentence
-
-Node      : TypeAlias = "Node_i"
-Structure : TypeAlias = "Structure_i"
-T = TypeVar('T', covariant=True, bound=Node)
-
 ##-- end imports
 
 @runtime_checkable

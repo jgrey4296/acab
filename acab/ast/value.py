@@ -18,27 +18,14 @@ from typing import (TYPE_CHECKING, Any, ClassVar, Collection, Container, Final,
                     runtime_checkable)
 from uuid import UUID, uuid1
 
+##-- end imports
+
 import acab
 import acab.interfaces.protocols.value as VSubP
 from acab import types as AT
 from acab.core.metaclasses.singletons import SingletonMeta
 from acab_config import AcabConfigException
 
-if TYPE_CHECKING:
-    # tc only imports
-    GenFunc     : TypeAlias = AT.fns.GenFunc
-    Sen_A       : TypeAlias = AT.Sentence
-    Sen_t       : TypeAlias = Type[Sen_A]
-    CtxInst_A   : TypeAlias = AT.CtxIns
-    Value_A     : TypeAlias = "AT.Value[AT.ValueCore_t]"
-    Value_t     : TypeAlias = Type[Value_A]
-    Variable    : TypeAlias = Value_A
-    Tag         : TypeAlias = "AT.Value[str]"
-    Instruction : TypeAlias = AT.Instruction
-    ValueData   : TypeAlias = str
-    SemSys      : TypeAlias = AT.SemanticSystem
-
-##-- end imports
 
 __all__ = ['Value_i', 'Instruction_i', 'Sentence_i', 'Operator_i', 'Action_i']
 

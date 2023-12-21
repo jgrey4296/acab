@@ -12,15 +12,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    # tc only imports
-    pass
+##-- end import
 
 from acab import types as AT
 import acab
-##-- end import
-
-config = acab.config
 
 cmd_fn : TypeAlias = Callable[[Cmd, str], ]
 

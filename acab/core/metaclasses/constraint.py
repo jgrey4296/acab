@@ -7,6 +7,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic, Itera
                     List, Mapping, Match, MutableMapping, Optional, Protocol,
                     Sequence, Set, Tuple, TypeVar, Union, cast)
 
+##-- end imports
 
 import acab
 import acab.core.defaults.value_keys as DS
@@ -19,16 +20,6 @@ from acab.interfaces.bind import Bind_i
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.constraint_sieve import default_sieve
 
-if TYPE_CHECKING:
-    CtxIns      = 'ContextInstance'
-    Constraints = 'ConstraintCollection'
-    Operator    = 'ProductionOperator'
-    Value       = AT.Value
-    Statement   = AT.Instruction
-    Sen         = AT.Sentence
-    Node        = AT.StructView
-
-##-- end imports
 
 logging       = logmod.getLogger(__name__)
 config        = acab.config

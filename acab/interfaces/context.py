@@ -17,26 +17,13 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection,
                     Sequence, Set, Tuple, TypeAlias, TypeVar, cast, overload,
                     runtime_checkable)
 from uuid import UUID
-
-if TYPE_CHECKING:
-    # tc only imports
-    from acab import types as AT
-    GenFunc             : TypeAlias = AT.fns.GenFunc
-    CtxSet              : TypeAlias = AT.CtxSet
-    View                : TypeAlias = AT.StructView
-    Sen                 : TypeAlias = AT.Sentence
-    ProductionContainer : TypeAlias = AT.Container
-    ModuleFragment      : TypeAlias = AT.ModuleFragment
-
-    DelayValue = 'UUID | CtxIns | CtxSet | None'
-
 ##-- end imports
 
 CtxIns              : TypeAlias = "ContextInstance_i"
 Value               : TypeAlias = "Value_i"
 
 logging = logmod.getLogger(__name__)
-from acab.interfaces.protocols.value import AcabFinishable_p
+from acab.interfaces.value import AcabFinishable_p
 
 # Type declarations:
 T = TypeVar('T')
@@ -172,4 +159,3 @@ class CtxManager_i(ContextManager):
         # Merge into single new instance
         # replace
         raise NotImplementedError()
-

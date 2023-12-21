@@ -13,27 +13,10 @@ from typing import (Any, Callable, ClassVar, Collection, Generic, Iterable,
                     Type, Iterator, Mapping, Match, MutableMapping, Protocol,
                     Sequence, Tuple, TypeAlias, TypeVar, cast)
 from types import ModuleType
-
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    # tc only imports
-    from acab import types as AT
-    # TODO add 'Tick' functionality
-    ModuleFragment   : TypeAlias = AT.ModuleFragment
-    Sen_A            : TypeAlias = AT.Sentence
-    Instruction      : TypeAlias = AT.Instruction
-    DSL_Fragment     : TypeAlias = AT.DSL_Fragment
-    SemanticSystem   : TypeAlias = AT.SemanticSystem
-    PrintSystem      : TypeAlias = AT.PrintSystem
-    DSL_Builder      : TypeAlias = AT.DSL_Builder
-    DSL_Builder_t    : TypeAlias = Type[AT.DSL_Builder]
-    ModuleLoader     : TypeAlias = AT.ModuleLoader
-
 ##-- end imports
 
 logging = logmod.getLogger(__name__)
 
-from acab.core.util.decorators.engine import EnsureEngineInitialised
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.context import ContextSet_i
 
@@ -75,4 +58,3 @@ class AcabEngine_i(_AcabEngine_p):
     _module_loader : ModuleLoader   = field(init=False)
 
     def __post_init__(self) -> None: pass
-

@@ -11,19 +11,12 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, Generic,
                     Optional, Sequence, Set, Tuple, TypeAlias, TypeVar, Union,
                     cast)
 
+##-- end imports
 from acab.core.util.decorators.engine import EnsureEngineInitialised
 from acab.error.parse import AcabParseException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
-
-if TYPE_CHECKING:
-    # tc only imports
-    from acab import types as AT
-    ModuleFragment : TypeAlias = AT.ModuleFragment
-else:
-    ModuleFragment = "ModuleFragment"
-##-- end imports
 
 logging = logmod.getLogger(__name__)
 
