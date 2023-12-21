@@ -166,5 +166,3 @@ class PrintSemanticsImpl(HS.HandlerComponent, PI.PrintSemantics_i):
 
     def verify(self, instruction:Value_i) -> bool:
         return True
-
-

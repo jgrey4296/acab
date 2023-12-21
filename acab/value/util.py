@@ -30,4 +30,3 @@ name_sieve_fns = [
     lambda x: str(x['value']) if x['value'] is not None else None,
     lambda x: ANON_VALUE
     ]
-

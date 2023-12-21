@@ -1,0 +1,66 @@
+[module.repl]
+# TODO specify default working memory
+# ENGINE           = "acab.modules.engines.configured.basic"
+ENGINE           = "acab.modules.engines.configured.exlo"
+# specify default module loads, split on newline
+
+# Specify default prompts
+PROMPT           = "ACAB REPL"
+PROMPT_ML        = "... "
+MULTI_LINE_START = ":{"
+MULTI_LINE_END   = ":}"
+
+intro = [ "Welcome to ACAB.",
+          "Type \"tutorial\" for a tutorial.",
+          "Type \"help\" or \"?\" to list commands.",
+          "Type \":sc\" to list command shortcuts.",
+          "Type \":q\" to quit."
+          ]
+
+
+[module.repl.import]
+modules = [ "acab.modules.operators.query",
+            "acab.modules.operators.transform",
+            "acab.modules.operators.action",
+            "acab.modules.operators.dfs",
+            "acab.modules.analysis.typing",
+          # "acab.modules.values.sen_val",
+            "acab.core.parsing.component_dsl"
+            ]
+commands = [ "acab.modules.repl.commands.break_cmd",
+             "acab.modules.repl.commands.exit_cmd",
+             "acab.modules.repl.commands.force_parser_cmd",
+             "acab.modules.repl.commands.print_cmd",
+             "acab.modules.repl.commands.report_cmd",
+             "acab.modules.repl.commands.tutorial_cmd",
+             "acab.modules.repl.commands_control",
+             "acab.modules.repl.commands_core",
+             "acab.modules.repl.commands_dependent",
+             "acab.modules.repl.commands_info",
+             "acab.modules.repl.commands_post_hooks",
+             "acab.modules.repl.commands.log_cmd",
+           ]
+
+[module.repl.shortcuts]
+break       = "b"
+ctx         = "c"
+echo        = "e"
+exit        = "q"
+load        = "l"
+"print ctx" = "pc"
+"print wm"  = "pwm"
+save        = "s"
+step        = "t"
+shortcuts   = "sc"
+parser      = "dsl"
+forcep      = "fp"
+
+[module.repl.debug]
+intro = [ "Shunting to Python debugger.",
+          "Explore using:",
+          "self   is the break cmd,",
+          "repl   is the repl,",
+          "state  is data the repl tracks,",
+          "engine is the active ACAB engine,",
+          "ctxs   is the current context set"
+          ]

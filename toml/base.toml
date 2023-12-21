@@ -1,0 +1,98 @@
+[default]
+
+## Misc settings that don't fit elsewhere
+# (beyond type_instance: atom and bind_s : False)
+
+[logging]
+# Control detailed logging elements here
+# If True, use acab_config.utils.log_formatter
+# else just install the AcabMinimalLogRecord
+ACAB          = true
+
+STREAM_FORMAT = "{levelname:10} : {message}"
+FILE_FORMAT   = "{levelname:10} : {shortname} : {message}"
+
+# Overriden by CLI for the repl, otherwise:
+STREAM_LEVEL  = "WARNING"
+FILE_LEVEL    = "DEBUG"
+
+SEMANTIC      = "WARNING" # Separate file level semantic trace
+
+# If True, attach a warning log to node and value destructors:
+DEL           = false
+
+rich_exceptions = true
+
+[handler.system]
+DEFAULT_SIGNAL = "_default"
+
+[config.constraints]
+# LHS value/s must be found in RHS
+# Splits on '/' for section:parameter
+Print.Annotations  = "Value.Structure"
+
+[imports.general]
+# Target Name to try to import when importing a module
+# before falling back to __init__
+# ie: import a.b.c -> a.b.c.{target}
+# See module_loader
+MODULE_TARGET = "module"
+
+[imports.specific]
+# Specific classes to use accessed through config,
+# Rather than the parse/semantic/print AcabModules
+# use config.actions_e.IMCLASS to import,
+# and pass an interface/protocol it has to match in args={'interface': {}}
+value_meta = "acab.core.metaclasses.value.ValueMeta"
+# value_meta = "acab.modules.values.string_cache_val.caching_meta.StringCacheValueMeta"
+bind       = "acab.modules.values.binding.binding.Bind"
+context    = "acab.modules.context.context_set.ContextSet"
+debug      = "acab.modules.debugger.running_debugger.RunningDebugger"
+engine     = "acab.modules.engines.basic_engine.AcabBasicEngine"
+handler    = "acab.core.util.patch_handler.PatchHandler"
+
+[data]
+# The base root name in a data structure:
+ROOT                  = "__root"
+TYPE_BASE             = 'ATOM'
+DEFAULT_SETUP_METHOD  = "_default_setup"
+DEFAULT_UPDATE_METHOD = "_update_node"
+
+[[types]]
+# Names to be turned into the base type sentences
+# on top of TYPE_BASE
+# TODO add action_operator? instruction?
+primitive = ["ACTION", "COMPONENT" , "CONTAINER", "INSTRUCT", "OPERATOR_PRIM", "QUERY", "REGEX", "RULE", "SENTENCE", "STRING", "STRUCTURE", "TRANSFORM"]
+structure = ["TRANSFORM", "QUERY", "ACTION"]
+
+[[values]]
+# These are used in AcabValue.data
+# to add metadata
+structure = ["ARG", "AT_BIND", "BIND", "CONSTRAINT", "NAME", "NEGATION", "OPERATOR", "PARAMS", "QUERY", "QUERY_FALLBACK", "SEN", "TAG", "TYPE_INSTANCE", "SEMANTIC_HINT", "FLATTEN"]
+
+
+[module] # Each module is a subtable
+
+# Arrays of subtables,
+# each entry adding more to accumulate:
+[[modal]] # { name, enum-values, default, symbols}
+[[parse]]
+[[alias]]
+[[print]]
+[[symbol]]
+[[semantic]]
+[[operator]]
+
+[[operator]]
+[operator.sugar]
+ASSERT          = "!!"
+PRINT           = "%"
+REBIND          = "§"
+EQ              = "=="
+NEQ             = "!="
+REGEX_MATCH     = "~="
+ELEM            = "∈"
+TYPEMATCH       = "τ="
+REGEX_TRANSFORM = "~:"
+FORMAT          = "%:"
+DFS             = "ᛦ"

@@ -1,0 +1,11 @@
+[module.numbers]
+# Parser to use for Numbers:
+# int, decimal, fraction, all
+USE_PARSER = "all"
+ALLOW_NEG  = true
+#Use to signify a decimal, eg: 34d423 is 34.423
+DECIMAL    = "d"
+# TODO add primitive types
+
+[[types]]
+primitive = []

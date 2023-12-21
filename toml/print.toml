@@ -1,0 +1,25 @@
+[[print]]
+silent_types            = []
+UUID_CHOP               = 1
+SPACER_SIZE             = 30
+
+[print.patterns]
+# Caution: Can easily produce un-reparseable strings
+WRAP_FORMAT         = "()"
+SPACE               = " "
+INDENT              = "    "
+TAB                 = "    "
+PARAM_JOIN          = ", "
+CONTAINER_JOIN      = '\n'
+PRINT_SEPARATOR     = '\n'
+SEN_JOIN            = ''
+STR_WRAP            = "\""
+REGEX_WRAP          = "/"
+PARAM_WRAP          = "|"
+
+[print.annotations]
+# A List of AcabValue data fields to try printing as annotations
+keys = ["CONSTRAINT", "TYPE_INSTANCE"]
+
+[print.signals]
+allowed = ["TYPE_INSTANCE", "ANNOTATIONS", "ANNOTATIONS_FINAL", "SYMBOL", "CONSTRAINT", "IMPLICIT_CONTAINER", "MODAL", "TAGS"]

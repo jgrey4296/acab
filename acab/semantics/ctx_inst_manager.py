@@ -170,4 +170,3 @@ class CtxInstManager(CtxInt.CtxManager_i):
                                                  successes,
                                                  sub_binds=constraints["sub_struct_binds"])
         return bound_ctxs
-

@@ -55,4 +55,3 @@ class AltExampleExtension(FI.UnifiedFragment_p):
                                        handlers=[ppDSL.PyParse_Handler("sentence.ends", func=simple_dsl)])
 
         return dsl_fragment
-

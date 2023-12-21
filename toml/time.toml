@@ -1,0 +1,8 @@
+[[parse]]
+# TrieWM
+# Time
+[parse.results]
+structure = ["OPT", "PATTERN", "TIME_EVENT", "TIME_PATTERN" ]
+
+[module.time]
+TIME_FORMAT = "{}/{}"

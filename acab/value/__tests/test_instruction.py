@@ -88,5 +88,3 @@ class InstructionTests(unittest.TestCase):
     def test_tagged_operator(self):
         op = BasicTestOp(tags=["a","b","c"])
         self.assertTrue(op.has_tag(AcabValue("a"), AcabValue("b"), AcabValue("c")))
-
-
