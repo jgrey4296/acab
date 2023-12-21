@@ -24,7 +24,7 @@ import acab_config
 
 logging = logmod.getLogger(__name__)
 
-__version__ = "0.0.1"
+__version__ = "0.1.1"
 __all__     = ['types', 'setup', 'AcabLogRecord']
 
 _Value_A : TypeAlias = types.Value
