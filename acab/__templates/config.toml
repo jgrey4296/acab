@@ -1,3 +1,5 @@
+## config.toml -*- mode: conf-toml -*-
+
 [default]
 # Note: Use configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation(), allow_no_value=True)
 ## Misc settings that don't fit elsewhere
