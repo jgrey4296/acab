@@ -1,0 +1,3 @@
+[submodule "wiki_"]
+	path = wiki_
+	url = git@github.com:jgrey4296/acab.wiki.git
