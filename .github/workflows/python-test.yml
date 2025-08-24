@@ -1,0 +1,40 @@
+# #  python-publish.yml -*- mode: YAML -*-
+
+# Actions to build and upload to pypi
+# Actions Used:
+# https://github.com/astral-sh/setup-uv
+# https://github.com/actions/checkout/
+# https://github.com/actions/upload-artifact
+# https://github.com/actions/download-artifact
+# https://github.com/pypa/gh-action-pypi-publish
+
+name: Run Tests
+
+on:
+  workflow_dispatch: 
+  push:
+    branches: [main]
+    
+permissions:
+  contents: read
+
+# --------------------------------------------------
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: publishing
+    steps:
+      - uses: actions/checkout@v4
+      - name: install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+      - name: setup
+        run: |
+          mkdir --parents .temp/egg-info
+          uv lock --no-sources
+          uv venv
+          UV_FROZEN=1 uv sync --group test
+      - name: test
+        run: |
+          UV_NO_SYNC=1 uv run tox -e test

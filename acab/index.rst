@@ -37,16 +37,15 @@ If you find a bug, bug me, unsurprisingly, on the `issue tracker <https://github
 .. .. Main Sidebar Toctree
 .. toctree::
    :maxdepth: 3
+   :glob:
    :hidden:
 
-   getting_started
-   cli
-
-   examples/overview
-   architecture/overview
-   FAQ <faq>
+   [a-z]*/index
+   
+   _docs/*
 
    genindex
    modindex
+   API Reference <_docs/_autoapi/acab/index>
 
 .. .. Links

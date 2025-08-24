@@ -1,0 +1,61 @@
+## ruff.toml -*- mode: toml -*-
+# https://docs.astral.sh/ruff/configuration/
+
+# Extend the project settings, if theres a ruff section
+# extend = "pyproject-toml"
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr", ".direnv", ".eggs", ".git", ".git-rewrite",
+    ".hg", ".mypy_cache", ".nox", ".pants.d", ".pytype",
+    ".ruff_cache", ".svn", ".tox", ".venv", "__pypackages__",
+    "_build", "buck-out", "build", "dist", "node_modules",
+    "venv", ".temp",
+]
+line-length    = 100
+indent-width   = 4
+target-version = "py312"
+cache-dir      = ".temp/ruff_cache"
+
+[lint]
+select = [
+       "E",  # pycodestyle errors
+       "W",  # pycodestyle warnings
+       "F",  # pyflakes
+       "B"   # flake8-bugbear
+       ]
+
+ignore = [
+       "F401", "E501", "F841", "N801", "ANN204", "UP035", "TRY003",
+       "EM101", "PLW0120", "C419", "C401", "N817", "C408", "ANN401",
+       "C409"
+]
+
+# Allow autofix for all enabled rules (when Symbol’s value as variable is void: --fix) is provided.
+fixable = [
+        "A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W",
+        "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT",
+        "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH",
+        "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"
+        ]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+logger-objects     = ["logging", "printer"]
+
+[lint.pep8-naming]
+# Silences N805
+extend-ignore-names = ["cls", "mcls"]
+
+[lint.per-file-ignore]
+# "__init__.py" = ["E402"]
+# "**/{test,docs,tools}/*" = ["E402"]
+
+[format]
+exclude                   = []
+quote-style               = "double"
+indent-style              = "space"
+skip-magic-trailing-comma = false
+line-ending               = "auto"
+

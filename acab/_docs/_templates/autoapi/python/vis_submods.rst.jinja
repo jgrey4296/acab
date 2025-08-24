@@ -1,0 +1,18 @@
+{# vis_submods.rst.jinja -*- mode: Jinja2 -*- #}
+{% set visible_subpackages = obj.subpackages|selectattr("display")|list %}
+{% set visible_submodules  = obj.submodules|selectattr("display")|list %}
+{% set visible_submodules  = (visible_subpackages + visible_submodules)|sort %}
+{% set show_submods_sum = visible_submodules %} 
+
+{% if show_submods_sum %}
+Submodules
+----------
+   
+.. toctree::
+   :maxdepth: 1
+
+   {% for submodule in visible_submodules %}
+   {{ submodule.include_path }}
+   {% endfor %}
+
+{% endif %}

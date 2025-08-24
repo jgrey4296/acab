@@ -1,0 +1,68 @@
+# #  python-publish.yml -*- mode: YAML -*-
+
+# Actions to build and upload to pypi
+# Actions Used:
+# https://github.com/astral-sh/setup-uv
+# https://github.com/actions/checkout/
+# https://github.com/actions/upload-artifact
+# https://github.com/actions/download-artifact
+# https://github.com/pypa/gh-action-pypi-publish
+
+name: Upload Python Package
+
+on:
+  workflow_dispatch: # for manual triggers
+  release:
+    types: [published]
+
+    
+permissions:
+  contents: read
+
+# --------------------------------------------------
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: publishing
+    steps:
+      - uses: actions/checkout@v4
+      - name: install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+      - name: setup
+        run: |
+          mkdir --parents .temp/egg-info
+          uv lock --no-sources
+          uv venv
+          UV_FROZEN=1 uv sync --group test
+      - name: test
+        run: |
+          UV_NO_SYNC=1 uv run tox -e test
+      - name: Build package
+        run: |
+          UV_NO_SYNC=1 uv build .
+      - name: Store dist packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    environment: 
+      name: publishing
+      url: https:://pypi.org/p/acab
+    permissions:
+      id-token: write
+    steps:
+      - name: get dists
+        uses: actions/download-artifact@v5
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: push
+        uses: pypa/gh-action-pypi-publish@release/v1
+      

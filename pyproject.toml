@@ -4,14 +4,13 @@ version         = "0.1.1"
 description     = "Production System DSL"
 readme          = "README.md"
 requires-python = ">=3.12"
-license         = {file = "LICENSE"}
+license-files   = ["LICENSE"]
 keywords        = ["AI", "Production System", "rules", "DSL"]
 authors         = [
-    {email = "jgrey4296@gmail.com"},
-    {name  = "J Grey"}
+    {email = "jgrey4296@gmail.com", name = "J Grey"}
 ]
 classifiers     = [
-    "Programming Language :: Python :: 3.10"
+    "Programming Language :: Python :: 3.12"
 ]
 
 dependencies   = [
@@ -19,15 +18,6 @@ dependencies   = [
     "pyparsing>=3.2.3",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "myst-parser>=4.0.1",
-    "pytest>=8.3.5",
-    "pytest-cov>=6.0.0",
-    "pytest-mock>=3.14.0",
-    "sphinx>=8.2.3",
-    "sphinx-rtd-theme>=3.0.2",
-]
 
 [project.urls]
 homepage      = "https://github.com/jgrey4296/acab"
@@ -94,28 +84,6 @@ log_file_level  = "DEBUG"
 log_file_format = "%(asctime)s %(levelname)s %(name)s : %(message)s"
 ##-- end pytest
 
-##-- bumpver
-[tool.bumpver]
-current_version    = "0.1.1"
-version_pattern    = "MAJOR.MINOR.PATCH"
-commit_message     = "[bump]: version {old_version} -> {new_version}"
-tag_message        = "{new_version}"
-tag_scope          = "default"
-commit             = true
-tag                = false
-# pre_commit_hook  = ""
-# post_commit_hook = ""
-# push             = true
-
-[tool.bumpver.file_patterns]
-"pyproject.toml"   = [
-                   '^version\s+=\s+"{version}"',
-                   '^current_version\s+=\s+"{version}"'
-]
-"acab/__init__.py" = ['^__version__\s+=\s+"{version}"']
-
-##-- end bumpver
-
 ##-- isort
 # https://pycqa.github.io/isort/docs/configuration/options.html
 [tool.isort]
@@ -156,4 +124,44 @@ warn_unused_configs = true
 exclude             = [] # regexs to ignore
 cache_dir           = ".temp/mypy_cache"
 ##-- end mypy
+
+##-- towncrier
+[tool.towncrier]
+package               = "acab"
+directory             = "acab/_docs/_changes"
+template              = "acab/_docs/_templates/news.md"
+filename              = "CHANGELOG.md"
+create_add_extension  = true
+
+##-- end towncrier
+
+##-- uv
+# https://docs.astral.sh/uv/concepts/configuration-files/
+[tool.uv.sources]
+
+[dependency-groups]
+dev = [
+    "ipython>=9.4.0",
+    "towncrier>=24.8.0",
+]
+test =[
+    "pydot>=4.0.1",
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+    "tox>=4.28.4",
+    "tox-uv>=1.27.0",
+    "ruff>=0.12.8",
+]
+docs = [
+    "myst-parser>=4.0.1",
+    "sphinx>=8.2.3",
+    "sphinx-autoapi>=3.6.0",
+    "sphinx-rtd-theme>=3.0.2",
+    "pydot>=4.0.1",
+    "tox>=4.28.4",
+    "tox-uv>=1.27.0",
+]
+
+##-- end uv
 

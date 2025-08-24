@@ -1,0 +1,15 @@
+;; dot.related -*- mode: elisp -*-
+;; A Related dirs file
+;; ';;' are comment lines
+;; Others are :{name} : {path} pairs
+;; paths are relative
+
+:src         : acab
+:data        : data
+:docs        : acab/_docs
+:github      : .github/workflows
+:tasks       : .tasks
+:temp        : .temp
+:templates   : aca/__templates
+:wiki        : wiki_
+:docs-build  : .temp/docs

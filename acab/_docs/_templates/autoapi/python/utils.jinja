@@ -1,0 +1,19 @@
+{# utils.jinja -*- mode: Jinja2 -*- #}
+ 
+
+{# Protect against a __ prefix  #}
+{% macro smartref(obj) %} 
+  {{- ".." }} {% if obj.name[0] != "_" %}{{"_"}}{% endif %}{{ obj.id ~ ":" -}}
+{% endmacro %} 
+
+{# A Heading  #}
+{% macro heading(name, line="=", above=False) %} 
+  {% if above +%}
+    {{- line * name|length }}
+  {% endif %} 
+  
+  {{- name }}
+  {# nl #}
+  {{- line * name|length }}
+  
+{% endmacro %} 

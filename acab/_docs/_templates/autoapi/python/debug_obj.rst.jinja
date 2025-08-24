@@ -1,0 +1,59 @@
+
+{% macro micro(target) %} 
+{# {% if target and target.obj.from_line_no %} #}
+{% if target %} 
+
+.. admonition:: {{ target }}
+   :collapsible: closed
+   
+   Private: {{ target.is_private_member }}
+   
+   Special: {{ target.is_special_member }}
+   
+   Line Number: {{ target.obj.from_line_no }}
+
+   {% for key,val in target.obj|items %} 
+   {{ key }}
+   {% endfor %} 
+
+{% endif %}
+{% endmacro %} 
+
+{% macro simple(target) %} 
+{% if target %}
+
+.. hint::
+   :collapsible:
+   
+   Object Debug
+   ------------
+
+   1. Name: {{ target }}
+   2. Private: {{ target.is_private_member }}
+   3. Special: {{ target.is_special_member }}
+   4. Type: {{ target.__class__.__name__}}
+   5. Imported: {{ target.imported }}
+   6. Opts: {{ target.options }}
+   
+   .. code:: json
+   
+      {
+      {% for key,val in target.obj|items %}
+      {% if key != "children" %} 
+      "{{key}}" : "{{val}}",
+      {% else %}
+      "{{key}}" : "{{val|length}}",  
+      {% endif %} 
+      {% endfor %} 
+      }
+    
+{% endif %}
+{% endmacro %} 
+
+{% macro raw(target) %} 
+.. hint::
+   :collapsible: closed
+   
+   {{ target }}
+{% endmacro %} 
+

@@ -1,0 +1,17 @@
+{# vis_attrs.rst.jinja -*- mode: Jinja2 -*- #}
+{% set visible_attributes = visible_data|rejectattr("obj.annotation", "equalto", "TypeAlias")|list %}
+{% set show_attrs_sum = (visible_attributes and "show-module-summary" in autoapi_options) %}
+
+{% if show_attrs_sum %}
+  {% set mod_ns.children = mod_ns.children + visible_attributes %} 
+   
+Attributes
+----------
+
+.. autoapisummary::
+
+   {% for attr in visible_attributes %}
+   {{ attr.id }}
+   {% endfor %}
+
+{% endif %}

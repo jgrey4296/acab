@@ -1,0 +1,16 @@
+{# vis_enums.rst.jinja -*- mode: Jinja2 -*- #}
+
+{% set visible_enums = visible_classes|selectattr("obj.bases", "contains", "enum")|list %}
+{% if visible_enums %} 
+   {% set mod_ns.children = mod_ns.children + visible_enums %} 
+   
+Enums
+-----
+
+.. autoapisummary::
+
+   {% for enum in visible_enums %}
+   {{ enum.id }}
+   {% endfor %}
+
+{% endif %} 
