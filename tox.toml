@@ -11,7 +11,7 @@ skip_missing_interpreters  = false
 [env_run_base]
 description          = "base_env"
 runner               = "uv-venv-lock-runner"
-uv_sync_flags        = ["--no-editable", "--no-sources"]
+uv_sync_flags        = ["--no-editable"]
 allowlist_externals  = ["echo", "mkdir"]
 set_env.PKGNAME      = {replace="env", name="PKGNAME", default="acab"}
 
@@ -66,41 +66,4 @@ commands  = [
      "--no-cov-on-fail",
      { replace="posargs", default=["./acab"], extend=true }
      ],
-]
-
-[env.docs]
-description   = "build documentation"
-dependency_groups = ["docs"]
-skip_install  = true
-set_env = [
-    {replace="ref", of=["env_run_base", "set_env"]},
-    {CONFDIR  = {replace="env", name="CONFDIR",  default="./acab/_docs/"}},
-    {OUTDIR   = {replace="env", name="OUTDIR",   default="./.temp/docs/"}},
-    {DOCTREE  = {replace="env", name="DOCTREE",  default="./.temp/docs/.doctrees/"}},
-]
-commands      = [
-    ["echo", "Building Documentation to:", "{env:OUTDIR}"],
-    ["echo", "Doctrees to:", "{env:DOCTREE}"],
-    ["echo", "Config in:", "{env:CONFDIR}"],
-    ["uv", "run", "--frozen", "sphinx-build",
-    # "-q",
-    # "--fresh-env",
-    "--conf-dir", "{env:CONFDIR}",
-    "--doctree-dir", "{env:DOCTREE}",
-    "--warning-file", "./.temp/logs/sphinx.log",
-    "--builder", "html",
-     "./{env:PKGNAME}",
-     "{env:OUTDIR}",
-    {replace="posargs", default=[], extend=true}
-    ]
-]
-
-[env.release]
-description  = "Generate a release"
-set_env      = [
-   {replace="ref", of=["env_run_base", "set_env"]},
-   {LEVEL={replace="env", name="LEVEL", default="minor"}},
-]
-commands     = [
-    ["python", ".tasks/release.py", "--bump", "{env:LEVEL}"]
 ]

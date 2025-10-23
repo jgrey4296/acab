@@ -1,0 +1,20 @@
+## VERSION.toml -*- mode: toml-ts-mode -*-
+## https://github.com/annie444/version
+
+# Update with:
+# fdfind --threads=1 "(pyproject|Cargo).toml" -x version file track {} 'version\s+=\s+"(.*)"'
+
+# Increment with:
+# version {level} set +
+
+version = "0.1.1"
+
+[[files]]
+file = "pyproject.toml"
+expr = 'version\s+=\s+"(.*)"'
+
+[[files]]
+file = "towncrier.toml"
+expr = 'version\s+=\s+"(.*)"'
+
+[package]

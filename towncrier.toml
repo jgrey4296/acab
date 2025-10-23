@@ -1,0 +1,13 @@
+# towncrier.toml -*- mode: toml-mode -*-
+# Summary:
+#
+# Tags:
+#
+## https://towncrier.readthedocs.io/en/stable/configuration.html
+[tool.towncrier]
+name                  = "acab"
+version               = "0.1.1"
+directory             = "acab/_docs/_changes"
+template              = "acab/_docs/_templates/news.md"
+filename              = "CHANGELOG.md"
+create_add_extension  = true

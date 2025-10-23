@@ -125,16 +125,6 @@ exclude             = [] # regexs to ignore
 cache_dir           = ".temp/mypy_cache"
 ##-- end mypy
 
-##-- towncrier
-[tool.towncrier]
-package               = "acab"
-directory             = "acab/_docs/_changes"
-template              = "acab/_docs/_templates/news.md"
-filename              = "CHANGELOG.md"
-create_add_extension  = true
-
-##-- end towncrier
-
 ##-- uv
 # https://docs.astral.sh/uv/concepts/configuration-files/
 [tool.uv.sources]

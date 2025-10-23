@@ -26,22 +26,23 @@ jobs:
     environment: publishing
     steps:
       - uses: actions/checkout@v4
-      - name: install uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          version: "latest"
+      - uses: asdf-vm/actions/setup@v4
+      - name: setup polyglot
+        run: |
+          asdf plugin add direnv
+          asdf install
+          direnv allow
+          direnv export gha >> "$GITHUB_ENV"
       - name: setup
         run: |
-          mkdir --parents .temp/egg-info
-          uv lock --no-sources
           uv venv
-          UV_FROZEN=1 uv sync --group test
+          uv sync --group test
       - name: test
         run: |
-          UV_NO_SYNC=1 uv run tox -e test
+          uv run tox -e test
       - name: Build package
         run: |
-          UV_NO_SYNC=1 uv build .
+          uv build .
       - name: Store dist packages
         uses: actions/upload-artifact@v4
         with:
