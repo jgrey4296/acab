@@ -1,8 +1,0 @@
-
-test.first(::ACTION):
-    λa.b.c test
-end
-
-a.b.c
-
-d.e.f

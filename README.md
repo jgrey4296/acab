@@ -1,2 +1,3 @@
-# ACAB: Analytic Collaborative Agent Bureaucracy
-A Python based adaptable pipeline architecture for AI DSLs.
+# ACAB License
+
+A Personal Software License to avoid cops and other objectionable groups.
